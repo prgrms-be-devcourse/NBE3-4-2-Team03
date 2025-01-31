@@ -7,7 +7,6 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 public class PcquotationApplication {
 
-	// 1
 	public static void main(String[] args) {
 		SpringApplication.run(PcquotationApplication.class, args);
 	}
