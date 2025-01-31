@@ -30,25 +30,28 @@ jobs:
         working-directory: frontend
         run: npm run build
 
+
+
   backend:
     name: Backend Build & Test
     runs-on: ubuntu-latest
 
     services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE:
-          MYSQL_USER: testuser
-          MYSQL_PASSWORD: testpass
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping --host=localhost --user=root --password=root"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
+          mysql:
+            image: mysql:8.0
+            env:
+              MYSQL_ROOT_PASSWORD: root
+              MYSQL_DATABASE: test_db
+              MYSQL_USER: test_user
+              MYSQL_PASSWORD: test_password
+            ports:
+              - 3306:3306
+            options: >-
+              --health-cmd="mysqladmin ping"
+              --health-interval=10s
+              --health-timeout=5s
+              --health-retries=3
+
 
     steps:
       - name: 저장소 체크아웃
@@ -67,11 +70,15 @@ jobs:
       - name: 의존성 설치 및 빌드
         working-directory: backend
         run: ./gradlew build --no-daemon
+        env:
+          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/pcquotation?useSSL=false&serverTimezone=UTC
+          SPRING_DATASOURCE_USERNAME: test_user
+          SPRING_DATASOURCE_PASSWORD: test_password
 
       - name: 테스트 실행
         working-directory: backend
-        env:
-          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/testdb
-          SPRING_DATASOURCE_USERNAME: testuser
-          SPRING_DATASOURCE_PASSWORD: testpass
         run: ./gradlew test --no-daemon
+        env:
+          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/pcquotation?useSSL=false&serverTimezone=UTC
+          SPRING_DATASOURCE_USERNAME: test_user
+          SPRING_DATASOURCE_PASSWORD: test_password
