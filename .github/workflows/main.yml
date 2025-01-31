@@ -30,11 +30,25 @@ jobs:
         working-directory: frontend
         run: npm run build
 
-
-
   backend:
     name: Backend Build & Test
     runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE:
+          MYSQL_USER: testuser
+          MYSQL_PASSWORD: testpass
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --host=localhost --user=root --password=root"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
     steps:
       - name: 저장소 체크아웃
@@ -56,4 +70,8 @@ jobs:
 
       - name: 테스트 실행
         working-directory: backend
+        env:
+          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/testdb
+          SPRING_DATASOURCE_USERNAME: testuser
+          SPRING_DATASOURCE_PASSWORD: testpass
         run: ./gradlew test --no-daemon
