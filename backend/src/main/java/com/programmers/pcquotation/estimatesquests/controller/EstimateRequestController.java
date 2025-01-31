@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class EstimateRequestController {
     private final EstimateRequestService estimateRequestService;
-    record EstimateRequestData(@NotBlank String purpose, @NotBlank Integer budget, @NotBlank String otherRequest){}
+    record EstimateRequestData(@NotBlank String purpose, @NotBlank Integer budget, String otherRequest){}
 
     @PostMapping
     @Transactional

@@ -13,6 +13,10 @@ import java.time.LocalDateTime;
 public class EstimateRequestService {
     private final EstimateRequestRepository estimateRequestRepository;
 
+    public Integer findId(Integer id){
+        return estimateRequestRepository.findById(id).get().getId();
+    }
+
     public EstimateRequest createEstimateRequest(@NotBlank String purpose, @NotBlank Integer budget, @NotBlank String otherRequest){
         return estimateRequestRepository.save(EstimateRequest
                 .builder()
