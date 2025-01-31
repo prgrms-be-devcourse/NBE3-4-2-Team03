@@ -18,7 +18,8 @@ public class ItemService {
 	public ItemCreateResponse addItem(final ItemCreateRequest request) {
 
 		NewItem newItem = new NewItem(
-			request.name()
+			request.name(),
+			request.imgFilename()
 		);
 
 		Long savedItemId = itemManager.addItem(newItem);

@@ -20,5 +20,5 @@ public class ItemDetail {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String name;                    // 부품 이름
-	private final String imgFilename;
+	private String imgFilename;
 }
