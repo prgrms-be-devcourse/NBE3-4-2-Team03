@@ -1,14 +1,5 @@
 # NBE3-4-2-Team03
 
-
-[요구사항 명세서]()
-
-***
-
-
-[API 명세서](https://github.com/prgrms-be-devcourse/NBE3-4-2-Team03/wiki)
-
-
 ### 브랜치 전략 ###
 
 ---
@@ -43,3 +34,11 @@ feature -> main
 git commit -m "#이슈번호 feat - 상품 CRUD 구현"
 git commit -m "#1 feat - 상품 CRUD 구현"
 ```
+
+***
+[요구사항 명세서]()
+
+***
+
+
+[API 명세서](https://github.com/prgrms-be-devcourse/NBE3-4-2-Team03/wiki)
