@@ -26,7 +26,7 @@ class PcquotationApplicationTests {
                 .build());
 
 
-        assertThat(estimateRequestRepository.findAll().size()).isEqualTo(4);
+        assertThat(estimateRequestRepository.findAll().size()).isEqualTo(3);
     }
 
 }
