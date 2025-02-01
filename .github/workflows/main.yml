@@ -65,7 +65,7 @@ jobs:
       - name: 의존성 설치 및 빌드
         working-directory: backend
         env:
-          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/pcquotation?useSSL=false&serverTimezone=UTC
+          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/pcquotation?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
           SPRING_DATASOURCE_USERNAME: root  # ✅ application.properties와 동일하게 설정
           SPRING_DATASOURCE_PASSWORD: "0000"
         run: ./gradlew build --no-daemon
@@ -73,7 +73,7 @@ jobs:
       - name: 테스트 실행
         working-directory: backend
         env:
-          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/pcquotation?useSSL=false&serverTimezone=UTC
+          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/pcquotation?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
           SPRING_DATASOURCE_USERNAME: root
           SPRING_DATASOURCE_PASSWORD: "0000"
         run: ./gradlew test --no-daemon
