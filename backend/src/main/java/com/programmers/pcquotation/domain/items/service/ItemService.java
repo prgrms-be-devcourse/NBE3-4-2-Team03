@@ -7,6 +7,7 @@ import com.programmers.pcquotation.domain.items.dto.request.ItemCreateRequest;
 import com.programmers.pcquotation.domain.items.dto.response.ItemCreateResponse;
 import com.programmers.pcquotation.domain.items.implement.ItemManager;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -15,6 +16,7 @@ public class ItemService {
 
 	private final ItemManager itemManager;
 
+	@Transactional
 	public ItemCreateResponse addItem(final ItemCreateRequest request) {
 
 		NewItem newItem = new NewItem(

@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Component
-
 public class ItemManager {
 
 	private final ItemDetailRepository itemDetailRepository;

@@ -1,7 +1,7 @@
 package com.programmers.pcquotation.domain.items.controller;
 
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.programmers.pcquotation.api.Result;
@@ -20,7 +20,7 @@ public class ItemController {
 	//부품 추가
 	@PostMapping("/api/items")
 	public Result<ItemCreateResponse> createItem(
-		@ModelAttribute("request") ItemCreateRequest request
+		@RequestBody ItemCreateRequest request
 	) {
 		ItemCreateResponse response = itemService.addItem(request);
 		return Result.success(response);
