@@ -5,6 +5,7 @@ import java.util.NoSuchElementException;
 
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +16,7 @@ import com.programmers.pcquotation.domain.sellers.dto.ResponseSellerDto;
 import com.programmers.pcquotation.domain.sellers.dto.SellerRegisterDto;
 import com.programmers.pcquotation.domain.sellers.dto.SellerUpdateDto;
 import com.programmers.pcquotation.domain.sellers.entitiy.Sellers;
+import com.programmers.pcquotation.domain.sellers.service.BusinessConfirmationService;
 import com.programmers.pcquotation.domain.sellers.service.SellersService;
 
 import jakarta.validation.Valid;
@@ -26,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/sellers")
 public class SellersController {
 	private final SellersService sellersService;
+	private final BusinessConfirmationService businessConfirmationService;
 
 	@GetMapping
 	@Transactional(readOnly = true)
@@ -79,4 +82,11 @@ public class SellersController {
 		 */
 		return "토큰 반환";
 	}
+	@GetMapping("/api/{code}")
+	@Transactional(readOnly = true)
+	public boolean checkCode(@PathVariable("code") String code) {
+		return businessConfirmationService.checkCode(code);
+	}
+
+
 }
