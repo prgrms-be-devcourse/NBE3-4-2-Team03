@@ -66,5 +66,33 @@ class PcquotationApplicationTests {
 		assertNotNull(sellers.get());
 		assertEquals(sellers.get().getUsername(), "test1234");
 	}
+	@Test
+	@DisplayName("사업자 번호 조회")
+	void t2() throws Exception {
+		ResultActions resultActions1 = mvc
+			.perform(get("/sellers/api/2208183676")
+				.contentType(
+					new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
+				)
+			)
+			.andDo(print());
+		resultActions1
+			.andExpect(handler().handlerType(SellersController.class))
+			.andExpect(handler().methodName("checkCode"))
+			.andExpect(status().isOk())
+			.andExpect(content().string("true"));
+		ResultActions resultActions2 = mvc
+			.perform(get("/sellers/api/220818")
+				.contentType(
+					new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
+				)
+			)
+			.andDo(print());
+		resultActions2
+			.andExpect(handler().handlerType(SellersController.class))
+			.andExpect(handler().methodName("checkCode"))
+			.andExpect(status().isOk())
+			.andExpect(content().string("false"));
+	}
 
 }
