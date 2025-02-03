@@ -1,26 +1,32 @@
-package com.programmers.pcquotation.sellers;
+package com.programmers.pcquotation.sellers.service;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.programmers.pcquotation.sellers.DTO.CustomerUpdateDto;
 import com.programmers.pcquotation.sellers.DTO.SellerRegisterDto;
+import com.programmers.pcquotation.sellers.DTO.SellerUpdateDto;
+import com.programmers.pcquotation.sellers.entitiy.Sellers;
+import com.programmers.pcquotation.sellers.repository.SellersRepository;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class SellersService {
+	@Autowired
 	private final SellersRepository sellersRepository;
+	@Autowired
+	PasswordEncoder passwordEncoder;
 
-	Optional<Sellers> findByName(String name) {
+	public Optional<Sellers> findByName(String name) {
 		return sellersRepository.findByUsername(name);
 	}
 
-	//시큐리티 추가후 패스워드 암호화하기
-	Sellers signUp(SellerRegisterDto sellerRegisterDto) {
+	public Sellers create(SellerRegisterDto sellerRegisterDto) {
 		if (!sellerRegisterDto
 			.getPassword()
 			.equals(sellerRegisterDto
@@ -28,7 +34,7 @@ public class SellersService {
 			throw new NoSuchElementException("비밀번호가 일치하지않습니다.");
 		Sellers sellers = Sellers.builder()
 			.username(sellerRegisterDto.getUsername())
-			.password(sellerRegisterDto.getPassword())
+			.password(passwordEncoder.encode(sellerRegisterDto.getPassword()))
 			.companyName(sellerRegisterDto.getCompanyName())
 			.email((sellerRegisterDto.getEmail()))
 			.verificationQuestion(sellerRegisterDto.getVerificationQuestion())
@@ -37,7 +43,7 @@ public class SellersService {
 		return sellers;
 	}
 
-	Sellers modify(Sellers sellers, CustomerUpdateDto customerUpdateDto) {
+	public Sellers modify(Sellers sellers, SellerUpdateDto customerUpdateDto) {
 		if (sellers.getPassword().equals(customerUpdateDto.getPassword())) {
 			if (!customerUpdateDto.getUserName().isEmpty())
 				sellers.setUsername(customerUpdateDto.getUserName());

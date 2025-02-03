@@ -1,4 +1,4 @@
-package com.programmers.pcquotation.sellers;
+package com.programmers.pcquotation.sellers.entitiy;
 
 import static jakarta.persistence.GenerationType.*;
 
@@ -24,7 +24,7 @@ public class Sellers {
 	private Long id;
 	@Column(length = 20)
 	private String username;
-	@Column(length = 20)
+	@Column(length = 255)
 	private String password;
 	@Column(length = 20)
 	private String companyName;
@@ -39,11 +39,6 @@ public class Sellers {
 	/*
 	// 추천한 유저 목록
 	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(
-		name = "seller_recommend",
-		joinColumns = @JoinColumn(name = "seller_id"),
-		inverseJoinColumns = @JoinColumn(name = "customer_id")
-	)
 	private Set<Customers> recommend = new HashSet<>();
 	*/
 
