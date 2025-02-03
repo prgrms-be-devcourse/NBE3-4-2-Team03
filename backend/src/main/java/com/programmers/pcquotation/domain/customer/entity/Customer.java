@@ -18,15 +18,15 @@ import lombok.Setter;
 @Builder
 @Entity
 public class Customer {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	@Column(unique = true)
-	private String username;
-	private String password;
-	private String customerName;
-	@Column(unique = true)
-	private String email;
-	private String verificationQuestion;
-	private String verificationAnswer;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(unique = true)
+    private String username;
+    private String password;
+    private String customerName;
+    @Column(unique = true)
+    private String email;
+    private String verificationQuestion;
+    private String verificationAnswer;
 }

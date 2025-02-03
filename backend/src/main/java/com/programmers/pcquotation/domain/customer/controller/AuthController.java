@@ -17,11 +17,11 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping(("/api/auth"))
 public class AuthController {
-	private final AuthService authService;
+    private final AuthService authService;
 
-	@PostMapping("/signup/customer")
-	public ResponseEntity<SignupResponse> signup(@RequestBody SignupRequest signupRequest) {
-		SignupResponse signupResponse = authService.addUser(signupRequest);
-		return new ResponseEntity<>(signupResponse, HttpStatus.CREATED);
-	}
+    @PostMapping("/signup/customer")
+    public ResponseEntity<SignupResponse> signup(@RequestBody SignupRequest signupRequest) {
+        SignupResponse signupResponse = authService.addUser(signupRequest);
+        return new ResponseEntity<>(signupResponse, HttpStatus.CREATED);
+    }
 }
