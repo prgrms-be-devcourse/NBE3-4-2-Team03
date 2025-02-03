@@ -1,4 +1,4 @@
-package com.programmers.pcquotation;
+package com.programmers.pcquotation.customers.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
