@@ -1,4 +1,4 @@
-package com.programmers.pcquotation.sellers.DTO;
+package com.programmers.pcquotation.domain.sellers.dto;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

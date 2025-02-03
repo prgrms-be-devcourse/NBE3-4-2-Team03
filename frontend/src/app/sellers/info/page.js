@@ -18,61 +18,40 @@ export default function MyPage() {
   const requestedQuotes = [
     {
       id: 1,
+      customerId: "user123",
       createDate: "2024-03-19",
       budget: "2,000,000원",
       purpose: "게이밍",
       status: "견적 대기중",
-      receivedQuotes: [
-        {
-          id: 1,
-          date: "2024-03-20",
-          seller: "컴퓨터마스터",
-          totalPrice: "1,950,000원",
-          status: "검토중",
-          parts: {
-            cpu: "Intel Core i5-13600K",
-            motherboard: "ASUS PRIME B760M-A",
-            memory: "삼성전자 DDR4-3200 16GB",
-            storage: "삼성전자 980 PRO 1TB",
-            gpu: "NVIDIA GeForce RTX 4060",
-            case: "ABKO NCORE G30",
-            power: "시소닉 FOCUS GOLD 750W",
-          },
-          comments: [
-            {
-              id: 1,
-              author: "홍길동",
-              text: "CPU 다른 모델로 변경 가능한가요?",
-              date: "2024-03-21 14:30",
-              isCustomer: true
-            },
-            {
-              id: 2,
-              author: "컴퓨터마스터",
-              text: "네, i7-13700K로 변경 가능합니다. 추가 금액은 15만원입니다.",
-              date: "2024-03-21 15:45",
-              isCustomer: false
-            }
-          ]
-        },
-        {
-          id: 2,
-          date: "2024-03-21",
-          seller: "PC프로",
-          totalPrice: "2,100,000원",
-          status: "검토중"
-        }
-      ]
+      
     },
     // ... 더 많은 요청 견적들
   ];
 
-
+  // 임시 데이터에 작성한 견적 데이터 추가
+  const writtenQuotes = [
+    {
+      id: 1,
+      customerId: "user123",
+      requestId: 1,
+      createDate: "2024-03-20",
+      totalPrice: "2,100,000원",
+      status: "검토중",
+      parts: {
+        cpu: "Intel Core i7-13700K",
+        motherboard: "ASUS ROG STRIX Z690-A",
+        memory: "Samsung DDR5-5600 32GB",
+        storage: "Samsung 990 PRO 2TB",
+        gpu: "NVIDIA GeForce RTX 4070",
+        case: "Lian Li O11 Dynamic",
+        power: "Corsair RM850x"
+      }
+    }
+  ];
 
   return (
     <div className="min-h-screen p-8 dark:bg-gray-900">
-      <h1 className="text-2xl font-bold mb-8 dark:text-white">구매자 페이지</h1>
-      
+      <h1 className="text-2xl font-bold mb-8 dark:text-white">판매자 페이지</h1>
       {/* 탭 메뉴 */}
       <div className="flex gap-4 mb-8 border-b dark:border-gray-700">
         <button 
@@ -85,9 +64,14 @@ export default function MyPage() {
           className={`pb-2 px-4 ${activeTab === 'requested' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500'}`}
           onClick={() => setActiveTab('requested')}
         >
-          요청한 견적
+          요청 받은 견적
         </button>
-        
+        <button 
+          className={`pb-2 px-4 ${activeTab === 'written' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500'}`}
+          onClick={() => setActiveTab('written')}
+        >
+          작성한 견적
+        </button>
       </div>
 
       {/* 회원정보 탭 */}
@@ -110,72 +94,103 @@ export default function MyPage() {
       {/* 요청한 견적 탭 */}
       {activeTab === 'requested' && (
         <div>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-semibold dark:text-white">요청 받은 견적 목록</h2>
+            
+          </div>
           <div className="space-y-8">
             {requestedQuotes.map(quote => (
               <div key={quote.id} className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
                 <div className="flex justify-between items-center mb-4">
-                  <span className="text-lg font-semibold dark:text-white">견적 요청 #{quote.id}</span>
-                  <span className="text-blue-600 dark:text-blue-400">{quote.status}</span>
+                  <div>
+                    <span className="text-lg font-semibold dark:text-white">견적 요청 #{quote.id}</span>
+                  </div>
+                  <button 
+                    className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+                    onClick={() => {/* 견적 작성 페이지로 이동 */}}
+                  >
+                    견적 작성하기
+                  </button>
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-sm mb-6">
+                <div className="text-gray-600 dark:text-gray-400">요청자</div>
+                <div className="dark:text-white">{quote.customerId}</div>
                   <div className="text-gray-600 dark:text-gray-400">요청일</div>
                   <div className="dark:text-white">{quote.createDate}</div>
                   <div className="text-gray-600 dark:text-gray-400">예산</div>
                   <div className="dark:text-white">{quote.budget}</div>
                   <div className="text-gray-600 dark:text-gray-400">용도</div>
                   <div className="dark:text-white">{quote.purpose}</div>
-                </div>
-
-                {/* 받은 견적 목록 */}
-                {quote.receivedQuotes.length > 0 && (
-                  <div className="mt-6 border-t dark:border-gray-700 pt-4">
-                    <h3 className="text-md font-semibold mb-4 dark:text-white">받은 견적 ({quote.receivedQuotes.length})</h3>
-                    <div className="space-y-4">
-                      {quote.receivedQuotes.map(receivedQuote => (
-                        <div key={receivedQuote.id} className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                          <div className="flex justify-between items-center mb-2">
-                            <span className="font-medium dark:text-white">{receivedQuote.seller}</span>
-                            <span className="text-sm text-blue-600 dark:text-blue-400">{receivedQuote.status}</span>
-                          </div>
-                          <div className="grid grid-cols-2 gap-2 text-sm">
-                            <div className="text-gray-600 dark:text-gray-400">받은날짜</div>
-                            <div className="dark:text-white">{receivedQuote.date}</div>
-                            <div className="text-gray-600 dark:text-gray-400">견적금액</div>
-                            <div className="dark:text-white">{receivedQuote.totalPrice}</div>
-                          </div>
-                          <div className="mt-3 flex gap-2">
-                            <button 
-                              className="text-sm text-blue-500 hover:text-blue-400"
-                              onClick={() => setSelectedQuote(receivedQuote)}
-                            >
-                              상세보기
-                            </button>
-                            <button 
-                              className="text-sm text-green-600 hover:text-green-500"
-                              onClick={() => {
-                                setShowConfirmModal(true);
-                              }}
-                            >
-                              채택하기
-                            </button>
-                            <button 
-                              className="text-sm text-purple-600 hover:text-purple-500"
-                              onClick={() => setSelectedQuoteForComment(receivedQuote)}
-                            >
-                              문의하기
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                </div>  
               </div>
             ))}
           </div>
-          <button className="mt-4 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors">
-            견적 요청하기
-          </button>
+        </div>
+      )}
+
+      {/* 작성한 견적 탭 */}
+      {activeTab === 'written' && (
+        <div>
+          <div className="space-y-8">
+            {writtenQuotes.map(quote => (
+              <div key={quote.id} className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+                <div className="flex justify-between items-center mb-4">
+                  <div>
+                    <span className="text-lg font-semibold dark:text-white">견적 #{quote.id}</span>
+                    <span className="ml-3 text-sm text-gray-500 dark:text-gray-400">
+                      (요청 #{quote.requestId})
+                    </span>
+                  </div>
+                  <div className="flex gap-2">
+                    
+                    <button 
+                      className="px-3 py-1 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      onClick={() => {/* 견적 수정 페이지로 이동 */}}
+                    >
+                      수정
+                    </button>
+                    <button 
+                      className="px-3 py-1 rounded-lg border border-red-300 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
+                      onClick={() => {
+                        if (window.confirm('정말로 이 견적을 삭제하시겠습니까?')) {
+                          // 견적 삭제 로직 구현
+                        }
+                      }}
+                    >
+                      삭제
+                    </button>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-sm mb-6">
+                  <div className="text-gray-600 dark:text-gray-400">요청자</div>
+                  <div className="dark:text-white">{quote.customerId}</div>
+                  <div className="text-gray-600 dark:text-gray-400">작성일</div>
+                  <div className="dark:text-white">{quote.createDate}</div>
+                  <div className="text-gray-600 dark:text-gray-400">총 견적금액</div>
+                  <div className="dark:text-white">{quote.totalPrice}</div>
+                </div>
+                <div className="border dark:border-gray-700 rounded-lg p-4">
+                  <h4 className="font-medium mb-3 dark:text-white">견적 구성</h4>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    {Object.entries(quote.parts).map(([part, name]) => (
+                      <div key={part} className="col-span-2 grid grid-cols-2">
+                        <div className="text-gray-600 dark:text-gray-400">
+                          {part === 'cpu' ? 'CPU' :
+                           part === 'motherboard' ? '메인보드' :
+                           part === 'memory' ? '메모리' :
+                           part === 'storage' ? '저장장치' :
+                           part === 'gpu' ? '그래픽카드' :
+                           part === 'case' ? '케이스' :
+                           part === 'power' ? '파워' : part}
+                        </div>
+                        <div className="dark:text-white">{name}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 

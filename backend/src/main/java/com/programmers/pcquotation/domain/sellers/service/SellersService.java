@@ -1,4 +1,4 @@
-package com.programmers.pcquotation.sellers.service;
+package com.programmers.pcquotation.domain.sellers.service;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -7,10 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.programmers.pcquotation.sellers.DTO.SellerRegisterDto;
-import com.programmers.pcquotation.sellers.DTO.SellerUpdateDto;
-import com.programmers.pcquotation.sellers.entitiy.Sellers;
-import com.programmers.pcquotation.sellers.repository.SellersRepository;
+import com.programmers.pcquotation.domain.sellers.dto.SellerRegisterDto;
+import com.programmers.pcquotation.domain.sellers.dto.SellerUpdateDto;
+import com.programmers.pcquotation.domain.sellers.entitiy.Sellers;
+import com.programmers.pcquotation.domain.sellers.repository.SellersRepository;
 
 import lombok.RequiredArgsConstructor;
 
