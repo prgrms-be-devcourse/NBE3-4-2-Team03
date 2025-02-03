@@ -29,6 +29,7 @@ import com.programmers.pcquotation.sellers.service.SellersService;
 class PcquotationApplicationTests {
 	@Autowired
 	SellersService sellersService;
+	
 	@Autowired
 	private MockMvc mvc;
 
