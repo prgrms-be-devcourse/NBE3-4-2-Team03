@@ -44,9 +44,10 @@ class EstimateServiceTest {
         estimateService.createEstimateRequest("asd", 7, "qwe");
         estimateService.createEstimateRequest("asd", 8, "qwe");
         estimateService.createEstimateRequest("asd", 9, "qwe");
+        estimateService.createEstimateRequest("asd", 10, "");
         //when
 
         //then
-        assertThat(estimateRequestRepository.findAll().size()).isEqualTo(9);
+        assertThat(estimateRequestRepository.findAll().size()).isEqualTo(10);
     }
 }
