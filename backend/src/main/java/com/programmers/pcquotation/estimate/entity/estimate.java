@@ -1,6 +1,7 @@
 package com.programmers.pcquotation.estimate.entity;
 
 import com.programmers.pcquotation.estimaterequest.entity.EstimateRequest;
+import com.programmers.pcquotation.sellers.entitiy.Sellers;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -21,6 +22,6 @@ public class estimate {
     @OneToOne
     private EstimateRequest estimateRequest;
 
-//    @OneToOne
-//    private Sellers sellers;
+    @OneToOne
+    private Sellers sellers;
 }
