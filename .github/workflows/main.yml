@@ -38,7 +38,7 @@ jobs:
       mysql:
         image: mysql:8.0
         env:
-          MYSQL_ROOT_PASSWORD: 0000
+          MYSQL_ROOT_PASSWORD: "0000"
           MYSQL_DATABASE: pcquotation  # ✅ DB 이름을 pcquotation으로 통일
 
         ports:
