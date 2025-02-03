@@ -40,8 +40,7 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: 0000
           MYSQL_DATABASE: pcquotation  # ✅ DB 이름을 pcquotation으로 통일
-          MYSQL_USER: root  # ✅ application.properties의 계정 정보와 일치시킴
-          MYSQL_PASSWORD: "0000"
+
         ports:
           - 3306:3306
         options: >-
