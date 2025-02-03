@@ -19,8 +19,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.programmers.pcquotation.sellers.entitiy.Sellers;
-import com.programmers.pcquotation.sellers.service.SellersService;
+import com.programmers.pcquotation.domain.sellers.controller.SellersController;
+import com.programmers.pcquotation.domain.sellers.entitiy.Sellers;
+import com.programmers.pcquotation.domain.sellers.service.SellersService;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -29,7 +30,7 @@ import com.programmers.pcquotation.sellers.service.SellersService;
 class PcquotationApplicationTests {
 	@Autowired
 	SellersService sellersService;
-	
+
 	@Autowired
 	private MockMvc mvc;
 
