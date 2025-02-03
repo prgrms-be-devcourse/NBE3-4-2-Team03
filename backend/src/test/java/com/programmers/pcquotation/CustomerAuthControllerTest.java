@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 
 import com.programmers.pcquotation.domain.customers.dto.SignupRequest;
 import com.programmers.pcquotation.domain.customers.dto.SignupResponse;
+import com.programmers.pcquotation.domain.customers.exception.PasswordMismatchException;
 import com.programmers.pcquotation.domain.customers.service.AuthService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,5 +66,30 @@ public class CustomerAuthControllerTest {
                 .andExpect(jsonPath("$.username").value("user1"))
                 .andExpect(jsonPath("$.customerName").value("홍길동"))
                 .andExpect(jsonPath("$.email").value("test@test.com"));
+    }
+
+    @Test
+    public void signup_passwordMismatch() throws Exception {
+        String signupRequest = """
+                {
+                    "username": "user1",
+                    "password": "1234",
+                    "confirmPassword": "1111",
+                    "customerName": "홍길동",
+                    "email": "test@test.com",
+                    "verificationQuestion": "가장 좋아하는 음식은",
+                    "verificationAnswer": "밥"
+                }
+                """;
+
+        when(authService.addUser(any(SignupRequest.class))).thenThrow(new PasswordMismatchException());
+
+        mvc.perform(
+                post("/api/auth/signup/customer")
+                        .content(signupRequest)
+                        .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+        )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Password mismatch"));
     }
 }
