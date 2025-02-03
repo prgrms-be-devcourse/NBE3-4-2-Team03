@@ -1,4 +1,9 @@
 package com.programmers.pcquotation.domain.categories.dto.request;
 
-public class CategoryCreateRequest {
+import jakarta.validation.constraints.NotEmpty;
+
+public record CategoryCreateRequest(
+	@NotEmpty
+	String category
+) {
 }
