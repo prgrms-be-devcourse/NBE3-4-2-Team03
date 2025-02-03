@@ -15,4 +15,11 @@ public class CustomerExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse("Password mismatch"));
     }
+
+    @ExceptionHandler(CustomerAlreadyExistException.class)
+    public ResponseEntity<ErrorResponse> handleCustomerAlreadyExist(CustomerAlreadyExistException ex) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse("User already exists"));
+    }
 }

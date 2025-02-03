@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 
 import com.programmers.pcquotation.domain.customers.dto.SignupRequest;
 import com.programmers.pcquotation.domain.customers.dto.SignupResponse;
+import com.programmers.pcquotation.domain.customers.exception.CustomerAlreadyExistException;
 import com.programmers.pcquotation.domain.customers.exception.PasswordMismatchException;
 import com.programmers.pcquotation.domain.customers.service.AuthService;
 import org.junit.jupiter.api.Test;
@@ -91,5 +92,30 @@ public class CustomerAuthControllerTest {
         )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Password mismatch"));
+    }
+
+    @Test
+    public void signup_customerAlreadyExist() throws Exception {
+        String signupRequest = """
+                {
+                    "username": "user1",
+                    "password": "1234",
+                    "confirmPassword": "1234",
+                    "customerName": "홍길동",
+                    "email": "test@test.com",
+                    "verificationQuestion": "가장 좋아하는 음식은",
+                    "verificationAnswer": "밥"
+                }
+                """;
+
+        when(authService.addUser(any(SignupRequest.class))).thenThrow(new CustomerAlreadyExistException());
+
+        mvc.perform(
+                        post("/api/auth/signup/customer")
+                                .content(signupRequest)
+                                .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+                )
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("User already exists"));
     }
 }
