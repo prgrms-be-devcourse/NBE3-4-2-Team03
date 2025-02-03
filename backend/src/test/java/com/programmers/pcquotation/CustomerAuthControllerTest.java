@@ -1,15 +1,22 @@
 package com.programmers.pcquotation;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.nio.charset.StandardCharsets;
 
+import com.programmers.pcquotation.domain.customers.dto.SignupRequest;
+import com.programmers.pcquotation.domain.customers.dto.SignupResponse;
+import com.programmers.pcquotation.domain.customers.service.AuthService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class CustomerAuthControllerTest {
     @Autowired
     private MockMvc mvc;
+
+    @MockitoBean
+    private AuthService authService;
 
     @Test
     public void signup_success() throws Exception {
@@ -36,10 +46,24 @@ public class CustomerAuthControllerTest {
                 }
                 """;
 
+        SignupResponse mockResponse = SignupResponse.builder()
+                .id(1L)
+                .username("user1")
+                .customerName("홍길동")
+                .email("test@test.com")
+                .build();
+
+        when(authService.addUser(any(SignupRequest.class))).thenReturn(mockResponse);
+
         mvc.perform(
                 post("/api/auth/signup/customer")
                         .content(signupRequest)
                         .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
-        ).andExpect(status().isCreated());
+        )
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.username").value("user1"))
+                .andExpect(jsonPath("$.customerName").value("홍길동"))
+                .andExpect(jsonPath("$.email").value("test@test.com"));
     }
 }
