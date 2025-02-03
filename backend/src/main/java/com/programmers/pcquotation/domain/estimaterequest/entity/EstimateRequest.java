@@ -2,11 +2,8 @@ package com.programmers.pcquotation.domain.estimaterequest.entity;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.programmers.pcquotation.domain.customers.entity.Customer;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,6 +30,6 @@ public class EstimateRequest {
 
 	LocalDateTime createDate;
 
-	//    @OneToMany
-	//    private Customer customer;
+	@OneToOne
+	private Customer customer;
 }
