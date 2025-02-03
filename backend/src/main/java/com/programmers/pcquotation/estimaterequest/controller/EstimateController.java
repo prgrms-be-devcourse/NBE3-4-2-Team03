@@ -4,17 +4,15 @@ import com.programmers.pcquotation.estimaterequest.service.EstimateService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/estimate/request")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000")
 public class EstimateController {
     private final EstimateService estimateService;
-    record EstimateRequestData(@NotBlank String purpose, @NotBlank Integer budget, String otherRequest){}
+    record EstimateRequestData(@NotBlank String purpose, Integer budget, String otherRequest){}
 
     @PostMapping
     public void createER(@RequestBody @Valid EstimateRequestData estimateRequestData){
