@@ -1,4 +1,4 @@
-package com.programmers.pcquotation.sellers.controller;
+package com.programmers.pcquotation.domain.sellers.controller;
 
 import java.security.Principal;
 import java.util.NoSuchElementException;
@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.programmers.pcquotation.sellers.DTO.ResponseSellerDto;
-import com.programmers.pcquotation.sellers.DTO.SellerRegisterDto;
-import com.programmers.pcquotation.sellers.DTO.SellerUpdateDto;
-import com.programmers.pcquotation.sellers.entitiy.Sellers;
-import com.programmers.pcquotation.sellers.service.SellersService;
+import com.programmers.pcquotation.domain.sellers.dto.ResponseSellerDto;
+import com.programmers.pcquotation.domain.sellers.dto.SellerRegisterDto;
+import com.programmers.pcquotation.domain.sellers.dto.SellerUpdateDto;
+import com.programmers.pcquotation.domain.sellers.entitiy.Sellers;
+import com.programmers.pcquotation.domain.sellers.service.SellersService;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;

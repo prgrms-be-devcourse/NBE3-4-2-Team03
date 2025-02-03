@@ -1,4 +1,4 @@
-package com.programmers.pcquotation.sellers.entitiy;
+package com.programmers.pcquotation.domain.sellers.entitiy;
 
 import static jakarta.persistence.GenerationType.*;
 

@@ -2,18 +2,26 @@
 "use client"; // Next.js App Router 환경에서 클라이언트 컴포넌트로 선언
 
 import { useState } from "react";
+import { useRouter } from "next/navigation"; // next/navigation에서 useRouter 훅 임포트
 import { createEstimateRequest } from "../service/service";
 
 export default function EstimateForm() {
     const [purpose, setPurpose] = useState("");
     const [budget, setBudget] = useState("0");
     const [otherRequest, setOtherRequest] = useState("");
+    const router = useRouter(); // useRouter 훅 사용
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
             await createEstimateRequest(purpose, parseInt(budget), otherRequest);
             alert("견적 요청이 완료되었습니다!");
+            // 입력 필드를 초기화합니다.
+            setPurpose("");
+            setBudget("0");
+            setOtherRequest("");
+            // 홈 페이지로 리디렉션
+            router.push("/");
         } catch (error) {
             alert("요청 실패: " + error);
         }

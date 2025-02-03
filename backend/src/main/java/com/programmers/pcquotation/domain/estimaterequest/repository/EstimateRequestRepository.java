@@ -1,7 +1,8 @@
-package com.programmers.pcquotation.estimaterequest.repository;
+package com.programmers.pcquotation.domain.estimaterequest.repository;
 
-import com.programmers.pcquotation.estimaterequest.entity.EstimateRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequest;
 
 public interface EstimateRequestRepository extends JpaRepository<EstimateRequest, Integer> {
 }
