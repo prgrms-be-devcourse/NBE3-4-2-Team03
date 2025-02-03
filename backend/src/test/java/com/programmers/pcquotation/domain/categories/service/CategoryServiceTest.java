@@ -13,16 +13,19 @@ import com.programmers.pcquotation.domain.categories.NewCategory;
 import com.programmers.pcquotation.domain.categories.dto.request.CategoryCreateRequest;
 import com.programmers.pcquotation.domain.categories.dto.response.CategoryCreateResponse;
 import com.programmers.pcquotation.domain.categories.implement.CategoryManager;
+import com.programmers.pcquotation.domain.categories.implement.CategoryReader;
 
 public class CategoryServiceTest {
 	private CategoryService categoryService;
 	@Mock
 	private CategoryManager categoryManager;
+	@Mock
+	private CategoryReader categoryReader;
 
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.openMocks(this);
-		categoryService = new CategoryService(categoryManager);
+		categoryService = new CategoryService(categoryManager, categoryReader);
 	}
 
 	@Test
