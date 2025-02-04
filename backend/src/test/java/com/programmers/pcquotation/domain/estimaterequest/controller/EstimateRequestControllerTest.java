@@ -97,7 +97,7 @@ public class EstimateRequestControllerTest {
 
         //when
         when(estimateRequestService.createEstimateRequest(any(), any(), any(), any()))
-                .thenThrow(new NullEntityException());
+                        .thenThrow(new NullEntityException());
 
         //then
         mockMvc.perform(
