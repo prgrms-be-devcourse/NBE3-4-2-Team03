@@ -15,5 +15,4 @@ public class ResponseSellerDto {
 	private String username;
 	private String companyName;
 	private String email;
-
 }
