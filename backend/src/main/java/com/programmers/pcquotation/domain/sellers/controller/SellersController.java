@@ -50,6 +50,8 @@ public class SellersController {
 
 	@PostMapping
 	public String create(@RequestBody @Valid SellerRegisterDto sellerRegisterDto) { //DTO 임시구현
+		if(!sellersService.findByName(sellerRegisterDto.getUsername()).isEmpty())
+			return "회원가입에 실패하였습니다.(아이디 중복)";
 		sellersService.create(sellerRegisterDto);
 		return "회원가입에 성공하였습니다.";
 	}
@@ -83,7 +85,7 @@ public class SellersController {
 		String message
 	) {}
 
-	
+
 	@PostMapping("/login")
 	public MemberLoginResBody login(
 		@RequestBody @Valid MemberLoginReqBody reqBody
@@ -104,7 +106,6 @@ public class SellersController {
 				"로그인에 성공하였습니다."
 			);
 	}
-
 	@GetMapping("/api/{code}")
 	@Transactional(readOnly = true)
 	public String checkCode(@PathVariable("code") String code) {
@@ -114,6 +115,5 @@ public class SellersController {
 		}
 		return "인증에 실패하였습니다.";
 	}
-
 
 }
