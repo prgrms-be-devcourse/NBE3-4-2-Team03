@@ -1,4 +1,4 @@
-package com.programmers.pcquotation.entity.category;
+package com.programmers.pcquotation.domain.categories.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,9 +15,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class CategoryDetail {
+public class Categories {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String category;
+
+	public void updateCategory(String category) {
+		this.category = category;
+	}
 }

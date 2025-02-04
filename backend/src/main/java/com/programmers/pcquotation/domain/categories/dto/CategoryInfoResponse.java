@@ -1,4 +1,4 @@
-package com.programmers.pcquotation.domain.categories.dto.response;
+package com.programmers.pcquotation.domain.categories.dto;
 
 import lombok.Builder;
 import lombok.NonNull;

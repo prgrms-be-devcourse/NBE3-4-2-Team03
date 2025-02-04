@@ -2,10 +2,10 @@ package com.programmers.pcquotation.domain.items.service;
 
 import org.springframework.stereotype.Service;
 
-import com.programmers.pcquotation.domain.items.NewItem;
 import com.programmers.pcquotation.domain.items.dto.request.ItemCreateRequest;
 import com.programmers.pcquotation.domain.items.dto.response.ItemCreateResponse;
-import com.programmers.pcquotation.domain.items.implement.ItemManager;
+import com.programmers.pcquotation.domain.items.entity.Items;
+import com.programmers.pcquotation.domain.items.repository.ItemRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -14,18 +14,17 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ItemService {
 
-	private final ItemManager itemManager;
+	private final ItemRepository itemRepository;
 
 	@Transactional
-	public ItemCreateResponse addItem(final ItemCreateRequest request) {
+	public ItemCreateResponse addItem(final ItemCreateRequest request) { // 부품 생성
+		Items items = Items.builder()
+			.name(request.name())
+			.imgFilename(request.imgFilename())
+			.build();
 
-		NewItem newItem = new NewItem(
-			request.name(),
-			request.imgFilename()
-		);
+		Items savedItem = itemRepository.save(items);
 
-		Long savedItemId = itemManager.addItem(newItem);
-
-		return new ItemCreateResponse(savedItemId, "부품생성 완료");
+		return new ItemCreateResponse(savedItem.getId(), "부품 생성 완료");
 	}
 }

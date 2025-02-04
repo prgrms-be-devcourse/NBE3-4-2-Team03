@@ -5,12 +5,14 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.programmers.pcquotation.domain.categories.NewCategory;
-import com.programmers.pcquotation.domain.categories.dto.request.CategoryCreateRequest;
-import com.programmers.pcquotation.domain.categories.dto.response.CategoryCreateResponse;
-import com.programmers.pcquotation.domain.categories.dto.response.CategoryInfoResponse;
-import com.programmers.pcquotation.domain.categories.implement.CategoryManager;
-import com.programmers.pcquotation.domain.categories.implement.CategoryReader;
+import com.programmers.pcquotation.domain.categories.dto.CategoryCreateRequest;
+import com.programmers.pcquotation.domain.categories.dto.CategoryCreateResponse;
+import com.programmers.pcquotation.domain.categories.dto.CategoryInfoResponse;
+import com.programmers.pcquotation.domain.categories.dto.CategoryUpdateRequest;
+import com.programmers.pcquotation.domain.categories.dto.CategoryUpdateResponse;
+import com.programmers.pcquotation.domain.categories.entity.Categories;
+import com.programmers.pcquotation.domain.categories.exception.CategoryNotFoundException;
+import com.programmers.pcquotation.domain.categories.repository.CategoryRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -19,28 +21,40 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CategoryService {
 
-	private final CategoryManager categoryManager;
-	private final CategoryReader categoryReader;
+	private final CategoryRepository categoryRepository;
 
+	// 카테고리 생성
 	@Transactional
-	public CategoryCreateResponse addCategory(final CategoryCreateRequest request) { //카테고리 생성
-		NewCategory newCategory = new NewCategory(
-			request.category()
-		);
+	public CategoryCreateResponse addCategory(final CategoryCreateRequest request) {
+		Categories categories = Categories.builder()
+			.category(request.category())
+			.build();
 
-		Long savedCategoryId = categoryManager.addCategory(newCategory);
+		Categories savedCategory = categoryRepository.save(categories);
 
-		return new CategoryCreateResponse(savedCategoryId, "카테고리 생성 완료");
-
+		return new CategoryCreateResponse(savedCategory.getId(), "카테고리 생성 완료");
 	}
 
-	public List<CategoryInfoResponse> getList() { //카테고리 조회
-		return categoryReader.findAllCategories().stream()
-			.map(category -> CategoryInfoResponse.builder()
-				.id(category.getId())
-				.category(category.getCategory())
+	// 카테고리 전체 조회
+	public List<CategoryInfoResponse> getList() {
+		return categoryRepository.findAll().stream()
+			.map(categories -> CategoryInfoResponse.builder()
+				.id(categories.getId())
+				.category(categories.getCategory())
 				.build())
 			.collect(Collectors.toList());
+	}
 
+	// 카테고리 수정
+	@Transactional
+	public CategoryUpdateResponse updateCategory(Long id, CategoryUpdateRequest request) {
+		Categories categories = categoryRepository.findById(id)
+			.orElseThrow(() -> new CategoryNotFoundException(id));
+
+		categories.updateCategory(request.category());
+
+		categoryRepository.save(categories);
+
+		return new CategoryUpdateResponse(id, "카테고리 수정 완료");
 	}
 }

@@ -11,37 +11,39 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.programmers.pcquotation.domain.categories.NewCategory;
-import com.programmers.pcquotation.domain.categories.dto.request.CategoryCreateRequest;
-import com.programmers.pcquotation.domain.categories.dto.response.CategoryCreateResponse;
-import com.programmers.pcquotation.domain.categories.dto.response.CategoryInfoResponse;
-import com.programmers.pcquotation.domain.categories.implement.CategoryManager;
-import com.programmers.pcquotation.domain.categories.implement.CategoryReader;
-import com.programmers.pcquotation.entity.category.CategoryDetail;
+import com.programmers.pcquotation.domain.categories.dto.CategoryCreateRequest;
+import com.programmers.pcquotation.domain.categories.dto.CategoryCreateResponse;
+import com.programmers.pcquotation.domain.categories.dto.CategoryInfoResponse;
+import com.programmers.pcquotation.domain.categories.entity.Categories;
+import com.programmers.pcquotation.domain.categories.repository.CategoryRepository;
 
 public class CategoryServiceTest {
+
 	private CategoryService categoryService;
+
 	@Mock
-	private CategoryManager categoryManager;
-	@Mock
-	private CategoryReader categoryReader;
+	private CategoryRepository categoryRepository;
 
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.openMocks(this);
-		categoryService = new CategoryService(categoryManager, categoryReader);
+		categoryService = new CategoryService(categoryRepository);
 	}
 
 	@Test
 	@DisplayName("addCategory 데이터 추가, 저장 테스트")
 	void addCategoryTest() {
-		CategoryCreateRequest request = new CategoryCreateRequest(
-			"카테고리"
-		);
-		when(categoryManager.addCategory(any(NewCategory.class))).thenReturn(1L);
+		// Given
+		CategoryCreateRequest request = new CategoryCreateRequest("카테고리");
+		Categories categories = Categories.builder().category("카테고리").build();
+		Categories savedCategory = Categories.builder().id(1L).category("카테고리").build();
 
+		when(categoryRepository.save(any(Categories.class))).thenReturn(savedCategory);
+
+		// When
 		CategoryCreateResponse response = categoryService.addCategory(request);
 
+		// Then
 		assertThat(response.id()).isEqualTo(1L);
 		assertThat(response.message()).isEqualTo("카테고리 생성 완료");
 	}
@@ -49,19 +51,16 @@ public class CategoryServiceTest {
 	@Test
 	@DisplayName("카테고리 다건조회 테스트")
 	void getListTest() {
+		// Given
+		Categories category1 = Categories.builder().id(1L).category("카테고리").build();
+		Categories category2 = Categories.builder().id(2L).category("카테고리2").build();
 
-		CategoryDetail category1 = mock(CategoryDetail.class);
-		CategoryDetail category2 = mock(CategoryDetail.class);
+		when(categoryRepository.findAll()).thenReturn(List.of(category1, category2));
 
-		when(category1.getId()).thenReturn(1L);
-		when(category1.getCategory()).thenReturn("카테고리");
-		when(category2.getId()).thenReturn(2L);
-		when(category2.getCategory()).thenReturn("카테고리2");
-
-		when(categoryReader.findAllCategories()).thenReturn(List.of(category1, category2));
-
+		// When
 		List<CategoryInfoResponse> response = categoryService.getList();
 
+		// Then
 		List<CategoryInfoResponse> expectedList = List.of(
 			new CategoryInfoResponse(1L, "카테고리"),
 			new CategoryInfoResponse(2L, "카테고리2")
