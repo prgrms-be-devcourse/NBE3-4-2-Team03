@@ -1,5 +1,9 @@
 package com.programmers.pcquotation.domain.estimaterequest.controller;
 
+import com.programmers.pcquotation.domain.customer.entity.Customer;
+import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,21 +15,25 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping("/estimate/request")
 @RequiredArgsConstructor
 public class EstimateRequestController {
 	private final EstimateRequestService estimateRequestService;
 
-	record EstimateRequestData(@NotBlank String purpose, @NotBlank Integer budget, String otherRequest) {
+	record EstimateRequestData(@NotBlank String purpose, Integer budget, String otherRequest) {
 	}
 
 	@PostMapping
-	public void createER(@RequestBody @Valid EstimateRequestData estimateRequestData) {
-		//principal을 사용해 구매자 아이디를 엔티티에 저장
+	public ResponseEntity<EstimateRequestData> createER(@RequestBody @Valid EstimateRequestData estimateRequestData, Principal principal){
+		Customer customer = estimateRequestService.findCustomer(principal.getName());
 		estimateRequestService.createEstimateRequest(
-			estimateRequestData.purpose,
-			estimateRequestData.budget,
-			estimateRequestData.otherRequest);
+				estimateRequestData.purpose,
+				estimateRequestData.budget,
+				estimateRequestData.otherRequest,
+				customer);
+		return new ResponseEntity<>(estimateRequestData, HttpStatus.CREATED);
 	}
 }
