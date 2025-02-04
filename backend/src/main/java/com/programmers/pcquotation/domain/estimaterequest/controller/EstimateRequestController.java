@@ -25,7 +25,7 @@ public class EstimateRequestController {
 
 	@PostMapping
 	public ResponseEntity<EstimateRequestData> createER(@RequestBody @Valid EstimateRequestData estimateRequestData, Principal principal){
-		Customer customer =  estimateRequestService.findCustomer(principal.getName());
+		Customer customer = estimateRequestService.findCustomer(principal.getName());
 		estimateRequestService.createEstimateRequest(
 			estimateRequestData.purpose,
 			estimateRequestData.budget,
