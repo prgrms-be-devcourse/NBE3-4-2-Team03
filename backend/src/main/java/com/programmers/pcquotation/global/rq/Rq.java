@@ -33,7 +33,6 @@ public class Rq {
 			"",
 			sellers.getAuthorities()
 		);
-
 		Authentication authentication = new UsernamePasswordAuthenticationToken(
 			user,
 			user.getPassword(),
@@ -44,7 +43,6 @@ public class Rq {
 	}
 
 	public Sellers getMember() {
-
 		return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
 			.map(Authentication::getPrincipal)
 			.filter(UserDetails.class::isInstance)

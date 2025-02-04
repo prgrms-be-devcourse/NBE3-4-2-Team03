@@ -3,6 +3,7 @@ package com.programmers.pcquotation.domain.sellers.service;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -40,6 +41,7 @@ public class SellersService {
 			.password(passwordEncoder.encode(sellerRegisterDto.getPassword()))
 			.companyName(sellerRegisterDto.getCompanyName())
 			.email((sellerRegisterDto.getEmail()))
+			.apiKey(UUID.randomUUID().toString())
 			.verificationQuestion(sellerRegisterDto.getVerificationQuestion())
 			.verificationAnswer(sellerRegisterDto.getVerificationAnswer()).build();
 		this.sellersRepository.save(sellers);
@@ -67,9 +69,9 @@ public class SellersService {
 		return sellersRepository.findById(id);
 	}
 
-	//public Optional<Sellers> findByApiKey(String apiKey) {
-	//	return sellersRepository.findByApiKey(apiKey);
-	//}
+	public Optional<Sellers> findByApiKey(String apiKey) {
+		return sellersRepository.findByApiKey(apiKey);
+	}
 	public boolean matchPassword(Sellers sellers,String password){
 		return passwordEncoder.matches(password,sellers.getPassword());
 	}

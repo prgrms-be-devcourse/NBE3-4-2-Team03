@@ -49,9 +49,7 @@ public class Sellers {
 	@ManyToMany(fetch = FetchType.LAZY)
 	private Set<Customers> recommend = new HashSet<>();
 	*/
-	public boolean isAdmin() {
-		return "admin".equals(username);
-	}
+
 
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return getAuthoritiesAsStringList()
@@ -63,8 +61,7 @@ public class Sellers {
 	public List<String> getAuthoritiesAsStringList() {
 		List<String> authorities = new ArrayList<>();
 
-		if (isAdmin())
-			authorities.add("ROLE_ADMIN");
+		authorities.add("ROLE_SELLER");
 
 		return authorities;
 	}

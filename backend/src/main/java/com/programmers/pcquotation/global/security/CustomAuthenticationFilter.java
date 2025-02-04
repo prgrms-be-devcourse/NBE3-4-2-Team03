@@ -24,28 +24,27 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 	private final Rq rq;
 
 	record AuthTokens(
-		//String apiKey,
+		String apiKey,
 		String accessToken
 	) {
 	}
 
 	private AuthTokens getAuthTokensFromRequest() {
 		String authorization = rq.getHeader("Authorization");
-		System.out.println(authorization);System.out.println(authorization);System.out.println(authorization);
+
 		if (authorization != null && authorization.startsWith("Bearer ")) {
 			String token = authorization.substring("Bearer ".length());
-			//String[] tokenBits = token.split(" ", 2);
+			String[] tokenBits = token.split(" ", 2);
 
-			//if (tokenBits.length == 2)
-				//return new AuthTokens(tokenBits[0], tokenBits[1]);
-			return new AuthTokens(token);
+			if (tokenBits.length == 2)
+				return new AuthTokens(tokenBits[0], tokenBits[1]);
 		}
 
-		//String apiKey = rq.getCookieValue("apiKey");
+		String apiKey = rq.getCookieValue("apiKey");
 		String accessToken = rq.getCookieValue("accessToken");
 
-		if (/*apiKey != null && */accessToken != null)
-			return new AuthTokens(/*apiKey,*/ accessToken);
+		if (apiKey != null && accessToken != null)
+			return new AuthTokens(apiKey, accessToken);
 
 		return null;
 	}
@@ -53,12 +52,12 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 	private void refreshAccessToken(Sellers sellers) {
 		String newAccessToken = sellersService.getAccessToken(sellers);
 
-		rq.setHeader("Authorization", "Bearer " /*+ sellers.getApiKey()*/ + " " + newAccessToken);
+		rq.setHeader("Authorization", "Bearer " + sellers.getApiKey() + " " + newAccessToken);
 		rq.setCookie("accessToken", newAccessToken);
 	}
 
 	private Sellers refreshAccessTokenByApiKey(String apiKey) {
-		Optional<Sellers> opMemberByApiKey = null;//sellersService.findByApiKey(apiKey);
+		Optional<Sellers> opMemberByApiKey = sellersService.findByApiKey(apiKey);
 
 		if (opMemberByApiKey.isEmpty()) {
 			return null;
@@ -76,7 +75,7 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 		FilterChain filterChain) throws
 		ServletException,
 		IOException {
-		if (List.of("/members/login").contains(request.getRequestURI())) {
+		if (List.of("/sellers/login").contains(request.getRequestURI())) {
 			filterChain.doFilter(request, response);
 			return;
 		}
@@ -88,13 +87,13 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 			return;
 		}
 
-		//String apiKey = authTokens.apiKey;
+		String apiKey = authTokens.apiKey;
 		String accessToken = authTokens.accessToken;
 
 		Sellers member = sellersService.getMemberFromAccessToken(accessToken);
 
-		//if (member == null)
-		//	member = refreshAccessTokenByApiKey(apiKey);
+		if (member == null)
+			member = refreshAccessTokenByApiKey(apiKey);
 
 		if (member != null)
 			rq.setLogin(member);
