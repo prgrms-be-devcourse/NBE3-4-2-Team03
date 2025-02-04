@@ -38,3 +38,5 @@ image:
     path: src/main/resources/static/image/item/
 
 
+  config:
+    import: classpath:/application-auth.yml

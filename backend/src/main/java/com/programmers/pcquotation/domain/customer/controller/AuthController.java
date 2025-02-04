@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.programmers.pcquotation.domain.customer.dto.SignupRequest;
 import com.programmers.pcquotation.domain.customer.dto.SignupResponse;
 import com.programmers.pcquotation.domain.customer.service.AuthService;
+import com.programmers.pcquotation.domain.customer.dto.LoginRequest;
+import com.programmers.pcquotation.domain.customer.dto.LoginResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,4 +26,10 @@ public class AuthController {
         SignupResponse signupResponse = authService.addUser(signupRequest);
         return new ResponseEntity<>(signupResponse, HttpStatus.CREATED);
     }
+
+	@PostMapping("/login/customer")
+	public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
+        LoginResponse loginResponse = authService.processLogin(loginRequest);
+		return new ResponseEntity<>(loginResponse, HttpStatus.OK);
+	}
 }
