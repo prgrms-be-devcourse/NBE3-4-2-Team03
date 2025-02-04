@@ -24,4 +24,11 @@ public class Categories {
 	public void updateCategory(String category) {
 		this.category = category;
 	}
+
+	public static Categories createTestCategory(Long id, String category) {
+		Categories categories = new Categories();
+		categories.id = id;
+		categories.category = category;
+		return categories;
+	}
 }
