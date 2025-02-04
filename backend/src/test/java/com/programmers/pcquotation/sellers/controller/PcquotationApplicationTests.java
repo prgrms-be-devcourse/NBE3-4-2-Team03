@@ -80,7 +80,7 @@ class PcquotationApplicationTests {
 			.andExpect(handler().handlerType(SellersController.class))
 			.andExpect(handler().methodName("checkCode"))
 			.andExpect(status().isOk())
-			.andExpect(content().string("true"));
+			.andExpect(content().string("인증에 성공하였습니다."));
 		ResultActions resultActions2 = mvc
 			.perform(get("/sellers/api/220818")
 				.contentType(
@@ -92,7 +92,7 @@ class PcquotationApplicationTests {
 			.andExpect(handler().handlerType(SellersController.class))
 			.andExpect(handler().methodName("checkCode"))
 			.andExpect(status().isOk())
-			.andExpect(content().string("false"));
+			.andExpect(content().string("인증에 실패하였습니다."));
 	}
 
 }
