@@ -83,6 +83,7 @@ public class SellersController {
 		String message
 	) {}
 
+	
 	@PostMapping("/login")
 	public MemberLoginResBody login(
 		@RequestBody @Valid MemberLoginReqBody reqBody
@@ -90,12 +91,10 @@ public class SellersController {
 		Sellers sellers = sellersService
 			.findByName(reqBody.username)
 			.orElseThrow(() -> new NoSuchElementException("존재하지 않는 사용자입니다."));
-
 		if(!sellersService.matchPassword(sellers,reqBody.password))
 			throw new NoSuchElementException("비밀번호가 일치하지 않습니다.");
 
 		String accessToken = sellersService.getAccessToken(sellers);
-
 		rq.setCookie("accessToken", accessToken);
 		rq.setCookie("apiKey", sellers.getApiKey());
 		return
@@ -104,7 +103,6 @@ public class SellersController {
 				accessToken,
 				"로그인에 성공하였습니다."
 			);
-
 	}
 
 	@GetMapping("/api/{code}")
