@@ -15,8 +15,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.programmers.pcquotation.domain.items.service.ImageService;
-
 @ExtendWith(MockitoExtension.class)
 class ImageServiceTest {
 
