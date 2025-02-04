@@ -65,7 +65,7 @@ public class SellersController {
 	public String modify(Principal principal, @RequestBody @Valid SellerUpdateDto customerUpdateDto) {
 		Sellers sellers = sellersService.findByName(principal.getName()).
 			orElseThrow(() -> new NoSuchElementException("존재하지 않는 사용자입니다."));
-		;
+
 		sellersService.modify(sellers, customerUpdateDto);
 		return "정보수정이 성공했습니다.";
 	}
@@ -84,8 +84,12 @@ public class SellersController {
 	}
 	@GetMapping("/api/{code}")
 	@Transactional(readOnly = true)
-	public boolean checkCode(@PathVariable("code") String code) {
-		return businessConfirmationService.checkCode(code);
+	public String checkCode(@PathVariable("code") String code) {
+		if(businessConfirmationService.checkCode(code)){
+			//계정 인증여부 수정
+			return "인증에 성공하였습니다.";
+		}
+		return "인증에 실패하였습니다.";
 	}
 
 
