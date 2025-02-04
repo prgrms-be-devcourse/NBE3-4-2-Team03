@@ -2,6 +2,13 @@ package com.programmers.pcquotation.domain.sellers.entitiy;
 
 import static jakarta.persistence.GenerationType.*;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -35,12 +42,32 @@ public class Sellers {
 	@Column(length = 100)
 	private String verificationAnswer;
 	private boolean isVerified;
-
+	@Column(unique = true)
+	private String apiKey;
 	/*
 	// 추천한 유저 목록
 	@ManyToMany(fetch = FetchType.LAZY)
 	private Set<Customers> recommend = new HashSet<>();
 	*/
+	public boolean isAdmin() {
+		return "admin".equals(username);
+	}
+
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return getAuthoritiesAsStringList()
+			.stream()
+			.map(SimpleGrantedAuthority::new)
+			.toList();
+	}
+
+	public List<String> getAuthoritiesAsStringList() {
+		List<String> authorities = new ArrayList<>();
+
+		if (isAdmin())
+			authorities.add("ROLE_ADMIN");
+
+		return authorities;
+	}
 
 	public boolean matchPassword(String password) {
 		return this.password.equals(password);
