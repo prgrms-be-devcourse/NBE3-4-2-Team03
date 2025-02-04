@@ -18,8 +18,8 @@ public class EstimateRequestService {
 	private final EstimateRequestRepository estimateRequestRepository;
 	private final CustomerRepository customerRepository;
 
-	public void createEstimateRequest(String purpose, Integer budget, String otherRequest, Customer customer) {
-		estimateRequestRepository.save(EstimateRequest
+	public EstimateRequest createEstimateRequest(String purpose, Integer budget, String otherRequest, Customer customer) {
+		return estimateRequestRepository.save(EstimateRequest
 			.builder()
 			.createDate(LocalDateTime.now())
 			.purpose(purpose)

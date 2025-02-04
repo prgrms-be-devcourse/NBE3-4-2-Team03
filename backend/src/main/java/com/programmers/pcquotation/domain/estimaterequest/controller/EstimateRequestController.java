@@ -21,7 +21,7 @@ import java.security.Principal;
 @RequiredArgsConstructor
 public class EstimateRequestController {
 	private final EstimateRequestService estimateRequestService;
-	record EstimateRequestData(@NotBlank String purpose, @NotBlank Integer budget, String otherRequest){}
+	record EstimateRequestData(@NotBlank String purpose, Integer budget, String otherRequest){}
 
 	@PostMapping
 	public ResponseEntity<EstimateRequestData> createER(@RequestBody @Valid EstimateRequestData estimateRequestData, Principal principal){
