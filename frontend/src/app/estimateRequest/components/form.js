@@ -1,4 +1,3 @@
-// components/EstimateForm.tsx
 "use client"; // Next.js App Router 환경에서 클라이언트 컴포넌트로 선언
 
 import { useState } from "react";
@@ -11,7 +10,7 @@ export default function EstimateForm() {
     const [otherRequest, setOtherRequest] = useState("");
     const router = useRouter(); // useRouter 훅 사용
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             await createEstimateRequest(purpose, parseInt(budget), otherRequest);
