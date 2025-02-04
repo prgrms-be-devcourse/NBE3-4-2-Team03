@@ -10,10 +10,10 @@ import com.programmers.pcquotation.global.jwt.Jwt;
 
 @Service
 public class AuthTokenService {
-	@Value("${custom.jwt.secretKey}")
+	@Value("${jwt.secretKey}")
 	private String jwtSecretKey;
 
-	@Value("${custom.accessToken.expirationSeconds}")
+	@Value("${jwt.accessToken.expirationSeconds}")
 	private long accessTokenExpirationSeconds;
 
 	String getAccessToken(Sellers sellers) {

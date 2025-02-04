@@ -10,5 +10,5 @@ import com.programmers.pcquotation.domain.sellers.entitiy.Sellers;
 @Repository
 public interface SellersRepository extends JpaRepository<Sellers, Long> {
 	Optional<Sellers> findByUsername(String username);
-
+	Optional<Sellers> findByApiKey(String apiKey);
 }

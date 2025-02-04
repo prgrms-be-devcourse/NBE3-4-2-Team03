@@ -1,5 +1,6 @@
 package com.programmers.pcquotation.domain.sellers.service;
 
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -19,6 +20,8 @@ import lombok.RequiredArgsConstructor;
 public class SellersService {
 	@Autowired
 	private final SellersRepository sellersRepository;
+	@Autowired
+	private final AuthTokenService authTokenService;
 	@Autowired
 	PasswordEncoder passwordEncoder;
 
@@ -60,4 +63,31 @@ public class SellersService {
 		return sellers;
 	}
 
+	public Optional<Sellers> findById(Long id) {
+		return sellersRepository.findById(id);
+	}
+
+	//public Optional<Sellers> findByApiKey(String apiKey) {
+	//	return sellersRepository.findByApiKey(apiKey);
+	//}
+	public boolean matchPassword(Sellers sellers,String password){
+		return passwordEncoder.matches(password,sellers.getPassword());
+	}
+	public String getAccessToken(Sellers sellers) {
+		return authTokenService.getAccessToken(sellers);
+	}
+
+	public String getAuthToken(Sellers sellers) {
+		return sellers.getApiKey() + " " + getAccessToken(sellers);
+	}
+
+	public Sellers getMemberFromAccessToken(String accessToken) {
+		Map<String, Object> payload = authTokenService.payload(accessToken);
+
+		if(payload == null) return null;
+
+		long id = (long) payload.get("id");
+
+		return findById(id).get();
+	}
 }

@@ -44,6 +44,7 @@ public class Rq {
 	}
 
 	public Sellers getMember() {
+
 		return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
 			.map(Authentication::getPrincipal)
 			.filter(UserDetails.class::isInstance)
