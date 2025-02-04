@@ -14,6 +14,7 @@ import org.mockito.MockitoAnnotations;
 
 import com.programmers.pcquotation.domain.categories.dto.CategoryCreateRequest;
 import com.programmers.pcquotation.domain.categories.dto.CategoryCreateResponse;
+import com.programmers.pcquotation.domain.categories.dto.CategoryDeleteResponse;
 import com.programmers.pcquotation.domain.categories.dto.CategoryInfoResponse;
 import com.programmers.pcquotation.domain.categories.dto.CategoryUpdateRequest;
 import com.programmers.pcquotation.domain.categories.entity.Categories;
@@ -85,4 +86,21 @@ public class CategoryServiceTest {
 
 		assertThat(existingCategory.getCategory()).isEqualTo("수정된 카테고리");
 	}
+
+	@Test
+	@DisplayName("카테고리 삭제 테스트")
+	void deleteCategoryTest() {
+
+		Long categoryId = 1L;
+		Categories existingCategory = Categories.createTestCategory(1L, "기존 카테고리");
+		when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(existingCategory));
+
+		CategoryDeleteResponse response = categoryService.deleteCategory(categoryId);
+
+		assertThat(response.id()).isEqualTo(categoryId);
+		assertThat(response.message()).isEqualTo("카테고리 삭제 완료");
+		verify(categoryRepository).delete(any(Categories.class));
+
+	}
+
 }
