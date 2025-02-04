@@ -52,12 +52,12 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 	private void refreshAccessToken(Sellers sellers) {
 		String newAccessToken = "";//sellersService.getAccessToken(sellers);
 
-		rq.setHeader("Authorization", "Bearer " + /*sellers.getApiKey() +*/ " " + newAccessToken);
+		rq.setHeader("Authorization", "Bearer " + sellers.getApiKey() + " " + newAccessToken);
 		rq.setCookie("accessToken", newAccessToken);
 	}
 
 	private Sellers refreshAccessTokenByApiKey(String apiKey) {
-		Optional<Sellers> opMemberByApiKey = null;// sellersService.findByApiKey(apiKey);
+		Optional<Sellers> opMemberByApiKey = sellersService.findByApiKey(apiKey);
 
 		if (opMemberByApiKey.isEmpty()) {
 			return null;
@@ -90,7 +90,7 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 		String apiKey = authTokens.apiKey;
 		String accessToken = authTokens.accessToken;
 
-		Sellers member = null;//sellersService.getMemberFromAccessToken(accessToken);
+		Sellers member = sellersService.getMemberFromAccessToken(accessToken);
 
 		if (member == null)
 			member = refreshAccessTokenByApiKey(apiKey);
