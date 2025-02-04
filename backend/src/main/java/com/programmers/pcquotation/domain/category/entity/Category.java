@@ -1,16 +1,9 @@
 package com.programmers.pcquotation.domain.category.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.programmers.pcquotation.domain.item.entity.Item;
-
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,10 +19,11 @@ public class Category {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
 	private String category;
 
-	@OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Item> items = new ArrayList<>();
+	// @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+	// private List<Item> item = new ArrayList<>();
 
 	public void updateCategory(String category) {
 		this.category = category;
