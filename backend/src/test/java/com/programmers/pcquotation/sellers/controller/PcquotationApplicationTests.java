@@ -34,6 +34,32 @@ class PcquotationApplicationTests {
 	@Autowired
 	private MockMvc mvc;
 
+	String id = "test1234";
+	String ps = "password1234";
+
+	Sellers register() throws Exception {
+		ResultActions resultActions = mvc
+			.perform(post("/sellers")
+				.content(String.format("""
+					{
+					    "username": "%s",
+					    "password": "%s",
+					    "confirmPassword": "password1234",
+					    "companyName": "너구리",
+					    "email": "abc@gmail.com",
+					    "verificationQuestion": "바나나는",
+					    "verificationAnswer": "길어"
+					}
+					""".stripIndent(),id,ps))
+				.contentType(
+					new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
+				)
+			)
+			.andDo(print());
+		Optional<Sellers> sellers = sellersService.findByName("test1234");
+		assertNotNull(sellers.get());
+		return sellers.get();
+	}
 	@Test
 	@DisplayName("회원가입")
 	void t1() throws Exception {
@@ -94,5 +120,34 @@ class PcquotationApplicationTests {
 			.andExpect(status().isOk())
 			.andExpect(content().string("인증에 실패하였습니다."));
 	}
+	@Test
+	@DisplayName("JWT 로그인 구현")
+	void t3() throws Exception {
+		register();
+		ResultActions resultActions = mvc
+			.perform(post("/sellers/login")
+				.content(String.format("""
+                                {
+                                    "username": "%s",
+                                    "password": "%s"
+                                }
+                                """.stripIndent(),id,ps))
+				.contentType(
+					new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
+				)
+			)
+			.andDo(print());
 
+		resultActions
+			.andExpect(handler().handlerType(SellersController.class))
+			.andExpect(handler().methodName("login"))
+			.andExpect(status().isOk());
+
+		String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+
+		String[] parts = responseBody.split(" ");
+		assertEquals(2, parts.length, "응답 형식이 올바르지 않음");
+		assertFalse(parts[0].isEmpty(), "JWT 토큰이 비어 있음");
+		assertFalse(parts[1].isEmpty(), "API 키가 비어 있음");
+	}
 }
