@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,12 +20,9 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class SellersService {
-	@Autowired
 	private final SellersRepository sellersRepository;
-	@Autowired
 	private final AuthTokenService authTokenService;
-	@Autowired
-	PasswordEncoder passwordEncoder;
+	private final PasswordEncoder passwordEncoder;
 
 	public Optional<Sellers> findByName(String name) {
 		return sellersRepository.findByUsername(name);
