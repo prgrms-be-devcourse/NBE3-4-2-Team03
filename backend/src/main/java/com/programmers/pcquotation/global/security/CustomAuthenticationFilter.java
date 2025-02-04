@@ -7,8 +7,8 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.programmers.pcquotation.domain.sellers.entitiy.Sellers;
-import com.programmers.pcquotation.domain.sellers.service.SellersService;
+import com.programmers.pcquotation.domain.seller.entitiy.Seller;
+import com.programmers.pcquotation.domain.seller.service.SellerService;
 import com.programmers.pcquotation.global.rq.Rq;
 
 import jakarta.servlet.FilterChain;
@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class CustomAuthenticationFilter extends OncePerRequestFilter {
-	private final SellersService sellersService;
+	private final SellerService sellerService;
 	private final Rq rq;
 
 	record AuthTokens(
@@ -49,25 +49,25 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 		return null;
 	}
 
-	private void refreshAccessToken(Sellers sellers) {
-		String newAccessToken = sellersService.getAccessToken(sellers);
+	private void refreshAccessToken(Seller seller) {
+		String newAccessToken = sellerService.getAccessToken(seller);
 
-		rq.setHeader("Authorization", "Bearer " + sellers.getApiKey() + " " + newAccessToken);
+		rq.setHeader("Authorization", "Bearer " + seller.getApiKey() + " " + newAccessToken);
 		rq.setCookie("accessToken", newAccessToken);
 	}
 
-	private Sellers refreshAccessTokenByApiKey(String apiKey) {
-		Optional<Sellers> opMemberByApiKey = sellersService.findByApiKey(apiKey);
+	private Seller refreshAccessTokenByApiKey(String apiKey) {
+		Optional<Seller> opMemberByApiKey = sellerService.findByApiKey(apiKey);
 
 		if (opMemberByApiKey.isEmpty()) {
 			return null;
 		}
 
-		Sellers sellers = opMemberByApiKey.get();
+		Seller seller = opMemberByApiKey.get();
 
-		refreshAccessToken(sellers);
+		refreshAccessToken(seller);
 
-		return sellers;
+		return seller;
 	}
 
 	@Override
@@ -90,7 +90,7 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 		String apiKey = authTokens.apiKey;
 		String accessToken = authTokens.accessToken;
 
-		Sellers member = sellersService.getMemberFromAccessToken(accessToken);
+		Seller member = sellerService.getMemberFromAccessToken(accessToken);
 
 		if (member == null)
 			member = refreshAccessTokenByApiKey(apiKey);

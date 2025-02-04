@@ -12,8 +12,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
-import com.programmers.pcquotation.domain.sellers.entitiy.Sellers;
-import com.programmers.pcquotation.domain.sellers.service.SellersService;
+import com.programmers.pcquotation.domain.seller.entitiy.Seller;
+import com.programmers.pcquotation.domain.seller.service.SellerService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,13 +25,13 @@ import lombok.RequiredArgsConstructor;
 public class Rq {
 	private final HttpServletRequest req;
 	private final HttpServletResponse resp;
-	private final SellersService sellersService;
+	private final SellerService sellersService;
 
-	public void setLogin(Sellers sellers) {
+	public void setLogin(Seller seller) {
 		UserDetails user = new User(
-			sellers.getUsername(),
+			seller.getUsername(),
 			"",
-			sellers.getAuthorities()
+			seller.getAuthorities()
 		);
 		Authentication authentication = new UsernamePasswordAuthenticationToken(
 			user,
@@ -42,7 +42,7 @@ public class Rq {
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 	}
 
-	public Sellers getMember() {
+	public Seller getMember() {
 		return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
 			.map(Authentication::getPrincipal)
 			.filter(UserDetails.class::isInstance)

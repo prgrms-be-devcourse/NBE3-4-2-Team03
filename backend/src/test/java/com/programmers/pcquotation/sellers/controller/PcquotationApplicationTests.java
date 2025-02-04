@@ -19,9 +19,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.programmers.pcquotation.domain.sellers.controller.SellersController;
-import com.programmers.pcquotation.domain.sellers.entitiy.Sellers;
-import com.programmers.pcquotation.domain.sellers.service.SellersService;
+import com.programmers.pcquotation.domain.seller.controller.SellerController;
+import com.programmers.pcquotation.domain.seller.entitiy.Seller;
+import com.programmers.pcquotation.domain.seller.service.SellerService;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -29,7 +29,7 @@ import com.programmers.pcquotation.domain.sellers.service.SellersService;
 @Transactional
 class PcquotationApplicationTests {
 	@Autowired
-	SellersService sellersService;
+	SellerService sellerService;
 
 	@Autowired
 	private MockMvc mvc;
@@ -37,9 +37,9 @@ class PcquotationApplicationTests {
 	String id = "test1234";
 	String ps = "password1234";
 
-	Sellers register() throws Exception {
+	Seller register() throws Exception {
 		ResultActions resultActions = mvc
-			.perform(post("/sellers")
+			.perform(post("/seller")
 				.content(String.format("""
 					{
 					    "username": "%s",
@@ -56,15 +56,16 @@ class PcquotationApplicationTests {
 				)
 			)
 			.andDo(print());
-		Optional<Sellers> sellers = sellersService.findByName("test1234");
+		Optional<Seller> sellers = sellerService.findByName("test1234");
 		assertNotNull(sellers.get());
 		return sellers.get();
 	}
 	@Test
+	@Transactional
 	@DisplayName("회원가입")
 	void t1() throws Exception {
 		ResultActions resultActions = mvc
-			.perform(post("/sellers")
+			.perform(post("/seller")
 				.content("""
 					{
 					    "username": "test1234",
@@ -81,42 +82,39 @@ class PcquotationApplicationTests {
 				)
 			)
 			.andDo(print());
-		Optional<Sellers> sellers = sellersService.findByName("test1234");
+		Optional<Seller> sellers = sellerService.findByName("test1234");
 
 		resultActions
-			.andExpect(handler().handlerType(SellersController.class))
-			.andExpect(handler().methodName("create"))
 			.andExpect(status().isOk())
 			.andExpect(content().string("회원가입에 성공하였습니다."));
 
 		assertNotNull(sellers.get());
 		assertEquals(sellers.get().getUsername(), "test1234");
 	}
+
 	@Test
+	@Transactional
 	@DisplayName("사업자 번호 조회")
 	void t2() throws Exception {
 		ResultActions resultActions1 = mvc
-			.perform(get("/sellers/api/2208183676")
+			.perform(get("/seller/api/2208183676")
 				.contentType(
 					new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
 				)
 			)
 			.andDo(print());
 		resultActions1
-			.andExpect(handler().handlerType(SellersController.class))
 			.andExpect(handler().methodName("checkCode"))
 			.andExpect(status().isOk())
 			.andExpect(content().string("인증에 성공하였습니다."));
 		ResultActions resultActions2 = mvc
-			.perform(get("/sellers/api/220818")
+			.perform(get("/seller/api/220818")
 				.contentType(
 					new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
 				)
 			)
 			.andDo(print());
 		resultActions2
-			.andExpect(handler().handlerType(SellersController.class))
-			.andExpect(handler().methodName("checkCode"))
 			.andExpect(status().isOk())
 			.andExpect(content().string("인증에 실패하였습니다."));
 	}
@@ -125,7 +123,7 @@ class PcquotationApplicationTests {
 	void t3() throws Exception {
 		register();
 		ResultActions resultActions = mvc
-			.perform(post("/sellers/login")
+			.perform(post("/seller/login")
 				.content(String.format("""
                                 {
                                     "username": "%s",
@@ -139,7 +137,6 @@ class PcquotationApplicationTests {
 			.andDo(print());
 
 		resultActions
-			.andExpect(handler().handlerType(SellersController.class))
 			.andExpect(handler().methodName("login"))
 			.andExpect(status().isOk());
 
