@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class EstimateService {
+public class EstimateRequestService {
 	private final EstimateRequestRepository estimateRequestRepository;
 	private final CustomerRepository customerRepository;
 
@@ -29,7 +29,8 @@ public class EstimateService {
 			.build());
 	}
 
-	public Optional<Customer> findCustomer(String customer){
-		return customerRepository.getCustomerByUsername(customer);
+	public Customer findCustomer(String customer){
+		return customerRepository.getCustomerByUsername(customer)
+				.orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
 	}
 }
