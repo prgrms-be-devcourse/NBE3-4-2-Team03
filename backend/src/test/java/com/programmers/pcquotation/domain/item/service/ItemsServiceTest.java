@@ -9,11 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.programmers.pcquotation.domain.items.dto.request.ItemCreateRequest;
-import com.programmers.pcquotation.domain.items.dto.response.ItemCreateResponse;
-import com.programmers.pcquotation.domain.items.entity.Items;
-import com.programmers.pcquotation.domain.items.repository.ItemRepository;
-import com.programmers.pcquotation.domain.items.service.ItemService;
+import com.programmers.pcquotation.domain.item.dto.request.ItemCreateRequest;
+import com.programmers.pcquotation.domain.item.dto.response.ItemCreateResponse;
+import com.programmers.pcquotation.domain.item.entity.Item;
+import com.programmers.pcquotation.domain.item.repository.ItemRepository;
 
 class ItemsServiceTest {
 	private ItemService itemService;
@@ -31,17 +30,17 @@ class ItemsServiceTest {
 	void addItemTest() {
 		// Given
 		ItemCreateRequest request = new ItemCreateRequest("부품", "img.png");
-		Items items = Items.builder()
+		Item items = Item.builder()
 			.name("부품")
 			.imgFilename("img.png")
 			.build();
-		Items savedItem = Items.builder()
+		Item savedItem = Item.builder()
 			.id(1L)
 			.name("부품2")
 			.imgFilename("img2.png").
 			build();
 
-		when(itemRepository.save(any(Items.class))).thenReturn(savedItem);
+		when(itemRepository.save(any(Item.class))).thenReturn(savedItem);
 
 		// When
 		ItemCreateResponse response = itemService.addItem(request);

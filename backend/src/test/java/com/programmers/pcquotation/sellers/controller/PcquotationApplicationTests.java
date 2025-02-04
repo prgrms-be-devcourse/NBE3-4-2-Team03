@@ -19,9 +19,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.programmers.pcquotation.domain.sellers.controller.SellersController;
-import com.programmers.pcquotation.domain.sellers.entitiy.Sellers;
-import com.programmers.pcquotation.domain.sellers.service.SellersService;
+import com.programmers.pcquotation.domain.seller.controller.SellerController;
+import com.programmers.pcquotation.domain.seller.entitiy.Seller;
+import com.programmers.pcquotation.domain.seller.service.SellerService;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -29,7 +29,7 @@ import com.programmers.pcquotation.domain.sellers.service.SellersService;
 @Transactional
 class PcquotationApplicationTests {
 	@Autowired
-	SellersService sellersService;
+	SellerService sellerService;
 
 	@Autowired
 	private MockMvc mvc;
@@ -55,10 +55,10 @@ class PcquotationApplicationTests {
 				)
 			)
 			.andDo(print());
-		Optional<Sellers> sellers = sellersService.findByName("test1234");
+		Optional<Seller> sellers = sellerService.findByName("test1234");
 
 		resultActions
-			.andExpect(handler().handlerType(SellersController.class))
+			.andExpect(handler().handlerType(SellerController.class))
 			.andExpect(handler().methodName("create"))
 			.andExpect(status().isOk())
 			.andExpect(content().string("회원가입에 성공하였습니다."));
@@ -66,6 +66,7 @@ class PcquotationApplicationTests {
 		assertNotNull(sellers.get());
 		assertEquals(sellers.get().getUsername(), "test1234");
 	}
+
 	@Test
 	@DisplayName("사업자 번호 조회")
 	void t2() throws Exception {
@@ -77,7 +78,7 @@ class PcquotationApplicationTests {
 			)
 			.andDo(print());
 		resultActions1
-			.andExpect(handler().handlerType(SellersController.class))
+			.andExpect(handler().handlerType(SellerController.class))
 			.andExpect(handler().methodName("checkCode"))
 			.andExpect(status().isOk())
 			.andExpect(content().string("인증에 성공하였습니다."));
@@ -89,7 +90,7 @@ class PcquotationApplicationTests {
 			)
 			.andDo(print());
 		resultActions2
-			.andExpect(handler().handlerType(SellersController.class))
+			.andExpect(handler().handlerType(SellerController.class))
 			.andExpect(handler().methodName("checkCode"))
 			.andExpect(status().isOk())
 			.andExpect(content().string("인증에 실패하였습니다."));
