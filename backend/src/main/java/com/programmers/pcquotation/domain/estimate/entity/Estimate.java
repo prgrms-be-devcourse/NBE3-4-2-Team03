@@ -1,42 +1,55 @@
 package com.programmers.pcquotation.domain.estimate.entity;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequest;
-import com.programmers.pcquotation.domain.sellers.entitiy.Sellers;
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+import com.programmers.pcquotation.domain.seller.entitiy.Seller;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 @Entity
 @Getter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Estimate {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
 
-    private LocalDateTime createDate;
+	@ManyToOne
+	private EstimateRequest estimateRequest;
 
-    @Column(columnDefinition = "Integer")
-    private Integer totalPrice;
+	@ManyToOne
+	private Seller seller;
 
-    @OneToOne
-    private EstimateRequest estimateRequest;
+	@Column(columnDefinition = "Integer")
+	private Integer totalPrice;
 
-    @OneToOne
-    private Sellers sellers;
+	@OneToMany(mappedBy = "estimates", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<EstimateComponent> estimateComponents = new ArrayList<>();
 
-    @OneToMany(mappedBy = "estimate", cascade = CascadeType.REMOVE)
-    private List<EstimateComment> estimateComments;
+	private LocalDateTime createDate;
 
-//    @PrePersist
-//    @PreUpdate
-//    public void calculateTotalPrice() {
-//    }
+	@Builder
+	public Estimate(EstimateRequest estimateRequest, Seller seller, Integer totalPrice,
+		List<EstimateComponent> estimateComponents) {
+		this.estimateRequest = estimateRequest;
+		this.seller = seller;
+		this.totalPrice = totalPrice;
+		this.createDate = LocalDateTime.now();
+		this.estimateComponents = estimateComponents;
+	}
+
 }

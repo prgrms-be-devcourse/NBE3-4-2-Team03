@@ -2,7 +2,7 @@ package com.programmers.pcquotation.domain.estimaterequest.entity;
 
 import java.time.LocalDateTime;
 
-import com.programmers.pcquotation.domain.customers.entity.Customer;
+import com.programmers.pcquotation.domain.customer.entity.Customer;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
