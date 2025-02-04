@@ -2,6 +2,7 @@ package com.programmers.pcquotation.domain.estimaterequest.dto;
 
 import java.time.LocalDateTime;
 
+import com.programmers.pcquotation.domain.customer.entity.Customer;
 import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequest;
 
 import lombok.Getter;
@@ -13,7 +14,7 @@ public class EstimateRequestDto {
 	private Integer budget;
 	private String otherRequest;
 	LocalDateTime createDate;
-	//    private Customer customer;
+	private Customer customer;
 
 	public EstimateRequestDto(EstimateRequest estimateRequest) {
 		this.id = estimateRequest.getId();
@@ -21,6 +22,6 @@ public class EstimateRequestDto {
 		this.budget = estimateRequest.getBudget();
 		this.otherRequest = estimateRequest.getOtherRequest();
 		this.createDate = estimateRequest.getCreateDate();
-		//this.customer = estimateRequest.getCustomer();
+		this.customer = estimateRequest.getCustomer();
 	}
 }
