@@ -69,8 +69,4 @@ public class Sellers {
 		return authorities;
 	}
 
-	public boolean matchPassword(String password) {
-		return this.password.equals(password);
-	}
-
 }
