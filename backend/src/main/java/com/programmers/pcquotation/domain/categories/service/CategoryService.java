@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.programmers.pcquotation.domain.categories.dto.CategoryCreateRequest;
 import com.programmers.pcquotation.domain.categories.dto.CategoryCreateResponse;
+import com.programmers.pcquotation.domain.categories.dto.CategoryDeleteResponse;
 import com.programmers.pcquotation.domain.categories.dto.CategoryInfoResponse;
 import com.programmers.pcquotation.domain.categories.dto.CategoryUpdateRequest;
 import com.programmers.pcquotation.domain.categories.dto.CategoryUpdateResponse;
@@ -56,5 +57,16 @@ public class CategoryService {
 		categoryRepository.save(categories);
 
 		return new CategoryUpdateResponse(id, "카테고리 수정 완료");
+	}
+
+	//카테고리 삭제
+	@Transactional
+	public CategoryDeleteResponse deleteCategory(Long id) {
+		Categories categories = categoryRepository.findById(id)
+			.orElseThrow(() -> new CategoryNotFoundException(id));
+
+		categoryRepository.delete(categories);
+
+		return new CategoryDeleteResponse(id, "카테고리 삭제 완료");
 	}
 }

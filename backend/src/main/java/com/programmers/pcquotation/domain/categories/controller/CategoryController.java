@@ -2,6 +2,7 @@ package com.programmers.pcquotation.domain.categories.controller;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.programmers.pcquotation.domain.categories.dto.CategoryCreateRequest;
 import com.programmers.pcquotation.domain.categories.dto.CategoryCreateResponse;
+import com.programmers.pcquotation.domain.categories.dto.CategoryDeleteResponse;
 import com.programmers.pcquotation.domain.categories.dto.CategoryInfoResponse;
 import com.programmers.pcquotation.domain.categories.dto.CategoryUpdateRequest;
 import com.programmers.pcquotation.domain.categories.dto.CategoryUpdateResponse;
@@ -47,5 +49,14 @@ public class CategoryController {
 		@RequestBody CategoryUpdateRequest request
 	) {
 		return categoryService.updateCategory(id, request);
+	}
+
+	//카테고리 삭제
+	@DeleteMapping("/{id}")
+	public CategoryDeleteResponse deleteCategory(
+		@PathVariable Long id
+	) {
+		return categoryService.deleteCategory(id);
+
 	}
 }
