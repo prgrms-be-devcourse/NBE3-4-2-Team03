@@ -8,38 +8,50 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.programmers.pcquotation.domain.items.dto.request.ItemCreateRequest;
 import com.programmers.pcquotation.domain.items.dto.response.ItemCreateResponse;
 import com.programmers.pcquotation.domain.items.entity.Items;
 import com.programmers.pcquotation.domain.items.repository.ItemRepository;
+import com.programmers.pcquotation.domain.items.service.ImageService;
 import com.programmers.pcquotation.domain.items.service.ItemService;
 
 class ItemsServiceTest {
 	private ItemService itemService;
+
 	@Mock
 	private ItemRepository itemRepository;
+
+	@Mock
+	private ImageService imageService;
+
+	@Mock
+	private MultipartFile mockFile; // 이미지 파일 Mock
 
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.openMocks(this);
-		itemService = new ItemService(itemRepository);
+		itemService = new ItemService(itemRepository, imageService);
 	}
 
 	@Test
 	@DisplayName("addItem 데이터 추가, 저장 테스트")
 	void addItemTest() {
 		// Given
-		ItemCreateRequest request = new ItemCreateRequest("부품", "img.png");
+		String expectedImagePath = "uploads/img.png";
+		when(imageService.storeImage(any(MultipartFile.class))).thenReturn(expectedImagePath);
+
+		ItemCreateRequest request = new ItemCreateRequest("부품", mockFile);
 		Items items = Items.builder()
 			.name("부품")
-			.imgFilename("img.png")
+			.imgFilename(expectedImagePath)
 			.build();
 		Items savedItem = Items.builder()
 			.id(1L)
-			.name("부품2")
-			.imgFilename("img2.png").
-			build();
+			.name("부품")
+			.imgFilename(expectedImagePath)
+			.build();
 
 		when(itemRepository.save(any(Items.class))).thenReturn(savedItem);
 
