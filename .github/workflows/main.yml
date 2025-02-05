@@ -68,7 +68,7 @@ jobs:
           SPRING_DATASOURCE_URL: ${ secret.DB_URL }
           SPRING_DATASOURCE_USERNAME: ${ secret.DB_USERNAME }  # ✅ application.properties와 동일하게 설정
           SPRING_DATASOURCE_PASSWORD: ${ secret.DB_PASSWORD }
-        run: echo ${{ secret.DB_URL }} && ./gradlew build --no-daemon -x test
+        run: echo ${{ secrets.DB_URL }} && ./gradlew build --no-daemon -x test
 
       - name: 테스트 실행
         working-directory: backend
