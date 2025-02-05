@@ -29,6 +29,6 @@ public class Item {
 	private String imgFilename;
 
 	@ManyToOne
-	@JoinColumn(nullable = false)
+	@JoinColumn(name = "category_id", nullable = false)
 	private Category category;
 }

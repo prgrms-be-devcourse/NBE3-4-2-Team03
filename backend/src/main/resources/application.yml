@@ -20,7 +20,14 @@ openapi:
   authentication-key:
     encoding: N08vvp1vbGXKB0dFb1s3hqd3WhZdyFk7FrIcHut2YXgnBfZpo9ByLIzoK5Xf9%2BrzfW%2FRE%2BV0ScEfXtFSvxDoLg%3D%3D
     decoding: N08vvp1vbGXKB0dFb1s3hqd3WhZdyFk7FrIcHut2YXgnBfZpo9ByLIzoK5Xf9+rzfW/RE+V0ScEfXtFSvxDoLg==
+
+
+image:
+  file:
+    path: src/main/resources/static/image/item/
+
 jwt:
   secretKey: nnqDC5CWSCpAE3JvJLAj40O87klnbNj9
   accessToken:
     expirationSeconds: "#{60*20}"
+

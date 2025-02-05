@@ -1,7 +1,8 @@
 package com.programmers.pcquotation.domain.item.controller;
 
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.programmers.pcquotation.domain.item.dto.request.ItemCreateRequest;
@@ -12,14 +13,15 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/items")
+
 public class ItemController {
 
 	private final ItemService itemService;
 
-	//부품 추가
-	@PostMapping("/api/items")
+	@PostMapping
 	public ItemCreateResponse createItem(
-		@RequestBody ItemCreateRequest request
+		@ModelAttribute("request") ItemCreateRequest request
 	) {
 		return itemService.addItem(request);
 	}
