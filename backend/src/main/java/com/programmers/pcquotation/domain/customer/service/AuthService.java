@@ -2,6 +2,7 @@ package com.programmers.pcquotation.domain.customer.service;
 
 import com.programmers.pcquotation.domain.customer.dto.LoginRequest;
 import com.programmers.pcquotation.domain.customer.dto.LoginResponse;
+import com.programmers.pcquotation.domain.customer.exception.WrongLoginAttemptException;
 import com.programmers.pcquotation.global.security.JwtUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,14 @@ public class AuthService {
 	}
 
 	public LoginResponse processLogin(LoginRequest loginRequest) {
+		String username = loginRequest.getUsername();
+		Customer customer = customerRepository.getCustomerByUsername(username)
+				.orElseThrow(WrongLoginAttemptException::new);
+
+		if (!passwordEncoder.matches(loginRequest.getPassword(), customer.getPassword())) {
+			throw new WrongLoginAttemptException();
+		}
+
 		return LoginResponse.builder()
 				.accessToken(jwtUtil.generateToken(loginRequest.getUsername()))
 				.expiresIn(jwtUtil.getAccessTokenExpirationSeconds())
