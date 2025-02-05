@@ -31,4 +31,10 @@ public class Item {
 	@ManyToOne
 	@JoinColumn(name = "category_id", nullable = false)
 	private Category category;
+
+	public Item(String name, String imgFilename, Category category) {
+		this.name = name;
+		this.imgFilename = imgFilename;
+		this.category = category;
+	}
 }
