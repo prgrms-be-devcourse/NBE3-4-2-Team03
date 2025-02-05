@@ -7,8 +7,6 @@ import java.util.List;
 import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequest;
 import com.programmers.pcquotation.domain.seller.entitiy.Seller;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -33,11 +31,10 @@ public class Estimate {
 
 	@ManyToOne
 	private Seller seller;
-
-	@Column(columnDefinition = "Integer")
+	
 	private Integer totalPrice;
 
-	@OneToMany(mappedBy = "estimates", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "estimate")
 	private List<EstimateComponent> estimateComponents = new ArrayList<>();
 
 	private LocalDateTime createDate;

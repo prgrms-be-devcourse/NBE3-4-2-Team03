@@ -36,7 +36,7 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     runtimeOnly 'com.mysql:mysql-connector-j'
-    implementation 'org.json:json:20090211'
+    implementation 'org.json:json:20231013'
 
     // JWT
     implementation 'io.jsonwebtoken:jjwt-api:0.12.6'

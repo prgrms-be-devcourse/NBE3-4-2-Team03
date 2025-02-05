@@ -33,13 +33,13 @@ jobs:
   backend:
     name: Backend Build & Test
     runs-on: ubuntu-latest
+
     services:
       mysql:
         image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          MYSQL_DATABASE: pcquotation  # ✅ DB 이름을 pcquotation으로 통일
-
+          MYSQL_DATABASE: pcquotation
         ports:
           - 3306:3306
         options: >-
@@ -52,7 +52,7 @@ jobs:
       - name: 저장소 체크아웃
         uses: actions/checkout@v3
 
-      - name: Java & Gradle 설정
+      - name: Java 설정
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
@@ -65,20 +65,20 @@ jobs:
       - name: 의존성 설치 및 빌드
         working-directory: backend
         env:
-          SPRING_DATASOURCE_URL: ${{ secrets.DB_URL }}
-          SPRING_DATASOURCE_USERNAME: ${{ secrets.DB_USERNAME }}  # ✅ application.properties와 동일하게 설정
-          SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_URL: ${{ secrets.DB_URL }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
           JWT_EXPIRATIONSECOND: ${{ secrets.JWT_EXPIRATIONSECOND }}
-          BUSINESS_ENCODING_KEY: ${{ secrets.BUSINESS_ENCODING_KEY }}          
-        run: ./gradlew build --no-daemon -x test
+          BUSINESS_ENCODING_KEY: ${{ secrets.BUSINESS_ENCODING_KEY }}
+        run: ./gradlew build -x test --no-daemon
 
       - name: 테스트 실행
         working-directory: backend
         env:
-          SPRING_DATASOURCE_URL: ${{ secrets.DB_URL }}
-          SPRING_DATASOURCE_USERNAME: ${{ secrets.DB_USERNAME }}  # ✅ application.properties와 동일하게 설정
-          SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_URL: ${{ secrets.DB_URL }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
           JWT_EXPIRATIONSECOND: ${{ secrets.JWT_EXPIRATIONSECOND }}
           BUSINESS_ENCODING_KEY: ${{ secrets.BUSINESS_ENCODING_KEY }}

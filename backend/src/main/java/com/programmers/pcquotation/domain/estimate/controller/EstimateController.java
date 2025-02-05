@@ -18,6 +18,6 @@ public class EstimateController {
 	@PostMapping("/api/estimates")
 	public ResponseEntity<String> createEstimate(@RequestBody EstimateCreateRequest request) {
 		estimateService.createEstimate(request);
-		return ResponseEntity.ok("견적서가 성공적으로 저장되었습니다.");
+		return ResponseEntity.ok().body("");
 	}
 }
