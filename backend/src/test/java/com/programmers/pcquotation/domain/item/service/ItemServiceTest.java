@@ -85,7 +85,7 @@ class ItemServiceTest {
 
 		// 테스트용 부품 생성
 		Item item = Item.builder()
-			.name("RTX 4090")
+			.name("4090")
 			.imgFilename("gpu.jpg")
 			.category(testCategory)
 			.build();
@@ -93,7 +93,7 @@ class ItemServiceTest {
 		// 검증
 		assertNotNull(item);
 		assertEquals("4090", item.getName());
-		assertEquals("gpu", item.getImgFilename());
+		assertEquals("gpu.jpg", item.getImgFilename());
 		assertEquals("GPU", item.getCategory().getCategory());
 	}
 }
