@@ -4,6 +4,7 @@ package com.programmers.pcquotation.member.service;
 import com.programmers.pcquotation.domain.customer.dto.SignupRequest;
 import com.programmers.pcquotation.domain.customer.dto.SignupResponse;
 import com.programmers.pcquotation.domain.customer.entity.Customer;
+import com.programmers.pcquotation.domain.customer.exception.CustomerAlreadyExistException;
 import com.programmers.pcquotation.domain.customer.exception.PasswordMismatchException;
 import com.programmers.pcquotation.domain.customer.repository.CustomerRepository;
 import com.programmers.pcquotation.domain.member.service.AuthService;
@@ -64,5 +65,41 @@ public class AuthServiceTest {
         );
 
         assertThrows(PasswordMismatchException.class, () -> authService.processSignup(signupRequest));
+    }
+
+    @Test
+    public void signup_customerUserNameAlreadyExist() {
+        SignupRequest signupRequest = new SignupRequest(
+                "user1",
+                "1234",
+                "1234",
+                "홍길동",
+                "test@test.com",
+                "가장 좋아하는 음식은",
+                "밥"
+        );
+
+        Customer customer = signupRequest.toCustomer();
+        when(customerRepository.getCustomerByUsername(signupRequest.getUsername())).thenReturn(Optional.of(customer));
+
+        assertThrows(CustomerAlreadyExistException.class, () -> authService.processSignup(signupRequest));
+    }
+
+    @Test
+    public void signup_customerEmailAlreadyExist() {
+        SignupRequest signupRequest = new SignupRequest(
+                "user1",
+                "1234",
+                "1234",
+                "홍길동",
+                "test@test.com",
+                "가장 좋아하는 음식은",
+                "밥"
+        );
+
+        Customer customer = signupRequest.toCustomer();
+        when(customerRepository.getCustomerByEmail(signupRequest.getEmail())).thenReturn(Optional.of(customer));
+
+        assertThrows(CustomerAlreadyExistException.class, () -> authService.processSignup(signupRequest));
     }
 }
