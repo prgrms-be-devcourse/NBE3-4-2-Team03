@@ -37,4 +37,10 @@ public class Item {
 		this.imgFilename = imgFilename;
 		this.category = category;
 	}
+
+	public void updateItem(String name, String imgFilename, Category category) {
+		this.name = name;
+		this.imgFilename = imgFilename;
+		this.category = category;
+	}
 }
