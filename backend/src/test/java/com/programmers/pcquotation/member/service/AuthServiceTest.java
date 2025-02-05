@@ -1,6 +1,8 @@
 package com.programmers.pcquotation.member.service;
 
 
+import com.programmers.pcquotation.domain.customer.dto.LoginRequest;
+import com.programmers.pcquotation.domain.customer.dto.LoginResponse;
 import com.programmers.pcquotation.domain.customer.dto.SignupRequest;
 import com.programmers.pcquotation.domain.customer.dto.SignupResponse;
 import com.programmers.pcquotation.domain.customer.entity.Customer;
@@ -8,9 +10,14 @@ import com.programmers.pcquotation.domain.customer.exception.CustomerAlreadyExis
 import com.programmers.pcquotation.domain.customer.exception.PasswordMismatchException;
 import com.programmers.pcquotation.domain.customer.repository.CustomerRepository;
 import com.programmers.pcquotation.domain.member.service.AuthService;
+import com.programmers.pcquotation.global.security.JwtUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.Optional;
@@ -26,6 +33,12 @@ public class AuthServiceTest {
 
     @MockitoBean
     private CustomerRepository customerRepository;
+
+    @MockitoBean
+    private PasswordEncoder passwordEncoder;
+
+    @MockitoBean
+    private JwtUtil jwtUtil;
 
     @Test
     public void signup_success() {
@@ -101,5 +114,34 @@ public class AuthServiceTest {
         when(customerRepository.getCustomerByEmail(signupRequest.getEmail())).thenReturn(Optional.of(customer));
 
         assertThrows(CustomerAlreadyExistException.class, () -> authService.processSignup(signupRequest));
+    }
+
+    @Test
+    public void login_success() {
+        LoginRequest loginRequest = new LoginRequest(
+                "user1",
+                "1234"
+        );
+
+        Customer customer = Customer.builder()
+                .username("user1")
+                .password("1234")
+                .build();
+
+        when(customerRepository.getCustomerByUsername(customer.getUsername())).thenReturn(Optional.of(customer));
+        when(passwordEncoder.matches(loginRequest.getPassword(), customer.getPassword())).thenReturn(true);
+        when(jwtUtil.generateToken(customer.getUsername())).thenReturn("jwt.test.token");
+        when(jwtUtil.getAccessTokenExpirationSeconds()).thenReturn(3600L);
+
+        LoginResponse response = authService.processLogin(loginRequest);
+
+        assertNotNull(response);
+        assertEquals("jwt.test.token", response.getAccessToken());
+        assertEquals(3600L, response.getExpiresIn());
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        assertNotNull(authentication);
+        assertEquals(customer.getUsername(), authentication.getName());
+        assertTrue(authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_CUSTOMER")));
     }
 }

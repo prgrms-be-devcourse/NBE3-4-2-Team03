@@ -68,7 +68,7 @@ public class AuthService {
 	private void setAuthentication(Customer customer) {
 		UserDetails user = new User(
 				customer.getUsername(),
-				null,
+				customer.getPassword(),
 				customer.getAuthorities()
 		);
 
