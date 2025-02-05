@@ -1,8 +1,11 @@
 package com.programmers.pcquotation.domain.estimaterequest.service;
 
 import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import com.programmers.pcquotation.domain.customer.entity.Customer;
+import com.programmers.pcquotation.domain.customer.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
 
 import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequest;
@@ -14,19 +17,26 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class EstimateRequestService {
 	private final EstimateRequestRepository estimateRequestRepository;
+	private final CustomerRepository customerRepository;
 
-	public void createEstimateRequest(String purpose, Integer budget, String otherRequest) {
-		estimateRequestRepository.save(EstimateRequest
+	public EstimateRequest createEstimateRequest(String purpose, Integer budget, String otherRequest, Customer customer) {
+		return estimateRequestRepository.save(EstimateRequest
 			.builder()
 			.createDate(LocalDateTime.now())
 			.purpose(purpose)
 			.budget(budget)
 			.otherRequest(otherRequest)
+			.customer(customer)
 			.build());
 	}
 
 	public Optional<EstimateRequest> getEstimateRequestById(Integer id) {
 		return estimateRequestRepository.getEstimateRequestById(id);
+	}
+	public Customer findCustomer(String name){
+        return customerRepository.getCustomerByUsername(name)
+				.orElseThrow(() -> new NoSuchElementException("고객을 찾을수 없습니다."));
+
 	}
 
 }
