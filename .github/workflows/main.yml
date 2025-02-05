@@ -36,11 +36,11 @@ jobs:
     strategy:
       matrix:
         DB_URL: 
-          - ${ secret.DB_URL }
+          - ${{ secret.DB_URL }}
         DB_USERNAME:
-          - ${ secret.DB_USERNAME }
+          - ${{ secret.DB_USERNAME }}
         DB_PASSWORD:
-          - ${ secret.DB_PASSWORD }
+          - ${{ secret.DB_PASSWORD }}
     services:
       mysql:
         image: mysql:8.0
