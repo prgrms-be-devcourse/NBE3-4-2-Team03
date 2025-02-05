@@ -68,7 +68,10 @@ jobs:
           SPRING_DATASOURCE_URL: ${{ secrets.DB_URL }}
           SPRING_DATASOURCE_USERNAME: ${{ secrets.DB_USERNAME }}  # ✅ application.properties와 동일하게 설정
           SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        run: echo ${{ secrets.DB_URL }} && ./gradlew build --no-daemon -x test
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          JWT_EXPIRATIONSECOND: ${{ secrets.JWT_EXPIRATIONSECOND }}
+          BUSINESS_ENCODING_KEY: ${{ secrets.BUSINESS_ENCODING_KEY }}          
+        run: ./gradlew build --no-daemon -x test
 
       - name: 테스트 실행
         working-directory: backend
@@ -76,4 +79,7 @@ jobs:
           SPRING_DATASOURCE_URL: ${{ secrets.DB_URL }}
           SPRING_DATASOURCE_USERNAME: ${{ secrets.DB_USERNAME }}  # ✅ application.properties와 동일하게 설정
           SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          JWT_EXPIRATIONSECOND: ${{ secrets.JWT_EXPIRATIONSECOND }}
+          BUSINESS_ENCODING_KEY: ${{ secrets.BUSINESS_ENCODING_KEY }}
         run: ./gradlew test --no-daemon
