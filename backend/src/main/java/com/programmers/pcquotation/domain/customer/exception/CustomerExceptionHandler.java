@@ -22,4 +22,11 @@ public class CustomerExceptionHandler {
 			.status(HttpStatus.CONFLICT)
 			.body(new ErrorResponse("User already exists"));
 	}
+
+	@ExceptionHandler(IncorrectLoginAttemptException.class)
+	public ResponseEntity<ErrorResponse> handleIncorrectLoginAttempt(IncorrectLoginAttemptException ex) {
+		return ResponseEntity
+				.status(HttpStatus.BAD_REQUEST)
+				.body(new ErrorResponse("Incorrect ID or Password"));
+	}
 }

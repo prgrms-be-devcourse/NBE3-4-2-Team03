@@ -15,7 +15,7 @@ import com.programmers.pcquotation.domain.customer.dto.SignupRequest;
 import com.programmers.pcquotation.domain.customer.dto.SignupResponse;
 import com.programmers.pcquotation.domain.customer.exception.CustomerAlreadyExistException;
 import com.programmers.pcquotation.domain.customer.exception.PasswordMismatchException;
-import com.programmers.pcquotation.domain.customer.service.AuthService;
+import com.programmers.pcquotation.domain.member.service.AuthService;
 import com.programmers.pcquotation.global.security.JwtUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
