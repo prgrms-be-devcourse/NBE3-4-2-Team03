@@ -1,4 +1,4 @@
-package com.programmers.pcquotation.domain.item.dto.request;
+package com.programmers.pcquotation.domain.item.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

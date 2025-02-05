@@ -16,10 +16,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.programmers.pcquotation.domain.category.entity.Category;
 import com.programmers.pcquotation.domain.category.repository.CategoryRepository;
-import com.programmers.pcquotation.domain.item.dto.request.ItemCreateRequest;
-import com.programmers.pcquotation.domain.item.dto.request.ItemUpdateRequest;
-import com.programmers.pcquotation.domain.item.dto.response.ItemCreateResponse;
-import com.programmers.pcquotation.domain.item.dto.response.ItemUpdateResponse;
+import com.programmers.pcquotation.domain.item.dto.ItemCreateRequest;
+import com.programmers.pcquotation.domain.item.dto.ItemCreateResponse;
+import com.programmers.pcquotation.domain.item.dto.ItemUpdateRequest;
+import com.programmers.pcquotation.domain.item.dto.ItemUpdateResponse;
 import com.programmers.pcquotation.domain.item.entity.Item;
 import com.programmers.pcquotation.domain.item.repository.ItemRepository;
 
