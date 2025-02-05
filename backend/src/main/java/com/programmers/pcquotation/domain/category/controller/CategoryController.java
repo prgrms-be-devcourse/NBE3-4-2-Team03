@@ -39,7 +39,7 @@ public class CategoryController {
 	//카테고리 다건조회
 	@GetMapping
 	public List<CategoryInfoResponse> getCategoryList() {
-		return categoryService.getList();
+		return categoryService.getCategoryList();
 	}
 
 	//카테고리 수정

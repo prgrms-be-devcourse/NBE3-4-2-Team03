@@ -51,14 +51,14 @@ public class CategoryServiceTest {
 
 	@Test
 	@DisplayName("카테고리 다건조회 테스트")
-	void getListTest() {
+	void getCategoryListTest() {
 
 		Category category1 = Category.builder().id(1L).category("카테고리").build();
 		Category category2 = Category.builder().id(2L).category("카테고리2").build();
 
 		when(categoryRepository.findAll()).thenReturn(List.of(category1, category2));
 
-		List<CategoryInfoResponse> response = categoryService.getList();
+		List<CategoryInfoResponse> response = categoryService.getCategoryList();
 
 		List<CategoryInfoResponse> expectedList = List.of(
 			new CategoryInfoResponse(1L, "카테고리"),
