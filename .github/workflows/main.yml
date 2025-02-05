@@ -33,19 +33,11 @@ jobs:
   backend:
     name: Backend Build & Test
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        DB_URL: 
-          - ${{ secret.DB_URL }}
-        DB_USERNAME:
-          - ${{ secret.DB_USERNAME }}
-        DB_PASSWORD:
-          - ${{ secret.DB_PASSWORD }}
     services:
       mysql:
         image: mysql:8.0
         env:
-          MYSQL_ROOT_PASSWORD: ${{ matrix.DB_PASSWORD }}
+          MYSQL_ROOT_PASSWORD: ${{ secret.DB_PASSWORD }}
           MYSQL_DATABASE: pcquotation  # ✅ DB 이름을 pcquotation으로 통일
 
         ports:
@@ -73,15 +65,15 @@ jobs:
       - name: 의존성 설치 및 빌드
         working-directory: backend
         env:
-          SPRING_DATASOURCE_URL: ${{ matrix.DB_URL }}
-          SPRING_DATASOURCE_USERNAME: ${{ matrix.DB_USERNAME }}  # ✅ application.properties와 동일하게 설정
-          SPRING_DATASOURCE_PASSWORD: ${{ matrix.DB_PASSWORD }}
+          SPRING_DATASOURCE_URL: ${{ secret.DB_URL }}
+          SPRING_DATASOURCE_USERNAME: ${{ secret.DB_USERNAME }}  # ✅ application.properties와 동일하게 설정
+          SPRING_DATASOURCE_PASSWORD: ${{ secret.DB_PASSWORD }}
         run: ./gradlew build --no-daemon -x test
 
       - name: 테스트 실행
         working-directory: backend
         env:
-          SPRING_DATASOURCE_URL: ${{ matrix.DB_URL }}
-          SPRING_DATASOURCE_USERNAME: ${{ matrix.DB_USERNAME }}  # ✅ application.properties와 동일하게 설정
-          SPRING_DATASOURCE_PASSWORD: ${{ matrix.DB_PASSWORD }}
+          SPRING_DATASOURCE_URL: ${{ secret.DB_URL }}
+          SPRING_DATASOURCE_USERNAME: ${{ secret.DB_USERNAME }}  # ✅ application.properties와 동일하게 설정
+          SPRING_DATASOURCE_PASSWORD: ${{ secret.DB_PASSWORD }}
         run: ./gradlew test --no-daemon
