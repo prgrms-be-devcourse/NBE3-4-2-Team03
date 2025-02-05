@@ -51,8 +51,7 @@ public class EstimateRequestControllerTest {
         String data = """
                 {
                     "purpose": "testPurpose",
-                    "budget": 100,
-                    "otherRequest": ""
+                    "budget": 100
                 }
                 """;
 
@@ -68,8 +67,7 @@ public class EstimateRequestControllerTest {
                 )
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.purpose").value("testPurpose"))
-                .andExpect(jsonPath("$.budget").value(100))
-                .andExpect(jsonPath("$.otherRequest").value(""));
+                .andExpect(jsonPath("$.budget").value(100));
     }
 
     @Test
@@ -112,16 +110,6 @@ public class EstimateRequestControllerTest {
     @DisplayName("오류케이스")
     public void 견적요청생성실패() throws Exception {
         //given
-        Customer customer = new Customer();
-
-        EstimateRequest estimateRequest = EstimateRequest
-                .builder()
-                .purpose("testPurpose")
-                .budget(100)
-                .otherRequest("testRequest")
-                .customer(customer)
-                .build();
-
         String data = """
                 {
                     "purpose": "sdf",

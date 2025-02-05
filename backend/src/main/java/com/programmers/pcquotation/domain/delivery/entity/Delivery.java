@@ -25,4 +25,8 @@ public class Delivery {
 
     @Column(length = 50)
     private String address;
+
+    public void updateAddress(String address){
+        this.address = address;
+    }
 }

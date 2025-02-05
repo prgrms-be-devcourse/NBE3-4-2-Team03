@@ -6,6 +6,7 @@ import com.programmers.pcquotation.domain.delivery.exception.NullEntityException
 import com.programmers.pcquotation.domain.delivery.repository.DeliveryRepository;
 import com.programmers.pcquotation.domain.estimate.entity.Estimate;
 import com.programmers.pcquotation.domain.estimate.repository.EstimateRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -40,12 +41,8 @@ public class DeliveryService {
         deliveryRepository.delete(findOne(id)); //findOne 예외 처리
     }
 
+    @Transactional
     public void modify(Integer id, String address) {
-        Delivery delivery = findOne(id);  //findOne 예외 처리
-        deliveryRepository.save(new Delivery(
-                delivery.getId(),
-                delivery.getEstimate(),
-                delivery.getStatus(),
-                address));
+        findOne(id).updateAddress(address);  //findOne 예외 처리
     }
 }
