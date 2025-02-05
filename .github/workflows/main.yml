@@ -71,7 +71,7 @@ jobs:
           JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
           JWT_EXPIRATIONSECOND: ${{ secrets.JWT_EXPIRATIONSECOND }}
           BUSINESS_ENCODING_KEY: ${{ secrets.BUSINESS_ENCODING_KEY }}
-        run: ./gradlew build --no-daemon
+        run: ./gradlew build -x test --no-daemon
 
       - name: 테스트 실행
         working-directory: backend
