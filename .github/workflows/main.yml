@@ -38,13 +38,14 @@ jobs:
       mysql:
         image: mysql:8.0
         env:
-          MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          MYSQL_USER: ${{ secrets.DB_USERNAME }}
+          MYSQL_PASSWORD: ${{ secrets.DB_PASSWORD }}
           MYSQL_DATABASE: pcquotation 
 
         ports:
           - 3306:3306
         options: >-
-          --health-cmd="mysqladmin ping --host=localhost --user=${{ secrets.DB_USERNAME }} --password=${{ secrets.DB_PASSWORD }}"
+          --health-cmd="mysqladmin ping --host=localhost --user=$MYSQL_USER --password=$MYSQL_PASSWORD"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=3
