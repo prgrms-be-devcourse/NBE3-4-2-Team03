@@ -31,4 +31,32 @@ public class Item {
 	@ManyToOne
 	@JoinColumn(name = "category_id", nullable = false)
 	private Category category;
+
+	public Item(String name, String imgFilename, Category category) {
+		this.name = name;
+		this.imgFilename = imgFilename;
+		this.category = category;
+	}
+
+	public void updateItem(String name, String imgFilename, Category category) {
+		this.name = name;
+		this.imgFilename = imgFilename;
+		this.category = category;
+	}
+
+	public static Item createTestItem(
+		Long id,
+		String name,
+		String imgFilename,
+		Category category
+	) {
+
+		Item item = new Item();
+		item.id = id;
+		item.name = name;
+		item.imgFilename = imgFilename;
+		item.category = category;
+		return item;
+	}
 }
+

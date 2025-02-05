@@ -1,4 +1,4 @@
-package com.programmers.pcquotation.domain.item.dto.response;
+package com.programmers.pcquotation.domain.item.dto;
 
 import org.springframework.lang.NonNull;
 
