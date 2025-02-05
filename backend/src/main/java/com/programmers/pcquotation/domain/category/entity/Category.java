@@ -29,7 +29,7 @@ public class Category {
 	private String category;
 
 	@OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Item> items = new ArrayList<>();
+	final private List<Item> items = new ArrayList<>();
 
 	public void updateCategory(String category) {
 		this.category = category;
