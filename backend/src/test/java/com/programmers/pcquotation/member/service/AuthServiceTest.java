@@ -129,9 +129,9 @@ public class AuthServiceTest {
                 .password("1234")
                 .build();
 
-        when(customerRepository.getCustomerByUsername(customer.getUsername())).thenReturn(Optional.of(customer));
+        when(customerRepository.getCustomerByUsername("user1")).thenReturn(Optional.of(customer));
         when(passwordEncoder.matches(loginRequest.getPassword(), customer.getPassword())).thenReturn(true);
-        when(jwtUtil.generateToken(customer.getUsername())).thenReturn("jwt.test.token");
+        when(jwtUtil.generateToken("user1")).thenReturn("jwt.test.token");
         when(jwtUtil.getAccessTokenExpirationSeconds()).thenReturn(3600L);
 
         LoginResponse response = authService.processLogin(loginRequest);
@@ -153,7 +153,29 @@ public class AuthServiceTest {
                 "1234"
         );
 
-        when(customerRepository.getCustomerByUsername(loginRequest.getUsername())).thenReturn(Optional.empty());
+        when(customerRepository.getCustomerByUsername("user1")).thenReturn(Optional.empty());
+
+        assertThrows(IncorrectLoginAttemptException.class, () -> {
+            authService.processLogin(loginRequest);
+        });
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        assertNull(authentication);
+    }
+
+    @Test
+    public void login_incorrectPassword() {
+        LoginRequest loginRequest = new LoginRequest(
+                "user1",
+                "1234"
+        );
+
+        Customer customer = Customer.builder()
+                .username("user1")
+                .password("1111")
+                .build();
+
+        when(customerRepository.getCustomerByUsername("user1")).thenReturn(Optional.of(customer));
 
         assertThrows(IncorrectLoginAttemptException.class, () -> {
             authService.processLogin(loginRequest);
