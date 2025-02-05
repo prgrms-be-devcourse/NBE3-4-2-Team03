@@ -1,11 +1,15 @@
 package com.programmers.pcquotation.domain.item.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
 import com.programmers.pcquotation.domain.category.entity.Category;
 import com.programmers.pcquotation.domain.category.repository.CategoryRepository;
 import com.programmers.pcquotation.domain.item.dto.request.ItemCreateRequest;
 import com.programmers.pcquotation.domain.item.dto.response.ItemCreateResponse;
+import com.programmers.pcquotation.domain.item.dto.response.ItemInfoResponse;
 import com.programmers.pcquotation.domain.item.entity.Item;
 import com.programmers.pcquotation.domain.item.repository.ItemRepository;
 
@@ -39,5 +43,13 @@ public class ItemService {
 		Item savedItem = itemRepository.save(item);
 
 		return new ItemCreateResponse(savedItem.getId(), "부품 생성 완료");
+	}
+
+	@Transactional
+	public List<ItemInfoResponse> getItemList() {
+		List<Item> items = itemRepository.findAll();
+		return items.stream()
+			.map(ItemInfoResponse::from)
+			.collect(Collectors.toList());
 	}
 }
