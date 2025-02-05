@@ -1,6 +1,5 @@
 package com.programmers.pcquotation.domain.estimate.entity;
 
-import com.programmers.pcquotation.domain.category.entity.Category;
 import com.programmers.pcquotation.domain.item.entity.Item;
 
 import jakarta.persistence.Entity;
@@ -10,7 +9,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -24,11 +22,7 @@ public class EstimateComponent {
 
 	@ManyToOne
 	@JoinColumn(name = "estimate_id")
-	private Estimate estimates;
-
-	@ManyToOne
-	@JoinColumn(name = "category_id")
-	private Category category;
+	private Estimate estimate;
 
 	@ManyToOne
 	@JoinColumn(name = "item_id")
@@ -36,11 +30,17 @@ public class EstimateComponent {
 
 	private Integer price;
 
-	@Builder
-	public EstimateComponent(Estimate estimates, Category category, Item item, Integer price) {
-		this.estimates = estimates;
-		this.category = category;
+	// 생성자를 통한 초기화
+	public EstimateComponent(Item item, Integer price) {
 		this.item = item;
 		this.price = price;
+	}
+
+	public void setEstimate(Estimate estimate) {
+		this.estimate = estimate;
+	}
+
+	public static EstimateComponent createComponent(Item item, Integer price) {
+		return new EstimateComponent(item, price);
 	}
 }
