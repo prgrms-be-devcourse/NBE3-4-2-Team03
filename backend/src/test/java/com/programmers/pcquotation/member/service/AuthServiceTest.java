@@ -4,6 +4,7 @@ package com.programmers.pcquotation.member.service;
 import com.programmers.pcquotation.domain.customer.dto.SignupRequest;
 import com.programmers.pcquotation.domain.customer.dto.SignupResponse;
 import com.programmers.pcquotation.domain.customer.entity.Customer;
+import com.programmers.pcquotation.domain.customer.exception.PasswordMismatchException;
 import com.programmers.pcquotation.domain.customer.repository.CustomerRepository;
 import com.programmers.pcquotation.domain.member.service.AuthService;
 import org.junit.jupiter.api.Test;
@@ -13,8 +14,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -49,5 +49,20 @@ public class AuthServiceTest {
         assertEquals("user1", response.getUsername());
         assertEquals("홍길동", response.getCustomerName());
         assertEquals("test@test.com", response.getEmail());
+    }
+
+    @Test
+    public void signup_passwordMismatch() {
+        SignupRequest signupRequest = new SignupRequest(
+                "user1",
+                "1234",
+                "1111",
+                "홍길동",
+                "test@test.com",
+                "가장 좋아하는 음식은",
+                "밥"
+        );
+
+        assertThrows(PasswordMismatchException.class, () -> authService.processSignup(signupRequest));
     }
 }
