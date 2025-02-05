@@ -7,6 +7,7 @@ import com.programmers.pcquotation.domain.customer.dto.SignupRequest;
 import com.programmers.pcquotation.domain.customer.dto.SignupResponse;
 import com.programmers.pcquotation.domain.customer.entity.Customer;
 import com.programmers.pcquotation.domain.customer.exception.CustomerAlreadyExistException;
+import com.programmers.pcquotation.domain.customer.exception.IncorrectLoginAttemptException;
 import com.programmers.pcquotation.domain.customer.exception.PasswordMismatchException;
 import com.programmers.pcquotation.domain.customer.repository.CustomerRepository;
 import com.programmers.pcquotation.domain.member.service.AuthService;
@@ -143,5 +144,22 @@ public class AuthServiceTest {
         assertNotNull(authentication);
         assertEquals(customer.getUsername(), authentication.getName());
         assertTrue(authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_CUSTOMER")));
+    }
+
+    @Test
+    public void login_usernameNotFound() {
+        LoginRequest loginRequest = new LoginRequest(
+                "user1",
+                "1234"
+        );
+
+        when(customerRepository.getCustomerByUsername(loginRequest.getUsername())).thenReturn(Optional.empty());
+
+        assertThrows(IncorrectLoginAttemptException.class, () -> {
+            authService.processLogin(loginRequest);
+        });
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        assertNull(authentication);
     }
 }
