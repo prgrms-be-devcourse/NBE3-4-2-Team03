@@ -18,6 +18,7 @@ import com.programmers.pcquotation.domain.category.entity.Category;
 import com.programmers.pcquotation.domain.category.repository.CategoryRepository;
 import com.programmers.pcquotation.domain.item.dto.ItemCreateRequest;
 import com.programmers.pcquotation.domain.item.dto.ItemCreateResponse;
+import com.programmers.pcquotation.domain.item.dto.ItemDeleteResponse;
 import com.programmers.pcquotation.domain.item.dto.ItemUpdateRequest;
 import com.programmers.pcquotation.domain.item.dto.ItemUpdateResponse;
 import com.programmers.pcquotation.domain.item.entity.Item;
@@ -134,6 +135,24 @@ class ItemServiceTest {
 
 		verify(itemRepository, times(1)).findById(1L);
 		verify(categoryRepository, times(1)).findById(2L);
+	}
+
+	@Test
+	@DisplayName("부품 삭제 테스트")
+	void deleteItemTest() {
+		// Given
+		Long itemId = 1L;
+		when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+
+		// When
+		ItemDeleteResponse response = itemService.deleteItem(itemId);
+
+		// Then
+		assertThat(response.id()).isEqualTo(itemId);
+		assertThat(response.message()).isEqualTo("부품 삭제 완료");
+
+		verify(itemRepository, times(1)).findById(itemId);
+		verify(itemRepository, times(1)).delete(item);
 	}
 
 }
