@@ -1,4 +1,4 @@
-package com.programmers.pcquotation.domain.customers.dto;
+package com.programmers.pcquotation.domain.customer.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

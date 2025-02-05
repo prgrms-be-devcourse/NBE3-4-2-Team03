@@ -1,5 +1,8 @@
 package com.programmers.pcquotation.domain.customer.service;
 
+import com.programmers.pcquotation.domain.customer.dto.LoginRequest;
+import com.programmers.pcquotation.domain.customer.dto.LoginResponse;
+import com.programmers.pcquotation.global.security.JwtUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 public class AuthService {
 	private final CustomerRepository customerRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final JwtUtil jwtUtil;
 
 	public SignupResponse addUser(SignupRequest signupRequest) {
 		if (!signupRequest.getPassword().equals(signupRequest.getConfirmPassword())) {
@@ -36,5 +40,12 @@ public class AuthService {
 		customerRepository.save(customer);
 
 		return new SignupResponse(customer);
+	}
+
+	public LoginResponse processLogin(LoginRequest loginRequest) {
+		return LoginResponse.builder()
+				.accessToken(jwtUtil.generateToken(loginRequest.getUsername()))
+				.expiresIn(jwtUtil.getAccessTokenExpirationSeconds())
+				.build();
 	}
 }
