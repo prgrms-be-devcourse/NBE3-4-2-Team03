@@ -43,4 +43,20 @@ public class Item {
 		this.imgFilename = imgFilename;
 		this.category = category;
 	}
+
+	public static Item createTestItem(
+		Long id,
+		String name,
+		String imgFilename,
+		Category category
+	) {
+
+		Item item = new Item();
+		item.id = id;
+		item.name = name;
+		item.imgFilename = imgFilename;
+		item.category = category;
+		return item;
+	}
 }
+

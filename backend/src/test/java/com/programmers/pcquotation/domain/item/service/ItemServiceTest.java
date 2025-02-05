@@ -17,7 +17,9 @@ import org.springframework.web.multipart.MultipartFile;
 import com.programmers.pcquotation.domain.category.entity.Category;
 import com.programmers.pcquotation.domain.category.repository.CategoryRepository;
 import com.programmers.pcquotation.domain.item.dto.request.ItemCreateRequest;
+import com.programmers.pcquotation.domain.item.dto.request.ItemUpdateRequest;
 import com.programmers.pcquotation.domain.item.dto.response.ItemCreateResponse;
+import com.programmers.pcquotation.domain.item.dto.response.ItemUpdateResponse;
 import com.programmers.pcquotation.domain.item.entity.Item;
 import com.programmers.pcquotation.domain.item.repository.ItemRepository;
 
@@ -37,9 +39,22 @@ class ItemServiceTest {
 	@Mock
 	private MultipartFile mockFile;
 
+	private Item item;
+	private Category oldCategory;
+	private Category newCategory;
+
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.openMocks(this);
+		oldCategory = Category.createTestCategory(1L, "기존 카테고리");
+		newCategory = Category.createTestCategory(2L, "새로운 카테고리");
+
+		item = Item.createTestItem(
+			1L,
+			"기존 부품 이름",
+			"old-image.jpg",
+			oldCategory
+		);
 	}
 
 	@Test
@@ -96,4 +111,29 @@ class ItemServiceTest {
 		assertEquals("gpu.jpg", item.getImgFilename());
 		assertEquals("GPU", item.getCategory().getCategory());
 	}
+
+	@Test
+	@DisplayName("부품 수정 테스트")
+	void updateItemTest() {
+		// Given
+		ItemUpdateRequest request = new ItemUpdateRequest("새로운 부품 이름", "new-image.jpg", 2L);
+
+		when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
+		when(categoryRepository.findById(2L)).thenReturn(Optional.of(newCategory));
+
+		// When
+		ItemUpdateResponse response = itemService.updateItem(1L, request);
+
+		// Then
+		assertThat(response.id()).isEqualTo(1L);
+		assertThat(response.message()).isEqualTo("부품 수정 완료");
+
+		assertThat(item.getName()).isEqualTo("새로운 부품 이름");
+		assertThat(item.getImgFilename()).isEqualTo("new-image.jpg");
+		assertThat(item.getCategory()).isEqualTo(newCategory);
+
+		verify(itemRepository, times(1)).findById(1L);
+		verify(categoryRepository, times(1)).findById(2L);
+	}
+
 }
