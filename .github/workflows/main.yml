@@ -63,6 +63,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: 의존성 설치 및 빌드
+        working-directory: backend
         env:
           DB_URL: ${{ secrets.DB_URL }}
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
@@ -73,6 +74,7 @@ jobs:
         run: ./gradlew build --no-daemon
 
       - name: 테스트 실행
+        working-directory: backend
         env:
           DB_URL: ${{ secrets.DB_URL }}
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
