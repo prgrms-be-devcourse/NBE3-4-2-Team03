@@ -40,12 +40,10 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD }}
           MYSQL_DATABASE: pcquotation
-          
-
         ports:
           - 3306:3306
         options: >-
-          --health-cmd="mysqladmin ping --host=localhost --user=root --password=0000"
+          --health-cmd="mysqladmin ping --host=localhost --user=${{ secrets.DB_USERNAME }} --password=${{ secrets.DB_PASSWORD }}"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=3
@@ -60,6 +58,14 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Gradle 캐시 설정
+        uses: gradle/gradle-build-action@v2
+
+      - name: application-secret.yml 생성
+        run: |
+          mkdir -p backend/src/main/resources
+          echo "${{ secrets.APPLICATION_SECRET }}" > backend/src/main/resources/application-secret.yml
+
       - name: Gradle 실행 권한 부여
         working-directory: backend
         run: chmod +x gradlew
@@ -70,7 +76,10 @@ jobs:
           SPRING_DATASOURCE_URL: ${{ secrets.DB_URL }}
           SPRING_DATASOURCE_USERNAME: ${{ secrets.DB_USERNAME }}
           SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        run: ./gradlew build --no-daemon
+          BUSINESS_ENCODING_KEY: ${{ secrets.BUSINESS_ENCODING_KEY }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          JWT_EXPIRATIONSECOND: ${{ secrets.JWT_EXPIRATIONSECOND }}
+        run: ./gradlew build --no-daemon -x test
 
       - name: 테스트 실행
         working-directory: backend
@@ -78,4 +87,14 @@ jobs:
           SPRING_DATASOURCE_URL: ${{ secrets.DB_URL }}
           SPRING_DATASOURCE_USERNAME: ${{ secrets.DB_USERNAME }}
           SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          BUSINESS_ENCODING_KEY: ${{ secrets.BUSINESS_ENCODING_KEY }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          JWT_EXPIRATIONSECOND: ${{ secrets.JWT_EXPIRATIONSECOND }}
         run: ./gradlew test --no-daemon
+
+      - name: 테스트 결과 게시
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: |
+            backend/build/test-results/**/*.xml
