@@ -46,7 +46,7 @@ public class ItemService {
 	}
 
 	@Transactional
-	public List<ItemInfoResponse> getItemList() {
+	public List<ItemInfoResponse> getItemList() { //부품 조회
 		List<Item> items = itemRepository.findAll();
 		return items.stream()
 			.map(ItemInfoResponse::from)

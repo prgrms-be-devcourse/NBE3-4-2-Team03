@@ -1,6 +1,7 @@
 package com.programmers.pcquotation.domain.item.service;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Optional;
@@ -74,5 +75,25 @@ class ItemServiceTest {
 		// Then
 		assertThat(response.id()).isEqualTo(2L);
 		assertThat(response.message()).isEqualTo("부품 생성 완료");
+	}
+
+	@Test
+	@DisplayName("부품 조회 테스트")
+	void getItemListTest() {
+		// 테스트용 카테고리 생성
+		Category testCategory = Category.createTestCategory(1L, "GPU");
+
+		// 테스트용 부품 생성
+		Item item = Item.builder()
+			.name("RTX 4090")
+			.imgFilename("gpu.jpg")
+			.category(testCategory)
+			.build();
+
+		// 검증
+		assertNotNull(item);
+		assertEquals("4090", item.getName());
+		assertEquals("gpu", item.getImgFilename());
+		assertEquals("GPU", item.getCategory().getCategory());
 	}
 }
