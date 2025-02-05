@@ -1,5 +1,10 @@
 package com.programmers.pcquotation.domain.member.service;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -55,9 +60,27 @@ public class AuthService {
 			throw new IncorrectLoginAttemptException();
 		}
 
+		setAuthentication(customer);
+
 		return LoginResponse.builder()
 				.accessToken(jwtUtil.generateToken(loginRequest.getUsername()))
 				.expiresIn(jwtUtil.getAccessTokenExpirationSeconds())
 				.build();
+	}
+
+	private void setAuthentication(Customer customer) {
+		UserDetails user = new User(
+				customer.getUsername(),
+				null,
+				customer.getAuthorities()
+		);
+
+		Authentication authentication = new UsernamePasswordAuthenticationToken(
+				user,
+				null,
+				user.getAuthorities()
+		);
+
+		SecurityContextHolder.getContext().setAuthentication(authentication);
 	}
 }

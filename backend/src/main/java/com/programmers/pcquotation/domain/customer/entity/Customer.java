@@ -1,5 +1,11 @@
 package com.programmers.pcquotation.domain.customer.entity;
 
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,4 +35,11 @@ public class Customer {
     private String email;
     private String verificationQuestion;
     private String verificationAnswer;
+
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of("ROLE_CUSTOMER")
+                .stream()
+                .map(SimpleGrantedAuthority::new)
+                .toList();
+    }
 }
