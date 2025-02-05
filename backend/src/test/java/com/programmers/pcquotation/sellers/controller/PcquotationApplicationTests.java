@@ -43,7 +43,6 @@ class PcquotationApplicationTests {
 	String id = "test1234";
 	String ps = "password1234";
 
-
 	Seller register() throws Exception {
 		ResultActions resultActions = mvc
 			.perform(post("/seller")
@@ -57,7 +56,7 @@ class PcquotationApplicationTests {
 					    "verificationQuestion": "바나나는",
 					    "verificationAnswer": "길어"
 					}
-					""".stripIndent(),id,ps))
+					""".stripIndent(), id, ps))
 				.contentType(
 					new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
 				)
@@ -67,16 +66,17 @@ class PcquotationApplicationTests {
 		assertNotNull(sellers.get());
 		return sellers.get();
 	}
+
 	String login() throws Exception {
 		register();
 		ResultActions resultActions = mvc
 			.perform(post("/seller/login")
 				.content(String.format("""
-                                {
-                                    "username": "%s",
-                                    "password": "%s"
-                                }
-                                """.stripIndent(),id,ps))
+					{
+					    "username": "%s",
+					    "password": "%s"
+					}
+					""".stripIndent(), id, ps))
 				.contentType(
 					new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
 				)
@@ -89,8 +89,9 @@ class PcquotationApplicationTests {
 
 		ObjectMapper objectMapper = new ObjectMapper();
 		JsonNode jsonNode = objectMapper.readTree(responseJson);
-		return jsonNode.get("apiKey").asText()+" " +jsonNode.get("accessToken").asText();
+		return jsonNode.get("apiKey").asText() + " " + jsonNode.get("accessToken").asText();
 	}
+
 	@Test
 	@Transactional
 	@DisplayName("회원가입")
@@ -152,6 +153,7 @@ class PcquotationApplicationTests {
 			.andExpect(status().isOk())
 			.andExpect(content().string("인증에 실패하였습니다."));
 	}
+
 	@Test
 	@DisplayName("JWT 로그인 구현")
 	void t3() throws Exception {
@@ -159,11 +161,11 @@ class PcquotationApplicationTests {
 		ResultActions resultActions = mvc
 			.perform(post("/seller/login")
 				.content(String.format("""
-                                {
-                                    "username": "%s",
-                                    "password": "%s"
-                                }
-                                """.stripIndent(),id,ps))
+					{
+					    "username": "%s",
+					    "password": "%s"
+					}
+					""".stripIndent(), id, ps))
 				.contentType(
 					new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
 				)
@@ -181,4 +183,30 @@ class PcquotationApplicationTests {
 		assertFalse(parts[0].isEmpty(), "JWT 토큰이 비어 있음");
 		assertFalse(parts[1].isEmpty(), "API 키가 비어 있음");
 	}
+
+	@Test
+	@Transactional
+	@WithMockUser(username = "test1234", roles = {"SELLER"}) //  SecurityContext 강제설정?
+	@DisplayName("판매자 정보 조회")
+	void t4() throws Exception {
+		String token = login();
+		ResultActions resultActions1 = mvc
+			.perform(get("/seller")
+				.header("Authorization", "Bearer " + token)
+				.contentType(
+					new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
+				)
+			)
+			.andDo(print());
+		resultActions1
+			.andExpect(handler().methodName("info"))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.id").isNotEmpty())
+			.andExpect(jsonPath("$.username").isNotEmpty())
+			.andExpect(jsonPath("$.companyName").isNotEmpty())
+			.andExpect(jsonPath("$.email").isNotEmpty());
+
+	}
+
+	
 }

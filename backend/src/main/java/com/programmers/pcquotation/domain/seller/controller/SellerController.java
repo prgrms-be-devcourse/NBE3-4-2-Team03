@@ -37,7 +37,7 @@ public class SellerController {
 
 	@GetMapping
 	@Transactional(readOnly = true)
-	public ResponseSellerDto info() {//jwt 구현후 수정할것 DTO도 임시구현
+	public ResponseSellerDto info() {
 		Seller sellers = rq.getMember();
 		if (sellers == null)
 			throw new NullPointerException("존재하지 않는 사용자입니다.");
