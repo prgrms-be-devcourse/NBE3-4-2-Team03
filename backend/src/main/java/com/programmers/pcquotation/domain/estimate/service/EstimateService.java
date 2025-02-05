@@ -34,7 +34,7 @@ public class EstimateService {
 		EstimateRequest estimateRequest = estimateRequestService.getEstimateRequestById(request.getEstimateRequestId())
 			.orElseThrow(() -> new NoSuchElementException("존재하지 않는 견적 요청입니다."));
 
-		Seller seller = sellerService.findByName(request.getSellerId())
+		Seller seller = sellerService.findByUserName(request.getSellerId())
 			.orElseThrow(() -> new NoSuchElementException("존재하지 않는 판매자입니다."));
 
 		List<EstimateComponent> components = request.getItem().stream()
