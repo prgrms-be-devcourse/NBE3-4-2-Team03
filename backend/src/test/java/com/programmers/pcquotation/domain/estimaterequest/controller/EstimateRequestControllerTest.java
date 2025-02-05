@@ -52,7 +52,7 @@ public class EstimateRequestControllerTest {
                 {
                     "purpose": "testPurpose",
                     "budget": 100,
-                    "otherRequest": "testRequest"
+                    "otherRequest": ""
                 }
                 """;
 
@@ -69,7 +69,42 @@ public class EstimateRequestControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.purpose").value("testPurpose"))
                 .andExpect(jsonPath("$.budget").value(100))
-                .andExpect(jsonPath("$.otherRequest").value("testRequest"));
+                .andExpect(jsonPath("$.otherRequest").value(""));
+    }
+
+    @Test
+    @WithMockUser(username = "user1")
+    @DisplayName("성공케이스")
+    public void 견적요청생성2() throws Exception {
+        //given
+        Customer customer = new Customer();
+
+        EstimateRequest estimateRequest = EstimateRequest
+                .builder()
+                .purpose("testPurpose")
+                .budget(100)
+                .otherRequest("testRequest")
+                .customer(customer)
+                .build();
+
+        String data = """
+                {
+                    "budget": 100,
+                    "otherRequest": ""
+                }
+                """;
+
+        //when
+        when(estimateRequestService.createEstimateRequest(any(), any(), any(), any()))
+                .thenReturn(estimateRequest);
+
+        //then
+        mockMvc.perform(
+                        post("/estimate/request")
+                                .content(data)
+                                .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+                )
+                .andExpect(status().isBadRequest());
     }
 
     @Test

@@ -8,4 +8,5 @@ import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequest
 
 public interface EstimateRequestRepository extends JpaRepository<EstimateRequest, Integer> {
 	Optional<EstimateRequest> getEstimateRequestById(Integer id);
+
 }

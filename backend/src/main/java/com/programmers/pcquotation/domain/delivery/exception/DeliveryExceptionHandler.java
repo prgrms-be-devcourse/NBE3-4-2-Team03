@@ -1,4 +1,4 @@
-package com.programmers.pcquotation.domain.estimaterequest.exception;
+package com.programmers.pcquotation.domain.delivery.exception;
 
 import com.programmers.pcquotation.domain.estimaterequest.dto.RsData;
 import org.springframework.http.HttpStatus;
@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
-public class EstimateRequestExceptionHandler {
+public class DeliveryExceptionHandler {
     @ExceptionHandler(NullEntityException.class)
     public ResponseEntity<RsData> handleException(NullEntityException e){
         return ResponseEntity
