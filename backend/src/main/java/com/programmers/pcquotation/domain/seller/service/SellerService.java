@@ -5,8 +5,6 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +12,6 @@ import com.programmers.pcquotation.domain.seller.dto.SellerRegisterDto;
 import com.programmers.pcquotation.domain.seller.dto.SellerUpdateDto;
 import com.programmers.pcquotation.domain.seller.entitiy.Seller;
 import com.programmers.pcquotation.domain.seller.repository.SellerRepository;
-import com.programmers.pcquotation.domain.seller.service.AuthTokenService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,7 +23,7 @@ public class SellerService {
 	private final PasswordEncoder passwordEncoder;
 
 
-	public Optional<Seller> findByName(String name) {
+	public Optional<Seller> findByUserName(String name) {
 		return sellerRepository.findByUsername(name);
 	}
 

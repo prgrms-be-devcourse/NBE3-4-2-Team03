@@ -1,9 +1,7 @@
 package com.programmers.pcquotation.domain.seller.controller;
 
-import java.security.Principal;
 import java.util.NoSuchElementException;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -50,7 +48,7 @@ public class SellerController {
 	}
 	@PostMapping
 	public String create(@RequestBody @Valid SellerRegisterDto sellerRegisterDto) { //DTO 임시구현
-		if(!sellerService.findByName(sellerRegisterDto.getUsername()).isEmpty())
+		if(!sellerService.findByUserName(sellerRegisterDto.getUsername()).isEmpty())
 			return "회원가입에 실패하였습니다.(아이디 중복)";
 
 		sellerService.create(sellerRegisterDto);
@@ -90,7 +88,7 @@ public class SellerController {
 	@PostMapping("/login")
 	@Transactional(readOnly = true)
 	public MemberLoginResBody login(@RequestBody @Valid MemberLoginReqBody reqBody) {
-		Seller seller = sellerService.findByName(reqBody.username).
+		Seller seller = sellerService.findByUserName(reqBody.username).
 			orElseThrow(() -> new NoSuchElementException("존재하지 않는 사용자입니다."));
 		if (!sellerService.matchPassword(seller,reqBody.password))
 			throw new NoSuchElementException("비밀번호가 일치하지 않습니다.");
