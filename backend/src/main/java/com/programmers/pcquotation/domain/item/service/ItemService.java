@@ -9,6 +9,7 @@ import com.programmers.pcquotation.domain.category.entity.Category;
 import com.programmers.pcquotation.domain.category.repository.CategoryRepository;
 import com.programmers.pcquotation.domain.item.dto.ItemCreateRequest;
 import com.programmers.pcquotation.domain.item.dto.ItemCreateResponse;
+import com.programmers.pcquotation.domain.item.dto.ItemDeleteResponse;
 import com.programmers.pcquotation.domain.item.dto.ItemInfoResponse;
 import com.programmers.pcquotation.domain.item.dto.ItemUpdateRequest;
 import com.programmers.pcquotation.domain.item.dto.ItemUpdateResponse;
@@ -29,6 +30,7 @@ public class ItemService {
 	private final ImageService imageService;
 	private final CategoryRepository categoryRepository;
 
+	//부품 생성
 	@Transactional
 	public ItemCreateResponse addItem(final ItemCreateRequest request) {
 
@@ -48,6 +50,7 @@ public class ItemService {
 		return new ItemCreateResponse(savedItem.getId(), "부품 생성 완료");
 	}
 
+	//부품 조회
 	@Transactional
 	public List<ItemInfoResponse> getItemList() {
 		List<Item> items = itemRepository.findAll();
@@ -62,6 +65,7 @@ public class ItemService {
 			.collect(Collectors.toList());
 	}
 
+	//부품 수정
 	@Transactional
 	public ItemUpdateResponse updateItem(Long id, ItemUpdateRequest request) {
 
@@ -79,5 +83,16 @@ public class ItemService {
 
 		return new ItemUpdateResponse(id, "부품 수정 완료");
 
+	}
+
+	//부품 삭제
+	@Transactional
+	public ItemDeleteResponse deleteItem(Long id) {
+		Item item = itemRepository.findById(id)
+			.orElseThrow(() -> new ItemNotFoundException(id));
+
+		itemRepository.delete(item);
+
+		return new ItemDeleteResponse(id, "부품 삭제 완료");
 	}
 }
