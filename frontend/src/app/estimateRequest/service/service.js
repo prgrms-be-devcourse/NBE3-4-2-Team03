@@ -1,5 +1,4 @@
-// services/estimateService.ts
-export async function createEstimateRequest(purpose: string, budget: number, otherRequest?: string) {
+export async function createEstimateRequest(purpose, budget, otherRequest) {
     const response = await fetch("http://localhost:8080/estimate/request", {
         method: "POST",
         headers: {
