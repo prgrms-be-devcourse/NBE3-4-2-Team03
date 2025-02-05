@@ -1,5 +1,7 @@
 package com.programmers.pcquotation.domain.customer.service;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 
 import com.programmers.pcquotation.domain.customer.entity.Customer;
@@ -16,13 +18,11 @@ public class CustomerService {
         customerRepository.save(customer);
     }
 
-    public Customer findCustomerByUsername(String username) {
-        return customerRepository.getCustomerByUsername(username)
-                .orElse(null);
+    public Optional<Customer> findCustomerByUsername(String username) {
+        return customerRepository.getCustomerByUsername(username);
     }
 
-    public Customer findCustomerByEmail(String email) {
-        return customerRepository.getCustomerByEmail(email)
-                .orElse(null);
+    public Optional<Customer> findCustomerByEmail(String email) {
+        return customerRepository.getCustomerByEmail(email);
     }
 }

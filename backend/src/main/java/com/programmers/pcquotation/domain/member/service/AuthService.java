@@ -28,16 +28,16 @@ public class AuthService {
 	private final PasswordEncoder passwordEncoder;
 	private final JwtUtil jwtUtil;
 
-	public SignupResponse addUser(SignupRequest signupRequest) {
+	public SignupResponse processSignup(SignupRequest signupRequest) {
 		if (!signupRequest.getPassword().equals(signupRequest.getConfirmPassword())) {
 			throw new PasswordMismatchException();
 		}
 
-		if (customerService.findCustomerByUsername(signupRequest.getUsername()) != null) {
+		if (customerService.findCustomerByUsername(signupRequest.getUsername()).isPresent()) {
 			throw new CustomerAlreadyExistException();
 		}
 
-		if (customerService.findCustomerByEmail(signupRequest.getEmail()) != null) {
+		if (customerService.findCustomerByEmail(signupRequest.getEmail()).isPresent()) {
 			throw new CustomerAlreadyExistException();
 		}
 
@@ -50,11 +50,8 @@ public class AuthService {
 
 	public LoginResponse processLogin(LoginRequest loginRequest) {
 		String username = loginRequest.getUsername();
-		Customer customer = customerService.findCustomerByUsername(username);
-
-		if (customer == null) {
-			throw new IncorrectLoginAttemptException();
-		}
+		Customer customer = customerService.findCustomerByUsername(username)
+				.orElseThrow(IncorrectLoginAttemptException::new);
 
 		if (!passwordEncoder.matches(loginRequest.getPassword(), customer.getPassword())) {
 			throw new IncorrectLoginAttemptException();
