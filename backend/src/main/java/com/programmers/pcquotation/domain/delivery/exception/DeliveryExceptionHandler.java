@@ -12,6 +12,6 @@ public class DeliveryExceptionHandler {
     public ResponseEntity<RsData> handleException(NullEntityException e){
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new RsData("주문이 존재하지 않습니다"));
+                .body(new RsData("다시 실행해주세요"));
     }
 }

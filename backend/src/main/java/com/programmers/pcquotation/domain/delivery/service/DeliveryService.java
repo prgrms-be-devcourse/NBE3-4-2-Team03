@@ -5,6 +5,7 @@ import com.programmers.pcquotation.domain.delivery.entity.DeliveryStatus;
 import com.programmers.pcquotation.domain.delivery.exception.NullEntityException;
 import com.programmers.pcquotation.domain.delivery.repository.DeliveryRepository;
 import com.programmers.pcquotation.domain.estimate.entity.Estimate;
+import com.programmers.pcquotation.domain.estimate.repository.EstimateRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,13 +15,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DeliveryService {
     private final DeliveryRepository deliveryRepository;
+    private final EstimateRepository estimateRepository;
 
-    public void create(String address, Estimate estimate) {
+    public void create(String address, Integer id) {
         deliveryRepository.save(Delivery
                 .builder()
-                .address(address)
-                .status(DeliveryStatus.ORDER_COMPLETED)
-                .estimate(estimate)
+                    .address(address)
+                    .status(DeliveryStatus.ORDER_COMPLETED)
+                    .estimate(estimateRepository.findById(id).orElseThrow(NullEntityException::new))
                 .build());
     }
 
@@ -35,11 +37,11 @@ public class DeliveryService {
     }
 
     public void delete(Integer id) {
-        deliveryRepository.delete(findOne(id));
+        deliveryRepository.delete(findOne(id)); //findOne 예외 처리
     }
 
     public void modify(Integer id, String address) {
-        Delivery delivery = findOne(id);
+        Delivery delivery = findOne(id);  //findOne 예외 처리
         deliveryRepository.save(new Delivery(
                 delivery.getId(),
                 delivery.getEstimate(),
