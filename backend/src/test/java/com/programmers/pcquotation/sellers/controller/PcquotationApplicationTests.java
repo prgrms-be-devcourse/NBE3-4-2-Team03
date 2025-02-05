@@ -8,8 +8,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.programmers.pcquotation.domain.seller.controller.SellerController;
 import com.programmers.pcquotation.domain.seller.entitiy.Seller;
 import com.programmers.pcquotation.domain.seller.service.SellerService;
-import com.programmers.pcquotation.global.security.CustomAuthenticationFilter;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -42,6 +38,9 @@ class PcquotationApplicationTests {
 
 	String id = "test1234";
 	String ps = "password1234";
+
+
+
 
 	Seller register() throws Exception {
 		ResultActions resultActions = mvc
@@ -62,12 +61,12 @@ class PcquotationApplicationTests {
 				)
 			)
 			.andDo(print());
-		Optional<Seller> sellers = sellerService.findByName("test1234");
+		Optional<Seller> sellers = sellerService.findByUserName("test1234");
 		assertNotNull(sellers.get());
 		return sellers.get();
 	}
 
-	String login() throws Exception {
+	String login(String username,String password) throws Exception {
 		register();
 		ResultActions resultActions = mvc
 			.perform(post("/seller/login")
@@ -76,7 +75,7 @@ class PcquotationApplicationTests {
 					    "username": "%s",
 					    "password": "%s"
 					}
-					""".stripIndent(), id, ps))
+					""".stripIndent(), username, password))
 				.contentType(
 					new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
 				)
@@ -114,7 +113,7 @@ class PcquotationApplicationTests {
 				)
 			)
 			.andDo(print());
-		Optional<Seller> sellers = sellerService.findByName("test1234");
+		Optional<Seller> sellers = sellerService.findByUserName("test1234");
 
 		resultActions
 			.andExpect(status().isOk())
@@ -129,7 +128,7 @@ class PcquotationApplicationTests {
 	@WithMockUser(username = "test1234", roles = {"SELLER"}) //  SecurityContext 강제설정?
 	@DisplayName("사업자 번호 조회")
 	void t2() throws Exception {
-		String token = login();
+		String token = login(id,ps);
 		ResultActions resultActions1 = mvc
 			.perform(get("/seller/api/2208183676")
 				.header("Authorization", "Bearer " + token)
@@ -189,7 +188,7 @@ class PcquotationApplicationTests {
 	@WithMockUser(username = "test1234", roles = {"SELLER"}) //  SecurityContext 강제설정?
 	@DisplayName("판매자 정보 조회")
 	void t4() throws Exception {
-		String token = login();
+		String token = login(id,ps);
 		ResultActions resultActions1 = mvc
 			.perform(get("/seller")
 				.header("Authorization", "Bearer " + token)
@@ -208,5 +207,45 @@ class PcquotationApplicationTests {
 
 	}
 
-	
+	@Test
+	@Transactional
+	@WithMockUser(username = "test1234", roles = {"SELLER"}) //  SecurityContext 강제설정?
+	@DisplayName("판매자 정보 수정")
+	void t5() throws Exception {
+		String token = login(id,ps);
+		String username = "zzzzzzz";
+		String password = ps;
+		String companyName = "sdasdaasdasd";
+		String email ="aaaa@naver.com";
+		String newPassword = "zzzzzzzzzz";
+		String confirmNewPassword = "zzzzzzzzzz";;
+
+		ResultActions resultActions1 = mvc
+			.perform(put("/seller")
+				.header("Authorization", "Bearer " + token)
+				.content(String.format("""
+					{
+						"username": "%s",
+					    "password": "%s",
+					    "companyName": "%s",
+					    "email": "%s",
+					    "newPassword": "%s",
+					    "confirmNewPassword": "%s"
+					    
+					}
+					""".stripIndent(), username,password,companyName,email,newPassword,confirmNewPassword))
+				.contentType(
+					new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
+				)
+			)
+			.andDo(print());
+		resultActions1
+			.andExpect(handler().methodName("modify"))
+			.andExpect(status().isOk())
+			.andExpect(content().string("정보수정이 성공했습니다."));
+
+	}
+
+
+
 }
