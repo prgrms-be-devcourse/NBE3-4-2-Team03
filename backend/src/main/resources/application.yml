@@ -3,12 +3,12 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/pcquotation?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
-    username: root
-    password: "0000"
+    url: jdbc:mysql://localhost:3306/${DB_NAME}?useSSL=false&serverTimezone=UTC
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
   jpa:
-    show-sql: false
+    show-sql: true
     hibernate:
       ddl-auto: create
     properties:
@@ -19,19 +19,10 @@ spring:
   sql:
     init:
       mode: always
+  config:
+    import: application-secret.yml
+
 openapi:
   url: http://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=
   authentication-key:
-    encoding: N08vvp1vbGXKB0dFb1s3hqd3WhZdyFk7FrIcHut2YXgnBfZpo9ByLIzoK5Xf9%2BrzfW%2FRE%2BV0ScEfXtFSvxDoLg%3D%3D
-    decoding: N08vvp1vbGXKB0dFb1s3hqd3WhZdyFk7FrIcHut2YXgnBfZpo9ByLIzoK5Xf9+rzfW/RE+V0ScEfXtFSvxDoLg==
-
-
-image:
-  file:
-    path: src/main/resources/static/image/item/
-
-jwt:
-  secretKey: nnqDC5CWSCpAE3JvJLAj40O87klnbNj9
-  accessToken:
-    expirationSeconds: "#{60*20}"
-
+    encoding: ${BUSINESS_ENCODING_KEY}
