@@ -64,7 +64,10 @@ public class SellerService {
 		this.sellerRepository.save(seller);
 		return seller;
 	}
-
+	public void setIsVerified(Seller seller,boolean isVerified){
+		seller.setVerified(isVerified);
+		sellerRepository.save(seller);
+	}
 	public Optional<Seller> findById(Long id) {
 		return sellerRepository.findById(id);
 	}

@@ -68,10 +68,10 @@ public class SellerController {
 	}
 
 	@PutMapping
-	@Transactional(readOnly = true)
-	public String modify(Principal principal, @RequestBody @Valid SellerUpdateDto customerUpdateDto) {
-		Seller seller = sellerService.findByName(principal.getName()).
-			orElseThrow(() -> new NoSuchElementException("존재하지 않는 사용자입니다."));
+	public String modify(@RequestBody @Valid SellerUpdateDto customerUpdateDto) {
+		Seller seller = rq.getMember();
+		if(seller == null)
+			throw new NoSuchElementException("존재하지 않는 사용자입니다.");
 
 		sellerService.modify(seller, customerUpdateDto);
 		return "정보수정이 성공했습니다.";
@@ -109,8 +109,12 @@ public class SellerController {
 	@GetMapping("/api/{code}")
 	@Transactional(readOnly = true)
 	public String checkCode(@PathVariable("code") String code) {
+		Seller seller = rq.getMember();
+		if(seller == null)
+			throw new NoSuchElementException("존재하지 않는 사용자입니다.");
+
 		if (businessConfirmationService.checkCode(code)) {
-			//계정 인증여부 수정
+			sellerService.setIsVerified(seller,true);
 			return "인증에 성공하였습니다.";
 		}
 		return "인증에 실패하였습니다.";
