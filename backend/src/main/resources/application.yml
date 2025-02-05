@@ -1,6 +1,9 @@
 server:
   port: 8080
 spring:
+  config:
+    import:
+      - optional:file:.env[.properties]
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: ${DB_URL}
@@ -19,8 +22,6 @@ spring:
   sql:
     init:
       mode: always
-  config:
-    import: application-secret.yml
 
 openapi:
   url: http://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=
