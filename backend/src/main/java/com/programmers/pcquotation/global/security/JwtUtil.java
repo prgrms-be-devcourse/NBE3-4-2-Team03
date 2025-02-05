@@ -13,11 +13,11 @@ import lombok.Getter;
 
 @Component
 public class JwtUtil {
-    @Value("${jwt.secret}")
+    @Value("${jwt.secretKey}")
     private String secret;
 
     @Getter
-    @Value("${jwt.expiration}")
+    @Value("${jwt.accessToken.expirationSeconds}")
     private long accessTokenExpirationSeconds;
 
     public String generateToken(String username) {

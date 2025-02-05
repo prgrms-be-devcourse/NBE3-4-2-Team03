@@ -40,4 +40,3 @@ public class AuthTokenService {
 		return Map.of("id", id, "username", username);
 	}
 }
-
