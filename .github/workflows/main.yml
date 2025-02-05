@@ -45,7 +45,7 @@ jobs:
       mysql:
         image: mysql:8.0
         env:
-          MYSQL_ROOT_PASSWORD: "0000"
+          MYSQL_ROOT_PASSWORD: ${{ matrix.DB_PASSWORD }}
           MYSQL_DATABASE: pcquotation  # ✅ DB 이름을 pcquotation으로 통일
 
         ports:
@@ -76,7 +76,7 @@ jobs:
           SPRING_DATASOURCE_URL: ${{ matrix.DB_URL }}
           SPRING_DATASOURCE_USERNAME: ${{ matrix.DB_USERNAME }}  # ✅ application.properties와 동일하게 설정
           SPRING_DATASOURCE_PASSWORD: ${{ matrix.DB_PASSWORD }}
-        run: ./gradlew build --no-daemon
+        run: ./gradlew build --no-daemon -x test
 
       - name: 테스트 실행
         working-directory: backend
