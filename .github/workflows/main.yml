@@ -59,6 +59,7 @@ jobs:
           java-version: '17'
 
       - name: Gradle 실행 권한 부여
+        working-directory: backend
         run: chmod +x gradlew
 
       - name: 의존성 설치 및 빌드
