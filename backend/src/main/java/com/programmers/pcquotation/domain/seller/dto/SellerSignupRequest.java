@@ -1,5 +1,8 @@
 package com.programmers.pcquotation.domain.seller.dto;
 
+import com.programmers.pcquotation.domain.customer.entity.Customer;
+import com.programmers.pcquotation.domain.seller.entitiy.Seller;
+
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -11,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SellerRegisterDto {
+public class SellerSignupRequest {
 	@NotNull
 	@Size(message = "아이디는 20글자 이하입니다.", max = 20)
 	String username;
@@ -32,4 +35,15 @@ public class SellerRegisterDto {
 	@NotNull
 	@Size(message = "본인확인대답은 100글자 이하입니다.", max = 100)
 	String verificationAnswer;
+
+	public Seller toSeller() {
+		return Seller.builder()
+			.username(username)
+			.password(password)
+			.companyName(companyName)
+			.email(email)
+			.verificationQuestion(verificationQuestion)
+			.verificationAnswer(verificationAnswer)
+			.build();
+	}
 }

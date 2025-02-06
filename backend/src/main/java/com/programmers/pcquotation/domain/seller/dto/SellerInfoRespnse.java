@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResponseSellerDto {
+public class SellerInfoRespnse {
 	private Long id;
 	private String username;
 	private String companyName;

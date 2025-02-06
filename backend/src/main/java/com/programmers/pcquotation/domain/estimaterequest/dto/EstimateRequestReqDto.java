@@ -8,7 +8,7 @@ import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequest
 import lombok.Getter;
 
 @Getter
-public class EstimateRequestDto {
+public class EstimateRequestReqDto {
 	private Integer id;
 	private String purpose;
 	private Integer budget;
@@ -16,7 +16,7 @@ public class EstimateRequestDto {
 	LocalDateTime createDate;
 	private Customer customer;
 
-	public EstimateRequestDto(EstimateRequest estimateRequest) {
+	public EstimateRequestReqDto(EstimateRequest estimateRequest) {
 		this.id = estimateRequest.getId();
 		this.purpose = estimateRequest.getPurpose();
 		this.budget = estimateRequest.getBudget();

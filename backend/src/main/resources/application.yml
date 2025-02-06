@@ -36,5 +36,3 @@ jwt:
 image:
   file:
     path: src/main/resources/static/image/item/
-
-

@@ -1,6 +1,7 @@
 package com.programmers.pcquotation.global.security;
 
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -13,7 +14,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @RequiredArgsConstructor
@@ -23,41 +24,43 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests(authorizeRequests ->
-						authorizeRequests
-								.requestMatchers(HttpMethod.GET, "/sellers")
-								.hasRole("SELLER")
-								.anyRequest()
-								.permitAll()
-				)
-				.cors(cors -> corsConfigurationSource())
-				.csrf(AbstractHttpConfigurer::disable)
-				.sessionManagement(sessionManagementConfigurer ->
-						sessionManagementConfigurer
-								.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.addFilterBefore(customAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-				.exceptionHandling(
-						exceptionHandling -> exceptionHandling
-								.authenticationEntryPoint(
-										(request, response, authException) -> {
-											response.setContentType("application/json;charset=UTF-8");
-											response.setStatus(401);
-											response.getWriter().write(
-													"사용자 인증정보가 올바르지 않습니다."
-											);
-										}
-								)
-								.accessDeniedHandler(
-										(request, response, accessDeniedException) -> {
-											response.setContentType("application/json;charset=UTF-8");
+				authorizeRequests
+					.requestMatchers(HttpMethod.GET, "/seller/api/**")
+					.hasRole("SELLER")
+					.requestMatchers(HttpMethod.GET, "/seller")
+					.hasRole("SELLER")
+					.anyRequest()
+					.permitAll()
+			)
+			.cors(cors -> corsConfigurationSource())
+			.csrf(AbstractHttpConfigurer::disable)
+			.sessionManagement(sessionManagementConfigurer ->
+				sessionManagementConfigurer
+					.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+			.addFilterBefore(customAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+			.exceptionHandling(
+				exceptionHandling -> exceptionHandling
+					.authenticationEntryPoint(
+						(request, response, authException) -> {
+							response.setContentType("application/json;charset=UTF-8");
+							response.setStatus(401);
+							response.getWriter().write(
+								"사용자 인증정보가 올바르지 않습니다."
+							);
+						}
+					)
+					.accessDeniedHandler(
+						(request, response, accessDeniedException) -> {
+							response.setContentType("application/json;charset=UTF-8");
 
-											response.setStatus(403);
-											response.getWriter().write(
-													"권한이 없습니다."
+							response.setStatus(403);
+							response.getWriter().write(
+								"권한이 없습니다."
 
-											);
-										}
-								)
-				);
+							);
+						}
+					)
+			);
 
 		return http.build();
 	}

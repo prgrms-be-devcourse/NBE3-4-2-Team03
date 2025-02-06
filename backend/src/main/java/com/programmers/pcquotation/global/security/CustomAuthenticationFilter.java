@@ -4,11 +4,16 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.programmers.pcquotation.domain.customer.entity.Customer;
+import com.programmers.pcquotation.domain.member.entitiy.Member;
+import com.programmers.pcquotation.domain.member.service.AuthService;
 import com.programmers.pcquotation.domain.seller.entitiy.Seller;
 import com.programmers.pcquotation.domain.seller.service.SellerService;
+import com.programmers.pcquotation.global.enums.UserType;
 import com.programmers.pcquotation.global.rq.Rq;
 
 import jakarta.servlet.FilterChain;
@@ -20,12 +25,13 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class CustomAuthenticationFilter extends OncePerRequestFilter {
-	private final SellerService sellerService;
+	private final AuthService authService;
 	private final Rq rq;
 
 	record AuthTokens(
 		String apiKey,
-		String accessToken
+		String accessToken,
+		UserType userType
 	) {
 	}
 
@@ -34,40 +40,41 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 
 		if (authorization != null && authorization.startsWith("Bearer ")) {
 			String token = authorization.substring("Bearer ".length());
-			String[] tokenBits = token.split(" ", 2);
-
-			if (tokenBits.length == 2)
-				return new AuthTokens(tokenBits[0], tokenBits[1]);
+			String[] tokenBits = token.split(" ", 3);
+			if (tokenBits.length == 3)
+				return new AuthTokens(tokenBits[0], tokenBits[1], UserType.fromString(tokenBits[2]));
 		}
 
 		String apiKey = rq.getCookieValue("apiKey");
 		String accessToken = rq.getCookieValue("accessToken");
+		UserType userType = UserType.fromString(rq.getCookieValue("userType"));
 
-		if (apiKey != null && accessToken != null)
-			return new AuthTokens(apiKey, accessToken);
+		if (apiKey != null && accessToken != null && userType != UserType.Nothing)
+			return new AuthTokens(apiKey, accessToken, userType);
 
 		return null;
 	}
 
-	private void refreshAccessToken(Seller seller) {
-		String newAccessToken = sellerService.getAccessToken(seller);
+	private void refreshAccessToken(Member member, UserType userType) {
+		String newAccessToken = authService.getAccessToken(member);
 
-		rq.setHeader("Authorization", "Bearer " + seller.getApiKey() + " " + newAccessToken);
+		rq.setHeader("Authorization", "Bearer " + member.getApiKey() + " " + newAccessToken + " " + userType);
 		rq.setCookie("accessToken", newAccessToken);
+		rq.setCookie("userType", userType.toString());
+
 	}
 
-	private Seller refreshAccessTokenByApiKey(String apiKey) {
-		Optional<Seller> opMemberByApiKey = sellerService.findByApiKey(apiKey);
+	private Member refreshAccessTokenByApiKey(String apiKey, UserType userType) {
+		Optional<Member> opMemberByApiKey = authService.findByApiKey(apiKey, userType);
 
 		if (opMemberByApiKey.isEmpty()) {
 			return null;
 		}
+		Member member = opMemberByApiKey.get();
+		refreshAccessToken(member,userType);
 
-		Seller seller = opMemberByApiKey.get();
+		return member;
 
-		refreshAccessToken(seller);
-
-		return seller;
 	}
 
 	@Override
@@ -75,10 +82,6 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 		FilterChain filterChain) throws
 		ServletException,
 		IOException {
-		if (List.of("/sellers/login").contains(request.getRequestURI())) {
-			filterChain.doFilter(request, response);
-			return;
-		}
 
 		AuthTokens authTokens = getAuthTokensFromRequest();
 
@@ -89,11 +92,11 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 
 		String apiKey = authTokens.apiKey;
 		String accessToken = authTokens.accessToken;
+		UserType userType = authTokens.userType;
 
-		Seller member = sellerService.getMemberFromAccessToken(accessToken);
-
+		Member member = authService.getMemberFromAccessToken(accessToken, userType);
 		if (member == null)
-			member = refreshAccessTokenByApiKey(apiKey);
+			member = refreshAccessTokenByApiKey(apiKey, userType);
 
 		if (member != null)
 			rq.setLogin(member);

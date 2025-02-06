@@ -7,16 +7,19 @@ import java.util.List;
 import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequest;
 import com.programmers.pcquotation.domain.seller.entitiy.Seller;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -26,15 +29,18 @@ public class Estimate {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
+	@NotNull
 	@ManyToOne
 	private EstimateRequest estimateRequest;
 
+	@NotNull
 	@ManyToOne
 	private Seller seller;
-	
+
 	private Integer totalPrice;
 
-	@OneToMany(mappedBy = "estimate")
+	@Setter
+	@OneToMany(mappedBy = "estimate", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<EstimateComponent> estimateComponents = new ArrayList<>();
 
 	private LocalDateTime createDate;
