@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
+import com.programmers.pcquotation.domain.member.entitiy.Member;
 import com.programmers.pcquotation.domain.seller.entitiy.Seller;
 import com.programmers.pcquotation.domain.seller.service.SellerService;
 
@@ -27,11 +28,11 @@ public class Rq {
 	private final HttpServletResponse resp;
 	private final SellerService sellersService;
 
-	public void setLogin(Seller seller) {
+	public void setLogin(Member member) {
 		UserDetails user = new User(
-			seller.getUsername(),
+			member.getUsername(),
 			"",
-			seller.getAuthorities()
+			member.getAuthorities()
 		);
 		Authentication authentication = new UsernamePasswordAuthenticationToken(
 			user,

@@ -5,9 +5,13 @@ import static jakarta.persistence.GenerationType.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import com.programmers.pcquotation.domain.customer.entity.Customer;
+import com.programmers.pcquotation.domain.member.entitiy.Member;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,7 +29,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Seller {
+public class Seller implements Member {
 	@Id
 	@GeneratedValue(strategy = IDENTITY) // AUTO_INCREMENT
 	private Long id;
@@ -52,18 +56,24 @@ public class Seller {
 
 
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return getAuthoritiesAsStringList()
+		return List.of("ROLE_SELLER")
 			.stream()
 			.map(SimpleGrantedAuthority::new)
 			.toList();
 	}
+	@Override
+	public long getId() {
+		return id;
+	}
 
-	public List<String> getAuthoritiesAsStringList() {
-		List<String> authorities = new ArrayList<>();
+	@Override
+	public String getUsername() {
+		return username;
+	}
 
-		authorities.add("ROLE_SELLER");
-
-		return authorities;
+	@Override
+	public String getApiKey() {
+		return apiKey;
 	}
 
 }

@@ -16,6 +16,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.programmers.pcquotation.domain.estimate.controller.EstimateController;
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
@@ -26,7 +28,7 @@ class EstimateControllerTest {
 
 	@Test
 	@DisplayName("견적작성 테스트")
-	void createEstimate() throws Exception {
+	void v1() throws Exception {
 		String requestBody = """
 			{
 			   "estimateRequestId" : 1,
@@ -56,6 +58,30 @@ class EstimateControllerTest {
 			.andExpect(status().isOk());
 
 		//테스트 추가 검증 필요
+	}
+
+	@Test
+	@DisplayName("견적요청 별 견적작성 조회")
+	void v2() throws Exception {
+		ResultActions resultActions = mvc.perform(
+			get("/api/estimates/{id}", 1)
+				.contentType(MediaType.APPLICATION_JSON)
+				.characterEncoding(StandardCharsets.UTF_8)
+		).andDo(print());
+
+		// 응답 상태 코드 확인
+		resultActions
+			.andExpect(handler().handlerType(EstimateController.class))
+			.andExpect(handler().methodName("getEstimateByRequest"))
+			.andExpect(status().isOk())
+			// 응답 본문이 배열인지 확인
+			.andExpect(jsonPath("$").isArray())
+			// 응답의 각 필드 존재 여부 확인
+			.andExpect(jsonPath("$[0].id").exists())
+			.andExpect(jsonPath("$[0].seller").exists())
+			.andExpect(jsonPath("$[0].date").exists())
+			.andExpect(jsonPath("$[0].totalPrice").exists())
+			.andExpect(jsonPath("$[0].items").exists());
 	}
 
 }
