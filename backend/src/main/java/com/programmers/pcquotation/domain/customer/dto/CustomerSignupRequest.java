@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class SignupRequest {
+public class CustomerSignupRequest {
     private String username;
     private String password;
     private String confirmPassword;

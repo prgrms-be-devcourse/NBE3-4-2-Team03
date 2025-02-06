@@ -8,7 +8,8 @@ import java.util.UUID;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.programmers.pcquotation.domain.seller.dto.SellerRegisterDto;
+import com.programmers.pcquotation.domain.member.entitiy.Member;
+import com.programmers.pcquotation.domain.seller.dto.SellerSignupRequest;
 import com.programmers.pcquotation.domain.seller.dto.SellerUpdateDto;
 import com.programmers.pcquotation.domain.seller.entitiy.Seller;
 import com.programmers.pcquotation.domain.seller.repository.SellerRepository;
@@ -27,21 +28,8 @@ public class SellerService {
 		return sellerRepository.findByUsername(name);
 	}
 
-	public Seller create(SellerRegisterDto sellerRegisterDto) {
-		if (!sellerRegisterDto
-			.getPassword()
-			.equals(sellerRegisterDto
-				.getConfirmPassword()))
-			throw new NoSuchElementException("비밀번호가 일치하지않습니다.");
-		Seller seller = Seller.builder()
-			.username(sellerRegisterDto.getUsername())
-			.password(passwordEncoder.encode(sellerRegisterDto.getPassword()))
-			.companyName(sellerRegisterDto.getCompanyName())
-			.email((sellerRegisterDto.getEmail()))
-			.apiKey(UUID.randomUUID().toString())
-			.verificationQuestion(sellerRegisterDto.getVerificationQuestion())
-			.verificationAnswer(sellerRegisterDto.getVerificationAnswer()).build();
-		this.sellerRepository.save(seller);
+	public Seller createSeller(Seller seller) {
+		sellerRepository.save(seller);
 		return seller;
 	}
 
@@ -65,31 +53,15 @@ public class SellerService {
 		seller.setVerified(isVerified);
 		sellerRepository.save(seller);
 	}
-	public Optional<Seller> findById(Long id) {
-		return sellerRepository.findById(id);
+	public Optional<Member> findById(Long id) {
+		return sellerRepository.findById(id).map(seller -> seller);
 	}
 
-	public Optional<Seller> findByApiKey(String apiKey) {
-		return sellerRepository.findByApiKey(apiKey);
+	public Optional<Member> findByApiKey(String apiKey) {
+		return sellerRepository.findByApiKey(apiKey).map(seller-> seller);
 	}
 	public boolean matchPassword(Seller sellers,String password){
 		return passwordEncoder.matches(password,sellers.getPassword());
 	}
-	public String getAccessToken(Seller sellers) {
-		return authTokenService.getAccessToken(sellers);
-	}
 
-	public String getAuthToken(Seller sellers) {
-		return sellers.getApiKey() + " " + getAccessToken(sellers);
-	}
-
-	public Seller getMemberFromAccessToken(String accessToken) {
-		Map<String, Object> payload = authTokenService.payload(accessToken);
-
-		if(payload == null) return null;
-
-		long id = (long) payload.get("id");
-
-		return findById(id).get();
-	}
 }

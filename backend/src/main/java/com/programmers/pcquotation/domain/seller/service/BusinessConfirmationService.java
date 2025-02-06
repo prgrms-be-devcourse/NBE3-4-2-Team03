@@ -1,6 +1,6 @@
 package com.programmers.pcquotation.domain.seller.service;
 
-import static com.programmers.pcquotation.global.enums.openApiStatus.*;
+import static com.programmers.pcquotation.global.enums.OpenApiStatus.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,7 +15,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.programmers.pcquotation.global.enums.openApiStatus;
+import com.programmers.pcquotation.global.enums.OpenApiStatus;
 
 @Service
 public class BusinessConfirmationService {
@@ -39,7 +39,7 @@ public class BusinessConfirmationService {
 
 	}
 
-	boolean bSttValueCheck(String bSttValue, openApiStatus status) {
+	boolean bSttValueCheck(String bSttValue, OpenApiStatus status) {
 		return status.getValue().equals(bSttValue);
 
 	}

@@ -20,11 +20,9 @@ public class AuthTokenService {
 	String getAccessToken(Seller seller) {
 		long id = seller.getId();
 		String username = seller.getUsername();
-		long nowMillis = System.currentTimeMillis(); // 현재 시간 (밀리초)
-		long nowAccessTokenExpirationSeconds = nowMillis + (accessTokenExpirationSeconds * 1000);
 		return Jwt.toString(
 			jwtSecretKey,
-			nowAccessTokenExpirationSeconds ,
+			accessTokenExpirationSeconds,
 			Map.of("id", id, "username", username)
 		);
 	}

@@ -5,28 +5,28 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import com.programmers.pcquotation.domain.customer.dto.ErrorResponse;
+import com.programmers.pcquotation.domain.customer.dto.CustomerErrorResponse;
 
 @ControllerAdvice
 public class CustomerExceptionHandler {
 	@ExceptionHandler(PasswordMismatchException.class)
-	public ResponseEntity<ErrorResponse> handlePasswordMismatch(PasswordMismatchException ex) {
+	public ResponseEntity<CustomerErrorResponse> handlePasswordMismatch(PasswordMismatchException ex) {
 		return ResponseEntity
 			.status(HttpStatus.BAD_REQUEST)
-			.body(new ErrorResponse("Password mismatch"));
+			.body(new CustomerErrorResponse("Password mismatch"));
 	}
 
 	@ExceptionHandler(CustomerAlreadyExistException.class)
-	public ResponseEntity<ErrorResponse> handleCustomerAlreadyExist(CustomerAlreadyExistException ex) {
+	public ResponseEntity<CustomerErrorResponse> handleCustomerAlreadyExist(CustomerAlreadyExistException ex) {
 		return ResponseEntity
 			.status(HttpStatus.CONFLICT)
-			.body(new ErrorResponse("User already exists"));
+			.body(new CustomerErrorResponse("User already exists"));
 	}
 
 	@ExceptionHandler(IncorrectLoginAttemptException.class)
-	public ResponseEntity<ErrorResponse> handleIncorrectLoginAttempt(IncorrectLoginAttemptException ex) {
+	public ResponseEntity<CustomerErrorResponse> handleIncorrectLoginAttempt(IncorrectLoginAttemptException ex) {
 		return ResponseEntity
 				.status(HttpStatus.BAD_REQUEST)
-				.body(new ErrorResponse("Incorrect ID or Password"));
+				.body(new CustomerErrorResponse("Incorrect ID or Password"));
 	}
 }
