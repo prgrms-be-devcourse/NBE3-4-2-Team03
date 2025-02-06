@@ -34,7 +34,7 @@ export default function SellerSignup() {
     e.preventDefault();
     const businessNumber = businessNumberRef.current.value;
 
-    const response = await fetch('http://localhost:8080/api/business/' + businessNumber + '/check', {
+    const response = await fetch('http://localhost:8080/seller/business/' + businessNumber + '/check', {
       method: 'GET'
     })
 
@@ -66,7 +66,7 @@ export default function SellerSignup() {
     }
 
     try {
-      const response = await fetch('http://localhost:8080/seller', {
+      const response = await fetch('http://localhost:8080/api/auth/signup/seller', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -76,11 +76,11 @@ export default function SellerSignup() {
 
       if (response.ok) {
         router.back();
-      } else {
-        //error
+      } else if (response.status === 409) {
+        alert("아이디 또는 이메일이 이미 존재합니다.");
       }
     } catch (error) {
-      //error
+      alert("error");
     }
   };
 
