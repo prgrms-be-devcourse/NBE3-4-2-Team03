@@ -21,7 +21,7 @@ export default function LoginSignupView() {
               : "bg-gray-200 text-gray-700"
           }`}
         >
-          개인 로그인
+          구매자 로그인
         </button>
         <button
           onClick={() => handleLoginTypeChange("SELLER")}
@@ -31,7 +31,7 @@ export default function LoginSignupView() {
               : "bg-gray-200 text-gray-700"
           }`}
         >
-          기업 로그인
+          판매자 로그인
         </button>
 
         <form>
@@ -71,7 +71,7 @@ export default function LoginSignupView() {
             type="submit"
             className="w-full py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none"
           >
-            {loginType === "CUSTOMER" ? "개인 로그인" : "기업 로그인"}
+            로그인
           </button>
         </form>
 
@@ -81,13 +81,13 @@ export default function LoginSignupView() {
           {loginType === "CUSTOMER" ? (
             <Link href="/signup/customer">
               <span className="text-blue-600 hover:underline cursor-pointer">
-                개인 회원가입
+                구매자 회원가입
               </span>
             </Link>
           ) : (
             <Link href="/signup/seller">
               <span className="text-blue-600 hover:underline cursor-pointer">
-                기업 회원가입
+                판매자 회원가입
               </span>
             </Link>
           )}
