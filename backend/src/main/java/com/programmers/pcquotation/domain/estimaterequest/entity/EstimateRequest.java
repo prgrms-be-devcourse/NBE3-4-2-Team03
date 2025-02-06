@@ -30,6 +30,6 @@ public class EstimateRequest {
 
 	LocalDateTime createDate;
 
-	@OneToOne
+	@ManyToOne
 	private Customer customer;
 }
