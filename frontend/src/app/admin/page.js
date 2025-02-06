@@ -332,24 +332,27 @@ export default function ItemList() {
             )}
 
             {/* 부품 목록 */}
-            {selectedCategory && (
-                <div>
-                    <h2 className="text-2xl font-semibold text-center mb-4">
-                        {categories.find(c => c.id === selectedCategory)?.category} 부품 목록
-                    </h2>
-                    <div className="flex justify-between mb-4">
-                        <button
-                            onClick={openAddModal}
-                            className="bg-green-500 text-white px-4 py-2 rounded"
-                        >
-                            부품 추가
-                        </button>
-                        <button
-                            onClick={handleDeleteSelectedItems}
-                            className="bg-red-500 text-white px-4 py-2 rounded"
-                        >
-                            선택한 부품 삭제
-                        </button>
+{selectedCategory && (
+    <div>
+        <h2 className="text-2xl font-semibold text-center mb-4">
+            {categories.find(c => c.id === selectedCategory)?.category} 부품 목록
+        </h2>
+        <div className="flex justify-center mb-4"> {/* 중앙 정렬을 위한 div 추가 */}
+            <button
+                onClick={openAddModal}
+                className="bg-green-500 text-white px-4 py-2 rounded mx-2" // 여백 추가
+            >
+                부품 추가
+            </button>
+            <button
+                onClick={handleDeleteSelectedItems}
+                className="bg-red-500 text-white px-4 py-2 rounded mx-2" // 여백 추가
+            >
+                선택한 부품 삭제
+            </button>
+        </div>
+        <div className="flex justify-between mb-4">
+                       
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4">
                         {items.filter(item => item.categoryId === selectedCategory).length > 0 ? (
