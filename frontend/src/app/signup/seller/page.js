@@ -20,7 +20,6 @@ export default function SellerSignup() {
   const [isBusinessNumberValid, setIsBusinessNumberValid] = useState(false);
 
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -88,7 +87,6 @@ export default function SellerSignup() {
       <div className="max-w-lg mx-auto p-8 bg-white shadow-md rounded-md">
         <h1 className="text-2xl font-bold text-center mb-4">회원가입</h1>
 
-        {success && <p className="text-green-500 text-center mb-4">회원가입 성공!</p>}
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
         <form onSubmit={handleSubmit}>

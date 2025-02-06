@@ -2,13 +2,50 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function LoginSignupView() {
+  const router = useRouter();
   const [loginType, setLoginType] = useState("CUSTOMER");
+  const [formData, setFormData] = useState({
+    username: '',
+    password: ''
+  });
 
   const handleLoginTypeChange = (type) => {
     setLoginType(type);
   };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value
+    }));
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch('http://localhost:8080/api/auth/login/seller', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData),
+        credentials: "include"
+      });
+
+      if (response.ok) {
+        router.replace("/sellers/info")
+      } else if (response.status === 400) {
+        alert("회원정보가 일치하지 않습니다.")
+      }
+    } catch (error) {
+      alert("error");
+    }
+  }
 
   return (
     <div className="flex justify-between mb-6">
@@ -34,34 +71,30 @@ export default function LoginSignupView() {
           판매자 로그인
         </button>
 
-        <form>
+        <form onSubmit={handleLogin}>
           <div className="mb-4">
-            <label
-              htmlFor="username"
-              className="block text-sm font-medium text-gray-600"
-            >
+            <label className="block text-sm font-medium text-gray-600">
               아이디
             </label>
             <input
               type="text"
-              id="username"
               name="username"
+              value={formData.username}
+              onChange={handleChange}
               className="w-full mt-2 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
 
           <div className="mb-6">
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-600"
-            >
+            <label className="block text-sm font-medium text-gray-600">
               비밀번호
             </label>
             <input
               type="password"
-              id="password"
               name="password"
+              value={formData.password}
+              onChange={handleChange}
               className="w-full mt-2 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
