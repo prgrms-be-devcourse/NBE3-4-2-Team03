@@ -33,13 +33,13 @@ public class Seller implements Member {
 	@Id
 	@GeneratedValue(strategy = IDENTITY) // AUTO_INCREMENT
 	private Long id;
-	@Column(length = 20)
+	@Column(length = 20, unique = true)
 	private String username;
 	@Column(length = 255)
 	private String password;
 	@Column(length = 20)
 	private String companyName;
-	@Column(length = 100)
+	@Column(length = 100, unique = true)
 	private String email;
 	@Column(length = 100)
 	private String verificationQuestion;

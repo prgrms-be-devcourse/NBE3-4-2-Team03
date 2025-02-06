@@ -71,11 +71,11 @@ public class AuthService {
 			throw new PasswordMismatchException();
 		}
 
-		if (customerService.findCustomerByUsername(sellerSignupRequest.getUsername()).isPresent()) {
+		if (sellerService.findSellerByUsername(sellerSignupRequest.getUsername()).isPresent()) {
 			throw new CustomerAlreadyExistException();
 		}
 
-		if (customerService.findCustomerByEmail(sellerSignupRequest.getEmail()).isPresent()) {
+		if (sellerService.findSellerByEmail(sellerSignupRequest.getEmail()).isPresent()) {
 			throw new CustomerAlreadyExistException();
 		}
 

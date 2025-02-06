@@ -35,6 +35,7 @@ public class SellerSignupRequest {
 	@NotNull
 	@Size(message = "본인확인대답은 100글자 이하입니다.", max = 100)
 	String verificationAnswer;
+    boolean isVerified;
 
 	public Seller toSeller() {
 		return Seller.builder()

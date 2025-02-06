@@ -5,6 +5,8 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -64,4 +66,11 @@ public class SellerService {
 		return passwordEncoder.matches(password,sellers.getPassword());
 	}
 
+	public Optional<Seller> findSellerByUsername(String username) {
+		return sellerRepository.findByUsername(username);
+	}
+
+	public Optional<Seller> findSellerByEmail(String email) {
+		return sellerRepository.findByEmail(email);
+	}
 }
