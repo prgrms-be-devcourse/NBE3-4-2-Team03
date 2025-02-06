@@ -1,12 +1,159 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+
+/**
+ * 
+ * @param {{id:number}} quote 
+ * @param {({id:number})=>{}} onConfirm 
+ * @param {({id:number})=>{}} onComment 
+ * @param {({id:number})=>{}} onSelectQuote 
+ * @returns 
+ */
+const QuoteComponent = ({quote,onConfirm,onComment,onSelectQuote})=>{
+  const [selected,setSelected] = useState(false)
+  const [receivedQuotes,setReceivedQuotes] = useState([])
+  // 받은 견적 목록 조회
+  useEffect(() => {
+    if (!selected)return;
+    if (receivedQuotes.length>0)return;
+    const fetchReceivedQuotes = async () => {      
+      try {
+        const response = await fetch(`http://localhost:8080/api/estimates/${quote.id}`);
+        if (!response.ok) {
+          throw new Error('받은 견적 데이터를 가져오는데 실패했습니다');
+        }
+        const data = await response.json();
+        setReceivedQuotes(data);
+      } catch (error) {
+        console.error('받은 견적 데이터 로딩 오류:', error);
+      }
+    };
+    fetchReceivedQuotes();
+  }, [selected]);
+
+  return (
+
+    <div key={quote.id} 
+    className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm"
+>
+ <div className="flex justify-between items-center mb-4">
+   <span className="text-lg font-semibold dark:text-white">
+     견적 요청 #{quote.id}
+    
+   </span>
+   <button 
+     onClick={()=>setSelected(p=>!p)}
+     className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+   >
+     {selected?"닫기":"열기"}
+   </button>
+ </div>
+ <div className="grid grid-cols-2 gap-2 text-sm mb-6">
+   <div className="text-gray-600 dark:text-gray-400">요청일</div>
+   <div className="dark:text-white">{quote.createDate}</div>
+   <div className="text-gray-600 dark:text-gray-400">예산</div>
+   <div className="dark:text-white">{quote.budget}</div>
+   <div className="text-gray-600 dark:text-gray-400">용도</div>
+   <div className="dark:text-white">{quote.purpose}</div>
+ </div>
+ {/* 받은 견적 목록 */}
+ {selected && receivedQuotes.length > 0 && (
+   <div className="mt-6 border-t dark:border-gray-700 pt-4">
+     <h3 className="text-md font-semibold mb-4 dark:text-white">받은 견적 ({receivedQuotes.length})</h3>
+     <div className="space-y-4">
+       {receivedQuotes.map(receivedQuote => (
+         <div key={receivedQuote.id} className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+           <div className="flex justify-between items-center mb-2">
+             <span className="font-medium dark:text-white">{receivedQuote.seller}</span>
+           </div>
+           <div className="grid grid-cols-2 gap-2 text-sm">
+             <div className="text-gray-600 dark:text-gray-400">받은날짜</div>
+             <div className="dark:text-white">{receivedQuote.date}</div>
+             <div className="text-gray-600 dark:text-gray-400">견적금액</div>
+             <div className="dark:text-white">{receivedQuote.totalPrice}</div>
+           </div>
+           <div className="mt-3 flex gap-2">
+             <button 
+               className="text-sm text-blue-500 hover:text-blue-400"
+               onClick={() => onSelectQuote(receivedQuote)}
+             >
+               상세보기
+             </button>
+             <button 
+               className="text-sm text-green-600 hover:text-green-500"
+               onClick={()=>onConfirm(receivedQuote)}
+             >
+               채택하기
+             </button>
+             <button 
+               className="text-sm text-purple-600 hover:text-purple-500"
+               onClick={()=>onComment(receivedQuote)}
+             >
+               문의하기
+             </button>
+           </div>
+         </div>
+       ))}
+     </div>
+   </div>
+ )}
+</div>
+  )
+}
 
 export default function MyPage() {
   const [activeTab, setActiveTab] = useState('profile');
   const [selectedQuote, setSelectedQuote] = useState(null);
   const [selectedQuoteForComment, setSelectedQuoteForComment] = useState(null);
   const [commentText, setCommentText] = useState('');
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [confirmQuote, setConfirmQuote] = useState(null);
+  const [requestedQuotes, setRequestedQuotes] = useState([]);
+
+  /**
+   * 
+   * @param {{id:number}} quote
+   */
+  const onSelcectQuote = (quote)=>{
+    setSelectedQuote(quote);
+  }
+  /**
+   * 
+   * @param {{id:number}} quote
+   */
+  const onConfirm = (quote)=>{
+    setConfirmQuote(quote);
+  }
+  /**
+   * 
+   * @param {{id:number}} quoteId 
+   */
+  const onComment =(quote)=>{
+    setSelectedQuoteForComment(quote)
+  }
+
+  // 견적 요청 목록 조회
+  useEffect(() => {
+    const fetchQuotes = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/estimate/request');
+        if (!response.ok) {
+          throw new Error('견적 데이터를 가져오는데 실패했습니다');
+        }
+        const data = await response.json();
+        console.log(data);
+        setRequestedQuotes(data);
+      } catch (error) {
+        console.error('견적 데이터 로딩 오류:', error);
+      }
+    };
+
+    if (activeTab === 'requested') {
+      fetchQuotes();
+    }
+  }, [activeTab]);
+
+ 
 
   // 임시 데이터 (나중에 API 연동 필요)
   const userInfo = {
@@ -14,60 +161,6 @@ export default function MyPage() {
     customer_name: "홍길동",
     email: "hong@example.com",
   };
-
-  const requestedQuotes = [
-    {
-      id: 1,
-      createDate: "2024-03-19",
-      budget: "2,000,000원",
-      purpose: "게이밍",
-      status: "견적 대기중",
-      receivedQuotes: [
-        {
-          id: 1,
-          date: "2024-03-20",
-          seller: "컴퓨터마스터",
-          totalPrice: "1,950,000원",
-          status: "검토중",
-          parts: {
-            cpu: "Intel Core i5-13600K",
-            motherboard: "ASUS PRIME B760M-A",
-            memory: "삼성전자 DDR4-3200 16GB",
-            storage: "삼성전자 980 PRO 1TB",
-            gpu: "NVIDIA GeForce RTX 4060",
-            case: "ABKO NCORE G30",
-            power: "시소닉 FOCUS GOLD 750W",
-          },
-          comments: [
-            {
-              id: 1,
-              author: "홍길동",
-              text: "CPU 다른 모델로 변경 가능한가요?",
-              date: "2024-03-21 14:30",
-              isCustomer: true
-            },
-            {
-              id: 2,
-              author: "컴퓨터마스터",
-              text: "네, i7-13700K로 변경 가능합니다. 추가 금액은 15만원입니다.",
-              date: "2024-03-21 15:45",
-              isCustomer: false
-            }
-          ]
-        },
-        {
-          id: 2,
-          date: "2024-03-21",
-          seller: "PC프로",
-          totalPrice: "2,100,000원",
-          status: "검토중"
-        }
-      ]
-    },
-    // ... 더 많은 요청 견적들
-  ];
-
-
 
   return (
     <div className="min-h-screen p-8 dark:bg-gray-900">
@@ -112,70 +205,15 @@ export default function MyPage() {
         <div>
           <div className="space-y-8">
             {requestedQuotes.map(quote => (
-              <div key={quote.id} className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-                <div className="flex justify-between items-center mb-4">
-                  <span className="text-lg font-semibold dark:text-white">견적 요청 #{quote.id}</span>
-                  <span className="text-blue-600 dark:text-blue-400">{quote.status}</span>
-                </div>
-                <div className="grid grid-cols-2 gap-2 text-sm mb-6">
-                  <div className="text-gray-600 dark:text-gray-400">요청일</div>
-                  <div className="dark:text-white">{quote.createDate}</div>
-                  <div className="text-gray-600 dark:text-gray-400">예산</div>
-                  <div className="dark:text-white">{quote.budget}</div>
-                  <div className="text-gray-600 dark:text-gray-400">용도</div>
-                  <div className="dark:text-white">{quote.purpose}</div>
-                </div>
-
-                {/* 받은 견적 목록 */}
-                {quote.receivedQuotes.length > 0 && (
-                  <div className="mt-6 border-t dark:border-gray-700 pt-4">
-                    <h3 className="text-md font-semibold mb-4 dark:text-white">받은 견적 ({quote.receivedQuotes.length})</h3>
-                    <div className="space-y-4">
-                      {quote.receivedQuotes.map(receivedQuote => (
-                        <div key={receivedQuote.id} className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                          <div className="flex justify-between items-center mb-2">
-                            <span className="font-medium dark:text-white">{receivedQuote.seller}</span>
-                            <span className="text-sm text-blue-600 dark:text-blue-400">{receivedQuote.status}</span>
-                          </div>
-                          <div className="grid grid-cols-2 gap-2 text-sm">
-                            <div className="text-gray-600 dark:text-gray-400">받은날짜</div>
-                            <div className="dark:text-white">{receivedQuote.date}</div>
-                            <div className="text-gray-600 dark:text-gray-400">견적금액</div>
-                            <div className="dark:text-white">{receivedQuote.totalPrice}</div>
-                          </div>
-                          <div className="mt-3 flex gap-2">
-                            <button 
-                              className="text-sm text-blue-500 hover:text-blue-400"
-                              onClick={() => setSelectedQuote(receivedQuote)}
-                            >
-                              상세보기
-                            </button>
-                            <button 
-                              className="text-sm text-green-600 hover:text-green-500"
-                              onClick={() => {
-                                setShowConfirmModal(true);
-                              }}
-                            >
-                              채택하기
-                            </button>
-                            <button 
-                              className="text-sm text-purple-600 hover:text-purple-500"
-                              onClick={() => setSelectedQuoteForComment(receivedQuote)}
-                            >
-                              문의하기
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
+              <QuoteComponent key={quote.id} quote={quote} onConfirm={onConfirm} onComment={onComment} onSelectQuote={onSelcectQuote}/>             ))}
           </div>
-          <button className="mt-4 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors">
-            견적 요청하기
-          </button>
+          <Link href="/estimateRequest/request">
+            <button 
+              className="mt-4 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+            >
+              견적 요청하기
+            </button>
+          </Link>
         </div>
       )}
 
@@ -210,7 +248,7 @@ export default function MyPage() {
                   견적 구성 부품
                 </h4>
                 <div className="divide-y dark:divide-gray-700">
-                  {Object.entries(selectedQuote.parts).map(([part, name]) => (
+                  {Object.entries(selectedQuote.items).map(([part, name]) => (
                     <div key={part} className="p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                       <div className="grid grid-cols-[140px_1fr] gap-4 items-center">
                         <div className="text-gray-600 dark:text-gray-400 font-medium">
@@ -349,23 +387,23 @@ export default function MyPage() {
       )}
 
       {/* 채택 확인 모달 */}
-      {showConfirmModal && (
+      {Boolean(confirmQuote) && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-sm w-full">
             <h3 className="text-lg font-semibold mb-4 dark:text-white">견적 채택</h3>
             <p className="text-gray-600 dark:text-gray-300 mb-6">견적을 채택하시겠습니까?</p>
             <div className="flex justify-end gap-3">
               <button 
-                onClick={() => setShowConfirmModal(false)}
+                onClick={() => setConfirmQuote(null)}
                 className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300"
               >
                 아니오
               </button>
               <button 
                 onClick={() => {
+                  console.log(confirmQuote.id)
                   // 채택 로직 구현
-                  setShowConfirmModal(false);
-                  setSelectedQuote(null);
+                  setConfirmQuote(null);
                 }}
                 className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
               >
