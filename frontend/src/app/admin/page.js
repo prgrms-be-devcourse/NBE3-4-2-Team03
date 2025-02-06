@@ -1,175 +1,392 @@
 'use client';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+
+const ItemModal = ({ isOpen, onClose, onSubmit, item, categories }) => {
+    const [name, setName] = useState('');
+    const [image, setImage] = useState(null);
+    const [categoryId, setCategoryId] = useState('');
+
+    useEffect(() => {
+        if (item) {
+            setName(item.name);
+            setImage(null); // 이미지 초기화
+            setCategoryId(item.categoryId);
+        }
+    }, [item]);
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        console.log('Image file in submit:', image); // 이미지 파일 상태 로그 추가
+        if (onSubmit) {
+            onSubmit({ name, image, categoryId });
+        }
+        onClose();
+    };
+
+    return (
+        isOpen && (
+            <div className="fixed inset-0 flex items-center justify-center z-50">
+                <div className="bg-white p-6 rounded-lg shadow-lg">
+                    <h2 className="text-lg font-bold">{item ? '부품 수정' : '부품 추가'}</h2>
+                    <form onSubmit={handleSubmit}>
+                        <input
+                            type="text"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            placeholder="부품 이름을 입력하세요"
+                            className="border p-2 w-full mb-4"
+                            required
+                        />
+                        <input
+                            type="file"
+                            onChange={(e) => {
+                                const file = e.target.files[0];
+                                console.log('Selected file:', file); // 선택된 파일 로그 추가
+                                setImage(file);
+                            }}
+                            className="mb-4"
+                            accept="image/*" // 파일 형식 제한
+                        />
+                        {item && item.filename && (
+                            <div className="mb-4">
+                                <img
+                                    src={`http://localhost:8080/api/image/${item.filename}`}
+                                    alt="현재 이미지"
+                                    className="w-full h-32 object-cover mb-2 rounded-md"
+                                />
+                            </div>
+                        )}
+                        <select
+                            value={categoryId}
+                            onChange={(e) => setCategoryId(e.target.value)}
+                            className="border p-2 w-full mb-4"
+                            required
+                        >
+                            <option value="">카테고리 선택</option>
+                            {categories.map((category) => (
+                                <option key={category.id} value={category.id}>
+                                    {category.category}
+                                </option>
+                            ))}
+                        </select>
+                        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
+                            {item ? '수정' : '추가'}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="ml-2 bg-gray-500 text-white px-4 py-2 rounded"
+                        >
+                            취소
+                        </button>
+                    </form>
+                </div>
+            </div>
+        )
+    );
+};
 
 export default function ItemList() {
-  const [categories, setCategories] = useState([]);
-  const [items, setItems] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [newCategoryName, setNewCategoryName] = useState('');
+    const [categories, setCategories] = useState([]);
+    const [items, setItems] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingItem, setEditingItem] = useState(null);
+    const [newCategoryName, setNewCategoryName] = useState('');
+    const [selectedItems, setSelectedItems] = useState(new Set());
+    const [image, setImage] = useState(null); // 이미지 상태 추가
 
-  useEffect(() => {
-    fetchCategories();
-    fetchItems();
-  }, []);
-
-  const fetchCategories = () => {
-    fetch('http://localhost:8080/api/admin/categories')
-      .then((response) => response.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setCategories(data);
-        } else {
-          console.error('잘못된 데이터 형식:', data);
-        }
-      })
-      .catch((error) => console.error('카테고리 로딩 실패:', error));
-  };
-
-  const fetchItems = () => {
-    fetch('http://localhost:8080/api/admin/items')
-      .then((response) => response.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setItems(data);
-        } else {
-          console.error('잘못된 데이터 형식:', data);
-        }
-      })
-      .catch((error) => console.error('부품 로딩 실패:', error));
-  };
-
-  const handleCategoryClick = (categoryId) => {
-    setSelectedCategory(categoryId);
-  };
-
-  const handleAddCategory = () => {
-    if (!newCategoryName.trim()) return alert('카테고리 이름을 입력하세요.');
-    fetch('http://localhost:8080/api/admin/categories', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ category: newCategoryName }),
-    })
-      .then((response) => response.json())
-      .then(() => {
-        setNewCategoryName('');
+    useEffect(() => {
         fetchCategories();
-      })
-      .catch((error) => console.error('카테고리 추가 실패:', error));
-  };
+        fetchItems();
+    }, []);
 
-  const handleUpdateCategory = () => {
-    if (!selectedCategory) return alert('수정할 카테고리를 선택하세요.');
-    const newName = prompt('새로운 카테고리 이름을 입력하세요:');
-    if (!newName) return;
+    const fetchCategories = () => {
+        fetch('http://localhost:8080/api/admin/categories')
+            .then((response) => response.json())
+            .then((data) => {
+                if (Array.isArray(data)) {
+                    setCategories(data);
+                } else {
+                    console.error('잘못된 데이터 형식:', data);
+                }
+            })
+            .catch((error) => console.error('카테고리 로딩 실패:', error));
+    };
 
-    fetch(`http://localhost:8080/api/admin/categories/${selectedCategory}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ category: newName }),
-    })
-      .then((response) => response.json())
-      .then(() => fetchCategories())
-      .catch((error) => console.error('카테고리 수정 실패:', error));
-  };
+    const fetchItems = () => {
+        fetch('http://localhost:8080/api/admin/items')
+            .then((response) => response.json())
+            .then((data) => {
+                if (Array.isArray(data)) {
+                    console.log(data);
+                    setItems(data);
+                } else {
+                    console.error('잘못된 데이터 형식:', data);
+                }
+            })
+            .catch((error) => console.error('부품 로딩 실패:', error));
+    };
 
-  const handleDeleteCategory = () => {
-    if (!selectedCategory) return alert('삭제할 카테고리를 선택하세요.');
-    if (!confirm('정말로 삭제하시겠습니까?')) return;
+    const handleCategoryClick = (categoryId) => {
+        setSelectedCategory(categoryId);
+    };
 
-    fetch(`http://localhost:8080/api/admin/categories/${selectedCategory}`, {
-      method: 'DELETE',
-    })
-      .then((response) => response.json())
-      .then(() => {
-        setSelectedCategory(null);
-        fetchCategories();
-      })
-      .catch((error) => console.error('카테고리 삭제 실패:', error));
-  };
+    const handleAddCategory = () => {
+        if (!newCategoryName.trim()) return alert('카테고리 이름을 입력하세요.');
+        fetch('http://localhost:8080/api/admin/categories', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ category: newCategoryName }),
+        })
+            .then((response) => response.json())
+            .then(() => {
+                setNewCategoryName('');
+                fetchCategories();
+            })
+            .catch((error) => console.error('카테고리 추가 실패:', error));
+    };
 
-  return (
-    <div className="min-h-screen p-8 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
-      <h1 className="text-3xl font-bold text-center mb-8">카테고리와 부품 목록</h1>
+    const handleUpdateCategory = () => {
+        if (!selectedCategory) return alert('수정할 카테고리를 선택하세요.');
+        const newName = prompt('새로운 카테고리 이름을 입력하세요:');
+        if (!newName) return;
 
-      {/* 카테고리 추가 */}
-      <div className="flex justify-center mb-6 gap-4">
-        <input
-          type="text"
-          value={newCategoryName}
-          onChange={(e) => setNewCategoryName(e.target.value)}
-          placeholder="새 카테고리 이름"
-          className="px-4 py-2 border border-gray-300 rounded-lg dark:bg-gray-800 dark:text-white"
-        />
-        <button
-          onClick={handleAddCategory}
-          className="px-4 py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition"
-        >
-          추가
-        </button>
-      </div>
+        fetch(`http://localhost:8080/api/admin/categories/${selectedCategory}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ category: newName }),
+        })
+            .then((response) => response.json())
+            .then(() => fetchCategories())
+            .catch((error) => console.error('카테고리 수정 실패:', error));
+    };
 
-      {/* 카테고리 목록 */}
-      <div className="flex flex-wrap justify-center gap-4 mb-8">
-        {categories.length > 0 ? (
-          categories.map((category) => (
-            <button
-              key={category.id}
-              onClick={() => handleCategoryClick(category.id)}
-              className={`px-6 py-3 rounded-lg text-lg font-medium transition-colors duration-300 shadow-md 
-                ${selectedCategory === category.id ? 'bg-blue-600 text-white' : 'bg-white text-gray-900 border border-gray-300 hover:bg-blue-100 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'}`}
-            >
-              {category.category}
-            </button>
-          ))
-        ) : (
-          <p>카테고리가 없습니다.</p>
-        )}
-      </div>
+    const handleDeleteCategory = () => {
+        if (!selectedCategory) return alert('삭제할 카테고리를 선택하세요.');
+        if (!confirm('정말로 삭제하시겠습니까?')) return;
 
-      {/* 카테고리 수정 & 삭제 */}
-      {selectedCategory && (
-        <div className="flex justify-center gap-4 mb-6">
-          <button
-            onClick={handleUpdateCategory}
-            className="px-4 py-2 bg-yellow-500 text-white rounded-lg shadow-md hover:bg-yellow-600 transition"
-          >
-            수정
-          </button>
-          <button
-            onClick={handleDeleteCategory}
-            className="px-4 py-2 bg-red-600 text-white rounded-lg shadow-md hover:bg-red-700 transition"
-          >
-            삭제
-          </button>
-        </div>
-      )}
+        fetch(`http://localhost:8080/api/admin/categories/${selectedCategory}`, {
+            method: 'DELETE',
+        })
+            .then((response) => response.json())
+            .then(() => {
+                setSelectedCategory(null);
+                fetchCategories();
+            })
+            .catch((error) => console.error('카테고리 삭제 실패:', error));
+    };
 
-      {/* 부품 목록 */}
-      {selectedCategory && (
-        <div>
-          <h2 className="text-2xl font-semibold text-center mb-4">
-            {categories.find(c => c.id === selectedCategory)?.category} 부품 목록
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4">
-            {items.filter(item => item.categoryId === selectedCategory).length > 0 ? (
-              items
-                .filter(item => item.categoryId === selectedCategory)
-                .map((item) => (
-                  <div key={item.id} className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg text-center">
-                    <img
-                      src={`/images/${item.filename}`}
-                      alt={item.name}
-                      className="w-full h-32 object-cover mb-2 rounded-md"
-                    />
-                    <p className="text-lg font-medium">{item.name}</p>
-                  </div>
-                ))
-            ) : (
-              <p className="col-span-full text-center">해당 카테고리에 부품이 없습니다.</p>
+    const handleAddItem = (newItem) => {
+        if (!newItem.image) {
+            return alert('이미지를 선택하세요.');
+        }
+
+        const formData = new FormData();
+        formData.append('name', newItem.name);
+        formData.append('categoryId', newItem.categoryId);
+
+        const uuid = crypto.randomUUID(); // UUID 생성
+        const extension = newItem.image.name.split('.').pop(); // 파일 확장자 추출
+        const filename = `${uuid}.${extension}`; // UUID와 확장자를 결합한 파일 이름
+
+        formData.append('image', new Blob([newItem.image], { type: newItem.image.type }), filename);
+
+        fetch('http://localhost:8080/api/admin/items', {
+            method: 'POST',
+            body: formData,
+        })
+            .then((response) => response.json())
+            .then(() => {
+                fetchItems();
+            })
+            .catch((error) => console.error('부품 추가 실패:', error));
+    };
+
+    const handleUpdateItem = (updatedItem) => {
+        const formData = new FormData();
+        formData.append('name', updatedItem.name);
+        formData.append('categoryId', updatedItem.categoryId);
+
+        if (updatedItem.image) {
+            const uuid = crypto.randomUUID(); // UUID 생성
+            const extension = updatedItem.image.name.split('.').pop(); // 파일 확장자 추출
+            const filename = `${uuid}.${extension}`; // UUID와 확장자를 결합한 파일 이름
+
+            formData.append('image', new Blob([updatedItem.image], { type: updatedItem.image.type }), filename);
+        } else {
+            formData.append('filename', editingItem.filename); // 기존 이미지 파일 이름 사용
+        }
+
+        fetch(`http://localhost:8080/api/admin/items/${editingItem.id}`, {
+            method: 'PUT',
+            body: formData,
+        })
+            .then((response) => response.json())
+            .then(() => {
+                fetchItems();
+            })
+            .catch((error) => console.error('부품 수정 실패:', error));
+    };
+
+    const toggleItemSelection = (itemId) => {
+        const updatedSelection = new Set(selectedItems);
+        if (updatedSelection.has(itemId)) {
+            updatedSelection.delete(itemId);
+        } else {
+            updatedSelection.add(itemId);
+        }
+        setSelectedItems(updatedSelection);
+    };
+
+    const handleDeleteSelectedItems = () => {
+        if (selectedItems.size === 0) return alert('삭제할 부품을 선택하세요.');
+        if (!confirm('선택한 부품을 정말로 삭제하시겠습니까?')) return;
+
+        Promise.all(Array.from(selectedItems).map(itemId => {
+            return fetch(`http://localhost:8080/api/admin/items/${itemId}`, {
+                method: 'DELETE',
+            });
+        }))
+            .then(() => {
+                setSelectedItems(new Set());
+                fetchItems();
+            })
+            .catch((error) => console.error('부품 삭제 실패:', error));
+    };
+
+    const openAddModal = () => {
+        setEditingItem(null);
+        setImage(null); // 이미지 상태 초기화
+        setIsModalOpen(true);
+    };
+
+    const openEditModal = (item) => {
+        setEditingItem(item);
+        setImage(null); // 이미지 상태 초기화
+        setIsModalOpen(true);
+    };
+
+    return (
+        <div className="min-h-screen p-8 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
+            <h1 className="text-3xl font-bold text-center mb-8">카테고리와 부품 목록</h1>
+
+            {/* 카테고리 추가 */}
+            <div className="flex justify-center mb-6 gap-4">
+                <input
+                    type="text"
+                    value={newCategoryName}
+                    onChange={(e) => setNewCategoryName(e.target.value)}
+                    placeholder="새 카테고리 이름"
+                    className="px-4 py-2 border border-gray-300 rounded-lg dark:bg-gray-800 dark:text-white"
+                />
+                <button
+                    onClick={handleAddCategory}
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition"
+                >
+                    카테고리 추가
+                </button>
+            </div>
+
+            {/* 카테고리 목록 */}
+            <div className="flex flex-wrap justify-center gap-4 mb-8">
+                {categories.length > 0 ? (
+                    categories.map((category) => (
+                        <button
+                            key={category.id}
+                            onClick={() => handleCategoryClick(category.id)}
+                            className={`px-6 py-3 rounded-lg text-lg font-medium transition-colors duration-300 shadow-md 
+                                ${selectedCategory === category.id ? 'bg-blue-600 text-white' : 'bg-white text-gray-900 border border-gray-300 hover:bg-blue-100 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'}`}
+                        >
+                            {category.category}
+                        </button>
+                    ))
+                ) : (
+                    <p>카테고리가 없습니다.</p>
+                )}
+            </div>
+
+            {/* 카테고리 수정 & 삭제 */}
+            {selectedCategory && (
+                <div className="flex justify-center gap-4 mb-6">
+                    <button
+                        onClick={handleUpdateCategory}
+                        className="px-4 py-2 bg-yellow-500 text-white rounded-lg shadow-md hover:bg-yellow-600 transition"
+                    >
+                        카테고리 수정
+                    </button>
+                    <button
+                        onClick={handleDeleteCategory}
+                        className="px-4 py-2 bg-red-600 text-white rounded-lg shadow-md hover:bg-red-700 transition"
+                    >
+                        카테고리 삭제
+                    </button>
+                </div>
             )}
-          </div>
+
+            {/* 부품 목록 */}
+            {selectedCategory && (
+                <div>
+                    <h2 className="text-2xl font-semibold text-center mb-4">
+                        {categories.find(c => c.id === selectedCategory)?.category} 부품 목록
+                    </h2>
+                    <div className="flex justify-between mb-4">
+                        <button
+                            onClick={openAddModal}
+                            className="bg-green-500 text-white px-4 py-2 rounded"
+                        >
+                            부품 추가
+                        </button>
+                        <button
+                            onClick={handleDeleteSelectedItems}
+                            className="bg-red-500 text-white px-4 py-2 rounded"
+                        >
+                            선택한 부품 삭제
+                        </button>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4">
+                        {items.filter(item => item.categoryId === selectedCategory).length > 0 ? (
+                            items
+                                .filter(item => item.categoryId === selectedCategory)
+                                .map((item) => (
+                                    <div key={item.id} className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg text-center">
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedItems.has(item.id)}
+                                            onChange={() => toggleItemSelection(item.id)}
+                                            className="mb-2"
+                                        />
+                                        <img
+                                            src={`http://localhost:8080/api/image/${item.filename}`} // 이미지 URL
+                                            alt={item.name}
+                                            className="w-full h-32 object-cover mb-2 rounded-md"
+                                        />
+                                        <p className="text-lg font-medium">{item.name}</p>
+                                        <button
+                                            onClick={() => openEditModal(item)}
+                                            className="mt-2 bg-yellow-500 text-white px-2 py-1 rounded"
+                                        >
+                                            수정
+                                        </button>
+                                    </div>
+                                ))
+                        ) : (
+                            <p className="col-span-full text-center">해당 카테고리에 부품이 없습니다.</p>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {/* 모달 */}
+            <ItemModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSubmit={editingItem ? handleUpdateItem : handleAddItem}
+                item={editingItem}
+                categories={categories} // 카테고리 목록을 모달에 전달
+            />
         </div>
-      )}
-    </div>
-  );
+    );
 }
+
+
