@@ -57,10 +57,10 @@ public class ItemService {
 		return items.stream()
 			.map(item -> new ItemInfoResponse(
 				item.getId(),
-				item.getCategory().getCategory(),
-				item.getCategory().getId(),
-				item.getName(),
-				item.getImgFilename()
+				item.getName(),                     // 부품 이름 (name)
+				item.getCategory().getId(),         // 카테고리 ID
+				item.getCategory().getCategory(),   // 카테고리 이름 (categoryName)
+				item.getImgFilename()               // 이미지 파일명
 			))
 			.collect(Collectors.toList());
 	}
