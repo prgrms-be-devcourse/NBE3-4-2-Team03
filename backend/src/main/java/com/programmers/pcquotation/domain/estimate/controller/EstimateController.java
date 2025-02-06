@@ -28,9 +28,9 @@ public class EstimateController {
 	}
 
 	@GetMapping("/api/estimates/{id}")
-	public ResponseEntity<List<ReceivedQuoteDTO>> getEstimateByCustomer(@PathVariable Integer id) {
-		List<ReceivedQuoteDTO> estimateByCustomer = estimateService.getEstimateByRequest(id);
-		return new ResponseEntity<>(estimateByCustomer, HttpStatus.OK);
+	public ResponseEntity<List<ReceivedQuoteDTO>> getEstimateByRequest(@PathVariable Integer id) {
+		List<ReceivedQuoteDTO> estimateByRequest = estimateService.getEstimateByRequest(id);
+		return new ResponseEntity<>(estimateByRequest, HttpStatus.OK);
 	}
 
 }

@@ -141,7 +141,7 @@ export default function MyPage() {
           throw new Error('견적 데이터를 가져오는데 실패했습니다');
         }
         const data = await response.json();
-        console.log(data);
+        
         setRequestedQuotes(data);
       } catch (error) {
         console.error('견적 데이터 로딩 오류:', error);
