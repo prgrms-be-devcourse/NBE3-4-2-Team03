@@ -27,8 +27,16 @@ export default function LoginSignupView() {
   const handleLogin = async (e) => {
     e.preventDefault();
 
+    if (loginType === "SELLER") {
+      await requestLogin("http://localhost:8080/api/auth/login/seller", "/sellers/info")
+    } else if (loginType === "CUSTOMER") {
+      await requestLogin("http://localhost:8080/api/auth/login/customer", "/customers/info")
+    }
+  }
+
+  const requestLogin = async (url, destination) => {
     try {
-      const response = await fetch('http://localhost:8080/api/auth/login/seller', {
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -38,9 +46,9 @@ export default function LoginSignupView() {
       });
 
       if (response.ok) {
-        router.replace("/sellers/info")
+        router.replace(destination);
       } else if (response.status === 400) {
-        alert("회원정보가 일치하지 않습니다.")
+        alert("회원정보가 일치하지 않습니다.");
       }
     } catch (error) {
       alert("error");

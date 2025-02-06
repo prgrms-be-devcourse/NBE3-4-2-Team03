@@ -100,8 +100,8 @@ export default function CustomerSignup() {
             <label className="block text-gray-700">이름:</label>
             <input
                 type="text"
-                name="companyName"
-                value={formData.companyName}
+                name="customerName"
+                value={formData.customerName}
                 onChange={handleChange}
                 className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
