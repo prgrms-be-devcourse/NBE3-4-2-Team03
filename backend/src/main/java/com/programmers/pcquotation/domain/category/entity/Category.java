@@ -35,10 +35,14 @@ public class Category {
 		this.category = category;
 	}
 
-	public static Category createTestCategory(Long id, String category) {
-		Category categories = new Category();
-		categories.id = id;
-		categories.category = category;
-		return categories;
+	public static Category createTestCategory(
+		Long id,
+		String categoryName
+	) {
+
+		Category category = new Category();
+		category.id = id;
+		category.category = categoryName;
+		return category;
 	}
 }

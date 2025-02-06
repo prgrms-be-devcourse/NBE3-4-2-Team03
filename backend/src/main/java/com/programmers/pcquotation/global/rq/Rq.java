@@ -48,7 +48,7 @@ public class Rq {
 			.filter(UserDetails.class::isInstance)
 			.map(UserDetails.class::cast)
 			.map(UserDetails::getUsername)
-			.flatMap(sellersService::findByName)
+			.flatMap(sellersService::findByUserName)
 			.orElse(null);
 	}
 

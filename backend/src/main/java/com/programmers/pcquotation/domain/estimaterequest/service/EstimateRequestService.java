@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import com.programmers.pcquotation.domain.customer.entity.Customer;
 import com.programmers.pcquotation.domain.customer.repository.CustomerRepository;
+import com.programmers.pcquotation.domain.estimaterequest.exception.NullEntityException;
 import org.springframework.stereotype.Service;
 
 import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequest;
@@ -35,7 +36,7 @@ public class EstimateRequestService {
 	}
 	public Customer findCustomer(String name){
         return customerRepository.getCustomerByUsername(name)
-				.orElseThrow(() -> new NoSuchElementException("고객을 찾을수 없습니다."));
+				.orElseThrow(NullEntityException::new);
 
 	}
 

@@ -37,11 +37,11 @@ public class CategoryService {
 	}
 
 	// 카테고리 전체 조회
-	public List<CategoryInfoResponse> getList() {
+	public List<CategoryInfoResponse> getCategoryList() {
 		return categoryRepository.findAll().stream()
-			.map(categories -> CategoryInfoResponse.builder()
-				.id(categories.getId())
-				.category(categories.getCategory())
+			.map(category -> CategoryInfoResponse.builder()
+				.id(category.getId())
+				.category(category.getCategory())
 				.build())
 			.collect(Collectors.toList());
 	}
