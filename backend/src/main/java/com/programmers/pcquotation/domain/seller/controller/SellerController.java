@@ -23,7 +23,6 @@ import com.programmers.pcquotation.global.enums.UserType;
 import com.programmers.pcquotation.global.rq.Rq;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 
 @RestController

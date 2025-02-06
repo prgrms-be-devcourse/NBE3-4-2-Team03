@@ -1,4 +1,4 @@
-package com.programmers.pcquotation.domain.customer.dto;
+package com.programmers.pcquotation.domain.member.dto;
 
 import org.springframework.lang.NonNull;
 
@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CustomerLoginResponse {
+public class LoginResponse {
     @NonNull
     String apiKey;
     @NonNull

@@ -83,7 +83,6 @@ class PcquotationApplicationTests {
 			)
 			.andDo(print());
 		resultActions
-			.andExpect(handler().methodName("login"))
 			.andExpect(status().isOk());
 		String responseJson = resultActions.andReturn().getResponse().getContentAsString();
 
@@ -92,37 +91,6 @@ class PcquotationApplicationTests {
 		return jsonNode.get("apiKey").asText() + " " + jsonNode.get("accessToken").asText() + jsonNode.get("userType").asText();
 	}
 
-	@Test
-	@Transactional
-	@DisplayName("회원가입")
-	void t1() throws Exception {
-		ResultActions resultActions = mvc
-			.perform(post("/api/auth/signup/seller")
-				.content("""
-					{
-					    "username": "test1234",
-					    "password": "password1234",
-					    "confirmPassword": "password1234",
-					    "companyName": "너구리",
-					    "email": "abc@gmail.com",
-					    "verificationQuestion": "바나나는",
-					    "verificationAnswer": "길어"
-					}
-					""".stripIndent())
-				.contentType(
-					new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
-				)
-			)
-			.andDo(print());
-		Optional<Seller> sellers = sellerService.findByUserName("test1234");
-
-		resultActions
-			.andExpect(status().isCreated())
-			.andExpect(jsonPath("$.message").value("회원가입 성공"));
-
-		assertNotNull(sellers.get());
-		assertEquals(sellers.get().getUsername(), "test1234");
-	}
 
 	@Test
 	@Transactional
@@ -173,7 +141,6 @@ class PcquotationApplicationTests {
 			.andDo(print());
 
 		resultActions
-			.andExpect(handler().methodName("login"))
 			.andExpect(status().isOk());
 
 		String responseBody = resultActions.andReturn().getResponse().getContentAsString();

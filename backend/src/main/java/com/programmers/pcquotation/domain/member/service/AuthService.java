@@ -5,12 +5,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.programmers.pcquotation.domain.customer.dto.CustomerLoginRequest;
-import com.programmers.pcquotation.domain.customer.dto.CustomerLoginResponse;
 import com.programmers.pcquotation.domain.customer.dto.CustomerSignupRequest;
 import com.programmers.pcquotation.domain.customer.dto.CustomerSignupResponse;
 import com.programmers.pcquotation.domain.customer.entity.Customer;
@@ -19,8 +16,8 @@ import com.programmers.pcquotation.domain.customer.exception.IncorrectLoginAttem
 import com.programmers.pcquotation.domain.customer.exception.PasswordMismatchException;
 import com.programmers.pcquotation.domain.customer.service.CustomerService;
 import com.programmers.pcquotation.domain.member.entitiy.Member;
-import com.programmers.pcquotation.domain.seller.dto.SellerLoginRequest;
-import com.programmers.pcquotation.domain.seller.dto.SellerLoginResponse;
+import com.programmers.pcquotation.domain.member.dto.LoginRequest;
+import com.programmers.pcquotation.domain.member.dto.LoginResponse;
 import com.programmers.pcquotation.domain.seller.dto.SellerSignupRequest;
 import com.programmers.pcquotation.domain.seller.dto.SellerSignupResponse;
 import com.programmers.pcquotation.domain.seller.entitiy.Seller;
@@ -28,7 +25,6 @@ import com.programmers.pcquotation.domain.seller.service.SellerService;
 import com.programmers.pcquotation.global.enums.UserType;
 import com.programmers.pcquotation.global.jwt.Jwt;
 import com.programmers.pcquotation.global.rq.Rq;
-import com.programmers.pcquotation.global.security.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -40,21 +36,14 @@ public class AuthService {
 
 	@Value("${jwt.accessToken.expirationSeconds}")
 	private long accessTokenExpirationSeconds;
+
 	private final CustomerService customerService;
 	private final SellerService sellerService;
 	private final PasswordEncoder passwordEncoder;
 	private final Rq rq;
-	private final JwtUtil jwtUtil;
 
-	String getAccessToken(Seller seller) {
-		long id = seller.getId();
-		String username = seller.getUsername();
-		return Jwt.toString(
-			jwtSecretKey,
-			accessTokenExpirationSeconds,
-			Map.of("id", id, "username", username)
-		);
-	}
+
+
 
 	public CustomerSignupResponse processSignup(CustomerSignupRequest customerSignupRequest) {
 		if (!customerSignupRequest.getPassword().equals(customerSignupRequest.getConfirmPassword())) {
@@ -98,7 +87,7 @@ public class AuthService {
 		return new SellerSignupResponse(seller, "회원가입 성공");
 	}
 
-	public CustomerLoginResponse processLogin(CustomerLoginRequest customerLoginRequest) {
+	public LoginResponse processLoginCustomer(LoginRequest customerLoginRequest) {
 		String username = customerLoginRequest.getUsername();
 		Customer customer = customerService.findCustomerByUsername(username)
 			.orElseThrow(IncorrectLoginAttemptException::new);
@@ -111,7 +100,7 @@ public class AuthService {
 		rq.setCookie("accessToken", accessToken);
 		rq.setCookie("apiKey", customer.getApiKey());
 		rq.setCookie("userType", UserType.Customer.toString());
-		return CustomerLoginResponse.builder()
+		return LoginResponse.builder()
 			.apiKey(customer.getApiKey())
 			.accessToken(accessToken)
 			.userType(UserType.Seller)
@@ -119,12 +108,12 @@ public class AuthService {
 			.build();
 	}
 
-	public SellerLoginResponse processLogin(SellerLoginRequest sellerLoginRequest) {
-		String username = sellerLoginRequest.getUsername();
+	public LoginResponse processLoginSeller(LoginRequest loginRequest) {
+		String username = loginRequest.getUsername();
 		Seller seller = sellerService.findByUserName(username)
 			.orElseThrow(IncorrectLoginAttemptException::new);
 
-		if (!passwordEncoder.matches(sellerLoginRequest.getPassword(), seller.getPassword())) {
+		if (!passwordEncoder.matches(loginRequest.getPassword(), seller.getPassword())) {
 			throw new IncorrectLoginAttemptException();
 		}
 		String accessToken = this.getAccessToken(seller);
@@ -132,7 +121,7 @@ public class AuthService {
 		rq.setCookie("apiKey", seller.getApiKey());
 		rq.setCookie("userType", UserType.Seller.toString());
 
-		return SellerLoginResponse.builder()
+		return LoginResponse.builder()
 			.apiKey(seller.getApiKey())
 			.accessToken(accessToken)
 			.userType(UserType.Seller)
