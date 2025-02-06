@@ -207,24 +207,31 @@ export default function ItemList() {
         const formData = new FormData();
         formData.append('name', updatedItem.name);
         formData.append('categoryId', updatedItem.categoryId);
-
+    
         if (updatedItem.image) {
+            // 새 이미지가 있는 경우
             const uuid = crypto.randomUUID(); // UUID 생성
             const extension = updatedItem.image.name.split('.').pop(); // 파일 확장자 추출
             const filename = `${uuid}.${extension}`; // UUID와 확장자를 결합한 파일 이름
-
+    
             formData.append('image', new Blob([updatedItem.image], { type: updatedItem.image.type }), filename);
         } else {
-            formData.append('filename', editingItem.filename); // 기존 이미지 파일 이름 사용
+            // 이미지가 없는 경우 기존 파일 이름 사용
+            formData.append('imgFilename', editingItem.filename); // 기존 이미지 파일 이름 사용
         }
-
+    
         fetch(`http://localhost:8080/api/admin/items/${editingItem.id}`, {
             method: 'PUT',
             body: formData,
         })
-            .then((response) => response.json())
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('부품 수정 실패');
+                }
+                return response.json();
+            })
             .then(() => {
-                fetchItems();
+                fetchItems(); // 아이템 목록 새로고침
             })
             .catch((error) => console.error('부품 수정 실패:', error));
     };
