@@ -17,14 +17,21 @@ export default function ItemList() {
         }
       })
       .catch((error) => console.error('카테고리 로딩 실패:', error));
+
+    fetch('http://localhost:8080/api/admin/items')
+      .then((response) => response.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setItems(data);
+        } else {
+          console.error('잘못된 데이터 형식:', data);
+        }
+      })
+      .catch((error) => console.error('부품 로딩 실패:', error));
   }, []);
 
   const handleCategoryClick = (categoryId) => {
     setSelectedCategory(categoryId);
-    fetch(`http://localhost:8080/api/admin/items?categoryId=${categoryId}`)
-      .then((response) => response.json())
-      .then((data) => setItems(data))
-      .catch((error) => console.error('부품 로딩 실패:', error));
   };
 
   return (
@@ -54,17 +61,19 @@ export default function ItemList() {
             {categories.find(c => c.id === selectedCategory)?.category} 부품 목록
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4">
-            {items.length > 0 ? (
-              items.map((item) => (
-                <div key={item.id} className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg text-center">
-                  <img
-                    src={`/images/${item.filename}`}
-                    alt={item.name}
-                    className="w-full h-32 object-cover mb-2 rounded-md"
-                  />
-                  <p className="text-lg font-medium">{item.name}</p>
-                </div>
-              ))
+            {items.filter(item => item.categoryId === selectedCategory).length > 0 ? (
+              items
+                .filter(item => item.categoryId === selectedCategory)
+                .map((item) => (
+                  <div key={item.id} className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg text-center">
+                    <img
+                      src={`/images/${item.filename}`}
+                      alt={item.name}
+                      className="w-full h-32 object-cover mb-2 rounded-md"
+                    />
+                    <p className="text-lg font-medium">{item.name}</p>
+                  </div>
+                ))
             ) : (
               <p className="col-span-full text-center">해당 카테고리에 부품이 없습니다.</p>
             )}
