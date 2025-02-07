@@ -178,27 +178,38 @@ export default function ItemList() {
     };
 
     const handleAddItem = (newItem) => {
+        // 부품 이름이 비어있는지 확인
+        if (!newItem.name) {
+            return alert('부품 이름을 입력해주세요.'); // 이름 비어 있을 경우 경고 메시지
+        }
+    
+        // 이미지가 선택되지 않은 경우 경고 메시지 표시
         if (!newItem.image) {
             return alert('이미지를 선택하세요.');
         }
-
+    
         const formData = new FormData();
         formData.append('name', newItem.name);
         formData.append('categoryId', newItem.categoryId);
-
+    
         const uuid = crypto.randomUUID(); // UUID 생성
         const extension = newItem.image.name.split('.').pop(); // 파일 확장자 추출
         const filename = `${uuid}.${extension}`; // UUID와 확장자를 결합한 파일 이름
-
+    
         formData.append('image', new Blob([newItem.image], { type: newItem.image.type }), filename);
-
+    
         fetch('http://localhost:8080/api/admin/items', {
             method: 'POST',
             body: formData,
         })
-            .then((response) => response.json())
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('부품 추가 실패'); // 응답이 성공적이지 않을 경우 에러 처리
+                }
+                return response.json();
+            })
             .then(() => {
-                fetchItems();
+                fetchItems(); // 아이템 목록 새로고침
             })
             .catch((error) => console.error('부품 추가 실패:', error));
     };
@@ -207,19 +218,19 @@ export default function ItemList() {
         const formData = new FormData();
         formData.append('name', updatedItem.name);
         formData.append('categoryId', updatedItem.categoryId);
-    
+
         if (updatedItem.image) {
             // 새 이미지가 있는 경우
             const uuid = crypto.randomUUID(); // UUID 생성
             const extension = updatedItem.image.name.split('.').pop(); // 파일 확장자 추출
             const filename = `${uuid}.${extension}`; // UUID와 확장자를 결합한 파일 이름
-    
+
             formData.append('image', new Blob([updatedItem.image], { type: updatedItem.image.type }), filename);
         } else {
             // 이미지가 없는 경우 기존 파일 이름 사용
             formData.append('imgFilename', editingItem.filename); // 기존 이미지 파일 이름 사용
         }
-    
+
         fetch(`http://localhost:8080/api/admin/items/${editingItem.id}`, {
             method: 'PUT',
             body: formData,
@@ -276,7 +287,7 @@ export default function ItemList() {
 
     return (
         <div className="min-h-screen p-8 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
-            <h1 className="text-3xl font-bold text-center mb-8">카테고리와 부품 목록</h1>
+            <h1 className="text-3xl font-bold text-center mb-8">카테고리와 부품 관리자 페이지</h1>
 
             {/* 카테고리 추가 */}
             <div className="flex justify-center mb-6 gap-4">
@@ -332,27 +343,27 @@ export default function ItemList() {
             )}
 
             {/* 부품 목록 */}
-{selectedCategory && (
-    <div>
-        <h2 className="text-2xl font-semibold text-center mb-4">
-            {categories.find(c => c.id === selectedCategory)?.category} 부품 목록
-        </h2>
-        <div className="flex justify-center mb-4"> {/* 중앙 정렬을 위한 div 추가 */}
-            <button
-                onClick={openAddModal}
-                className="bg-green-500 text-white px-4 py-2 rounded mx-2" // 여백 추가
-            >
-                부품 추가
-            </button>
-            <button
-                onClick={handleDeleteSelectedItems}
-                className="bg-red-500 text-white px-4 py-2 rounded mx-2" // 여백 추가
-            >
-                선택한 부품 삭제
-            </button>
-        </div>
-        <div className="flex justify-between mb-4">
-                       
+            {selectedCategory && (
+                <div>
+                    <h2 className="text-2xl font-semibold text-center mb-4">
+                        {categories.find(c => c.id === selectedCategory)?.category} 부품 목록
+                    </h2>
+                    <div className="flex justify-center mb-4"> {/* 중앙 정렬을 위한 div 추가 */}
+                        <button
+                            onClick={openAddModal}
+                            className="bg-green-500 text-white px-4 py-2 rounded mx-2" // 여백 추가
+                        >
+                            부품 추가
+                        </button>
+                        <button
+                            onClick={handleDeleteSelectedItems}
+                            className="bg-red-500 text-white px-4 py-2 rounded mx-2" // 여백 추가
+                        >
+                            선택한 부품 삭제
+                        </button>
+                    </div>
+                    <div className="flex justify-between mb-4">
+
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4">
                         {items.filter(item => item.categoryId === selectedCategory).length > 0 ? (
