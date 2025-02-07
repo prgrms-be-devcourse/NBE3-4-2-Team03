@@ -61,5 +61,9 @@ public class Customer implements Member {
     public String getApiKey() {
         return apiKey;
     }
+    @Override
+    public String getPassword() {
+        return password;
+    }
 
 }
