@@ -1,5 +1,6 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 export default function MyPage() {
   const [activeTab, setActiveTab] = useState('profile');
@@ -7,6 +8,9 @@ export default function MyPage() {
   const [selectedQuoteForComment, setSelectedQuoteForComment] = useState(null);
   const [commentText, setCommentText] = useState('');
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [requestedQuotes, setRequestedQuotes] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // 임시 데이터 (나중에 API 연동 필요)
   const userInfo = {
@@ -15,18 +19,26 @@ export default function MyPage() {
     email: "hong@example.com",
   };
 
-  const requestedQuotes = [
-    {
-      id: 1,
-      customerId: "user123",
-      createDate: "2024-03-19",
-      budget: "2,000,000원",
-      purpose: "게이밍",
-      status: "견적 대기중",
-      
-    },
-    // ... 더 많은 요청 견적들
-  ];
+  useEffect(() => {
+    const fetchRequestedQuotes = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/estimate/request');
+        if (!response.ok) {
+          throw new Error('견적 데이터를 불러오는데 실패했습니다');
+        }
+        const data = await response.json();
+        setRequestedQuotes(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (activeTab === 'requested') {
+      fetchRequestedQuotes();
+    }
+  }, [activeTab]);
 
   // 임시 데이터에 작성한 견적 데이터 추가
   const writtenQuotes = [
@@ -94,37 +106,43 @@ export default function MyPage() {
       {/* 요청한 견적 탭 */}
       {activeTab === 'requested' && (
         <div>
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold dark:text-white">요청 받은 견적 목록</h2>
-            
-          </div>
-          <div className="space-y-8">
-            {requestedQuotes.map(quote => (
-              <div key={quote.id} className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-                <div className="flex justify-between items-center mb-4">
-                  <div>
-                    <span className="text-lg font-semibold dark:text-white">견적 요청 #{quote.id}</span>
+          {isLoading ? (
+            <div className="text-center py-8 dark:text-white">로딩중...</div>
+          ) : error ? (
+            <div className="text-center py-8 text-red-500">{error}</div>
+          ) : (
+            <div className="space-y-8">
+              {requestedQuotes.length === 0 ? (
+                <div className="text-center py-8 dark:text-white">요청받은 견적이 없습니다.</div>
+              ) : (
+                requestedQuotes.map(quote => (
+                  <div key={quote.id} className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+                    <div className="flex justify-between items-center mb-4">
+                      <div>
+                        <span className="text-lg font-semibold dark:text-white">견적 요청 #{quote.id}</span>
+                      </div>
+                      <Link 
+                        href={`/estimate/create?requestId=${quote.id}`}
+                        className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+                      >
+                        견적 작성하기
+                      </Link>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-sm mb-6">
+                    <div className="text-gray-600 dark:text-gray-400">요청자</div>
+                    <div className="dark:text-white">{quote.customerId}</div>
+                      <div className="text-gray-600 dark:text-gray-400">요청일</div>
+                      <div className="dark:text-white">{quote.createDate}</div>
+                      <div className="text-gray-600 dark:text-gray-400">예산</div>
+                      <div className="dark:text-white">{quote.budget}</div>
+                      <div className="text-gray-600 dark:text-gray-400">용도</div>
+                      <div className="dark:text-white">{quote.purpose}</div>
+                    </div>  
                   </div>
-                  <button 
-                    className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-                    onClick={() => {/* 견적 작성 페이지로 이동 */}}
-                  >
-                    견적 작성하기
-                  </button>
-                </div>
-                <div className="grid grid-cols-2 gap-2 text-sm mb-6">
-                <div className="text-gray-600 dark:text-gray-400">요청자</div>
-                <div className="dark:text-white">{quote.customerId}</div>
-                  <div className="text-gray-600 dark:text-gray-400">요청일</div>
-                  <div className="dark:text-white">{quote.createDate}</div>
-                  <div className="text-gray-600 dark:text-gray-400">예산</div>
-                  <div className="dark:text-white">{quote.budget}</div>
-                  <div className="text-gray-600 dark:text-gray-400">용도</div>
-                  <div className="dark:text-white">{quote.purpose}</div>
-                </div>  
-              </div>
-            ))}
-          </div>
+                ))
+              )}
+            </div>
+          )}
         </div>
       )}
 
