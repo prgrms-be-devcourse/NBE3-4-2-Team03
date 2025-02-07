@@ -18,6 +18,7 @@ import com.programmers.pcquotation.domain.member.entitiy.Member;
 import com.programmers.pcquotation.domain.member.service.AuthService;
 import com.programmers.pcquotation.domain.seller.service.SellerService;
 import com.programmers.pcquotation.global.enums.UserType;
+import com.programmers.pcquotation.global.security.CustomAuthenticationFilter;
 import com.programmers.pcquotation.global.security.CustomUserDetails;
 import com.programmers.pcquotation.global.security.CustomUserDetailsService;
 
@@ -45,15 +46,20 @@ public class Rq {
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 	}
 
-	public Member getMember(UserType userType) {
+	public Member getMember() {
+		String authorization = getHeader("Authorization");
+		String token = authorization.substring("Bearer ".length());
+		String[] tokenBits = token.split(" ", 3);
+
 		return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
 			.map(Authentication::getPrincipal)
 			.filter(UserDetails.class::isInstance)
 			.map(UserDetails.class::cast)
 			.map(userDetails -> {
-				return customUserDetailsService.loadUserByUsername(userDetails.getUsername(), userType);
+				return customUserDetailsService.loadUserByUsername(userDetails.getUsername(), UserType.valueOf(tokenBits[2]));
 			}).orElse(null);
 	}
+
 	public void setHeader(String name, String value) {
 		resp.setHeader(name, value);
 	}

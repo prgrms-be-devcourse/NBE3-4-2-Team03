@@ -87,7 +87,7 @@ class PcquotationApplicationTests {
 
 		ObjectMapper objectMapper = new ObjectMapper();
 		JsonNode jsonNode = objectMapper.readTree(responseJson);
-		return jsonNode.get("apiKey").asText() + " " + jsonNode.get("accessToken").asText() + jsonNode.get("userType").asText();
+		return jsonNode.get("apiKey").asText() + " " + jsonNode.get("accessToken").asText() + " "+ jsonNode.get("userType").asText();
 	}
 
 

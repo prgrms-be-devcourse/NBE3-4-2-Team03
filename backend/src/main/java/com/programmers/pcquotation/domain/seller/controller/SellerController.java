@@ -36,7 +36,7 @@ public class SellerController {
 	@GetMapping
 	@Transactional(readOnly = true)
 	public SellerInfoRespnse info() {
-		Seller seller = (Seller)rq.getMember(UserType.Seller);
+		Seller seller = (Seller)rq.getMember();
 		if (seller == null)
 			throw new NullPointerException("존재하지 않는 사용자입니다.");
 		return SellerInfoRespnse.builder()
@@ -50,7 +50,7 @@ public class SellerController {
 
 	@PutMapping
 	public String modify(@RequestBody @Valid SellerUpdateDto customerUpdateDto) {
-		Seller seller = (Seller)rq.getMember(UserType.Seller);
+		Seller seller = (Seller)rq.getMember();
 		if(seller == null)
 			throw new NoSuchElementException("존재하지 않는 사용자입니다.");
 
