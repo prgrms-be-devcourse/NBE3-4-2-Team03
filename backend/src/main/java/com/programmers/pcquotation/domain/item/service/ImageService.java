@@ -40,6 +40,7 @@ public class ImageService {
 	 * @return Product Image Resource
 	 */
 	public Resource getImageByFilename(String filename) {
+		log.info("Requested filename: {}", filename);
 		if (filename == null || filename.isEmpty() || checkInvalidExt(filename)) {
 			throw new InvalidImageRequestException("Invalid Type Filename");
 		}

@@ -58,20 +58,13 @@ public class SellerController {
 		return "정보수정이 성공했습니다.";
 	}
 
-
-
-	@GetMapping("/api/{code}")
+	@GetMapping("/business/{code}/check")
 	@Transactional(readOnly = true)
 	public String checkCode(@PathVariable("code") String code) {
-		Seller seller = (Seller)rq.getMember(UserType.Seller);
-		if(seller == null)
-			throw new NoSuchElementException("존재하지 않는 사용자입니다.");
-
 		if (businessConfirmationService.checkCode(code)) {
-			sellerService.setIsVerified(seller,true);
-			return "인증에 성공하였습니다.";
+			return "true";
 		}
-		return "인증에 실패하였습니다.";
+		return "false";
 	}
 
 }
