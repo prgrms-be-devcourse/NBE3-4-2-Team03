@@ -1,6 +1,7 @@
 package com.programmers.pcquotation.global.rq;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.http.ResponseCookie;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
 import com.programmers.pcquotation.domain.customer.service.CustomerService;
+import com.programmers.pcquotation.domain.estimaterequest.exception.NullEntityException;
 import com.programmers.pcquotation.domain.member.entitiy.Member;
 import com.programmers.pcquotation.domain.member.service.AuthService;
 import com.programmers.pcquotation.domain.seller.service.SellerService;
@@ -44,20 +46,22 @@ public class Rq {
 			user.getAuthorities()
 		);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
+
 	}
 
 	public Member getMember() {
 		String authorization = getHeader("Authorization");
+		if(authorization.isEmpty()) throw new NullEntityException();
 		String token = authorization.substring("Bearer ".length());
 		String[] tokenBits = token.split(" ", 3);
-
 		return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
 			.map(Authentication::getPrincipal)
 			.filter(UserDetails.class::isInstance)
 			.map(UserDetails.class::cast)
-			.map(userDetails -> {
-				return customUserDetailsService.loadUserByUsername(userDetails.getUsername(), UserType.valueOf(tokenBits[2]));
-			}).orElse(null);
+			.map(userDetails ->
+				customUserDetailsService
+					.loadUserByUsername(userDetails.getUsername(), UserType.valueOf(tokenBits[2])))
+			.orElse(null);
 	}
 
 	public void setHeader(String name, String value) {
