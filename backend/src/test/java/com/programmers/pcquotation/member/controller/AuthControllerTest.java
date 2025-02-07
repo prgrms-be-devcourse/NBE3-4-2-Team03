@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.programmers.pcquotation.domain.customer.service.CustomerService;
 import com.programmers.pcquotation.domain.seller.service.SellerService;
 @SpringBootTest
-@ActiveProfiles("test")
 @AutoConfigureMockMvc
 @Transactional
 public class AuthControllerTest {
