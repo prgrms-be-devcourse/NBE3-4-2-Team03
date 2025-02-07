@@ -1,9 +1,11 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from "next/navigation";
 
 
 export default function MyPage() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState('profile');
   const [selectedQuote, setSelectedQuote] = useState(null);
   const [selectedQuoteForComment, setSelectedQuoteForComment] = useState(null);
@@ -48,6 +50,18 @@ export default function MyPage() {
     }
   }, [activeTab, userInfo.username]);
 
+  const handleLogout = async (e) => {
+    e.preventDefault();
+    const response = await fetch("http://localhost:8080/api/auth/logout", {
+      method: 'POST',
+      credentials: 'include'
+    });
+
+    if (response.ok) {
+      router.replace("/");
+    }
+  }
+
   return (
     <div className="min-h-screen p-8 dark:bg-gray-900">
       <h1 className="text-2xl font-bold mb-8 dark:text-white">판매자 페이지</h1>
@@ -75,28 +89,34 @@ export default function MyPage() {
 
       {/* 회원정보 탭 */}
       {activeTab === 'profile' && (
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="text-gray-600 dark:text-gray-400">아이디</div>
-            <div className="dark:text-white">{userInfo.username}</div>
-            <div className="text-gray-600 dark:text-gray-400">이름</div>
-            <div className="dark:text-white">{userInfo.customer_name}</div>
-            <div className="text-gray-600 dark:text-gray-400">이메일</div>
-            <div className="dark:text-white">{userInfo.email}</div>
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="text-gray-600 dark:text-gray-400">아이디</div>
+              <div className="dark:text-white">{userInfo.username}</div>
+              <div className="text-gray-600 dark:text-gray-400">이름</div>
+              <div className="dark:text-white">{userInfo.customer_name}</div>
+              <div className="text-gray-600 dark:text-gray-400">이메일</div>
+              <div className="dark:text-white">{userInfo.email}</div>
+            </div>
+            <button className="mt-6 text-blue-500 hover:text-blue-400 dark:text-blue-400 dark:hover:text-blue-300">
+              회원정보 수정
+            </button>
+            <div>
+              <button onClick={handleLogout}
+                      className="mt-6 text-blue-500 hover:text-blue-400 dark:text-blue-400 dark:hover:text-blue-300">
+                로그아웃
+              </button>
+            </div>
           </div>
-          <button className="mt-6 text-blue-500 hover:text-blue-400 dark:text-blue-400 dark:hover:text-blue-300">
-            회원정보 수정
-          </button>
-        </div>
       )}
 
       {/* 요청한 견적 탭 */}
       {activeTab === 'requested' && (
-        <div>
-          {isLoading ? (
-            <div className="text-center py-8 dark:text-white">로딩중...</div>
-          ) : error ? (
-            <div className="text-center py-8 text-red-500">{error}</div>
+          <div>
+            {isLoading ? (
+                <div className="text-center py-8 dark:text-white">로딩중...</div>
+            ) : error ? (
+                <div className="text-center py-8 text-red-500">{error}</div>
           ) : (
             <div className="space-y-8">
               {requestedQuotes.length === 0 ? (
