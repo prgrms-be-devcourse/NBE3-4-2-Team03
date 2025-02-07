@@ -34,9 +34,9 @@ export async function middleware(req) {
         throw new Error("Failed to create estimate request");
     }
 
-    const isAdmin = meResponse.data?.userType === 'Admin';
-    const isSeller = meResponse.data?.userType === 'Seller';
-    const isCustomer = meResponse.data?.userType === 'Customer';
+    const isAdmin = response.data?.userType === 'Admin';
+    const isSeller = response.data?.userType === 'Seller';
+    const isCustomer = response.data?.userType === 'Customer';
 
     if(isProtectedRouteAdmin(req.nextUrl.pathname)){
         if (!isAdmin) {
