@@ -27,7 +27,6 @@ import com.programmers.pcquotation.domain.seller.entitiy.Seller;
 import com.programmers.pcquotation.domain.seller.service.SellerService;
 
 @SpringBootTest
-@ActiveProfiles("test")
 @AutoConfigureMockMvc
 @Transactional
 class PcquotationApplicationTests {
@@ -99,7 +98,7 @@ class PcquotationApplicationTests {
 	void t2() throws Exception {
 		String token = login(id,ps);
 		ResultActions resultActions1 = mvc
-			.perform(get("/seller/api/2208183676")
+			.perform(get("/seller/business/2208183676/check")
 				.header("Authorization", "Bearer " + token)
 				.contentType(
 					new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
@@ -109,9 +108,9 @@ class PcquotationApplicationTests {
 		resultActions1
 			.andExpect(handler().methodName("checkCode"))
 			.andExpect(status().isOk())
-			.andExpect(content().string("인증에 성공하였습니다."));
+			.andExpect(content().string("true"));
 		ResultActions resultActions2 = mvc
-			.perform(get("/seller/api/220818")
+			.perform(get("/seller/business/220818/check")
 				.contentType(
 					new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
 				)
@@ -119,7 +118,7 @@ class PcquotationApplicationTests {
 			.andDo(print());
 		resultActions2
 			.andExpect(status().isOk())
-			.andExpect(content().string("인증에 실패하였습니다."));
+			.andExpect(content().string("false"));
 	}
 
 	@Test
