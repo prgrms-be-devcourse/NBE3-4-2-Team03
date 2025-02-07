@@ -52,7 +52,7 @@ public class ItemService {
 		return new ItemCreateResponse(savedItem.getId(), "부품 생성 완료");
 	}
 
-	//부품 조회
+	//모든 부품 조회
 	@Transactional
 	public List<ItemInfoResponse> getItemList() {
 		List<Item> items = itemRepository.findAll();
@@ -63,6 +63,21 @@ public class ItemService {
 				item.getCategory().getId(),         // 카테고리 ID
 				item.getCategory().getCategory(),   // 카테고리 이름 (categoryName)
 				item.getImgFilename()               // 이미지 파일명
+			))
+			.collect(Collectors.toList());
+	}
+
+	//특정 카테고리의 아이템만 조회
+	@Transactional
+	public List<ItemInfoResponse> getItemsByCategory(Long categoryId) {
+		List<Item> items = itemRepository.findByCategoryId(categoryId); // JPA에서 categoryId로 조회
+		return items.stream()
+			.map(item -> new ItemInfoResponse(
+				item.getId(),
+				item.getName(),
+				item.getCategory().getId(),
+				item.getCategory().getCategory(),
+				item.getImgFilename()
 			))
 			.collect(Collectors.toList());
 	}
