@@ -31,16 +31,13 @@ public class EstimateComponent {
 	private Integer price;
 
 	// 생성자를 통한 초기화
-	public EstimateComponent(Item item, Integer price) {
+	public EstimateComponent(Item item, Integer price, Estimate estimate) {
 		this.item = item;
 		this.price = price;
-	}
-
-	public void setEstimate(Estimate estimate) {
 		this.estimate = estimate;
 	}
 
-	public static EstimateComponent createComponent(Item item, Integer price) {
-		return new EstimateComponent(item, price);
+	public static EstimateComponent createComponent(Item item, Integer price, Estimate estimate) {
+		return new EstimateComponent(item, price, estimate);
 	}
 }

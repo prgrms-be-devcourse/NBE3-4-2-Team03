@@ -3,7 +3,13 @@ package com.programmers.pcquotation.domain.estimaterequest.entity;
 import java.time.LocalDateTime;
 
 import com.programmers.pcquotation.domain.customer.entity.Customer;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,6 +36,6 @@ public class EstimateRequest {
 
 	LocalDateTime createDate;
 
-	@OneToOne
+	@ManyToOne
 	private Customer customer;
 }
