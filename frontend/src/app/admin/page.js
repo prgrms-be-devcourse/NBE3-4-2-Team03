@@ -98,7 +98,6 @@ export default function ItemList() {
 
     useEffect(() => {
         fetchCategories();
-        fetchItems();
     }, []);
 
     const fetchCategories = () => {
@@ -114,8 +113,8 @@ export default function ItemList() {
             .catch((error) => console.error('카테고리 로딩 실패:', error));
     };
 
-    const fetchItems = () => {
-        fetch('http://localhost:8080/api/admin/items')
+    const fetchItems = (categoryId) => {
+        fetch(`http://localhost:8080/api/admin/items?categoryId=${categoryId}`)
             .then((response) => response.json())
             .then((data) => {
                 if (Array.isArray(data)) {
@@ -130,7 +129,9 @@ export default function ItemList() {
 
     const handleCategoryClick = (categoryId) => {
         setSelectedCategory(categoryId);
+        fetchItems(categoryId);
     };
+    
 
     const handleAddCategory = () => {
         if (!newCategoryName.trim()) return alert('카테고리 이름을 입력하세요.');
