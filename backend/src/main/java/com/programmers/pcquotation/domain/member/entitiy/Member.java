@@ -11,4 +11,5 @@ public interface Member<T> {
 	String getUsername();
 	Collection<? extends GrantedAuthority> getAuthorities();
 	String getApiKey();
+	String getPassword();
 }
