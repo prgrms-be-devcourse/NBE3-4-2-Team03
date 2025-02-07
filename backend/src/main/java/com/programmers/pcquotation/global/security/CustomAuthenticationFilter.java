@@ -58,7 +58,7 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 	private void refreshAccessToken(Member member, UserType userType) {
 		String newAccessToken = authService.getAccessToken(member);
 
-		rq.setHeader("Authorization", "Bearer " + member.getApiKey() + " " + newAccessToken + " " + userType);
+		rq.setHeader("Authorization", "Bearer " + member.getApiKey() + " " + newAccessToken + " " + userType.toString());
 		rq.setCookie("accessToken", newAccessToken);
 		rq.setCookie("userType", userType.toString());
 

@@ -2,6 +2,7 @@ package com.programmers.pcquotation.domain.member.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,12 +10,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.programmers.pcquotation.domain.customer.dto.CustomerSignupRequest;
 import com.programmers.pcquotation.domain.customer.dto.CustomerSignupResponse;
+import com.programmers.pcquotation.domain.member.dto.AuthRequest;
+import com.programmers.pcquotation.domain.member.entitiy.Member;
 import com.programmers.pcquotation.domain.member.service.AuthService;
 import com.programmers.pcquotation.domain.member.dto.LoginRequest;
 import com.programmers.pcquotation.domain.member.dto.LoginResponse;
 import com.programmers.pcquotation.domain.seller.dto.SellerSignupRequest;
 import com.programmers.pcquotation.domain.seller.dto.SellerSignupResponse;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -43,6 +47,11 @@ public class AuthController {
 	public ResponseEntity<LoginResponse> loginSeller(@RequestBody LoginRequest loginRequest) {
 		LoginResponse loginResponse = authService.processLoginSeller(loginRequest);
 		return new ResponseEntity<>(loginResponse, HttpStatus.OK);
+	}
+	@GetMapping
+	public ResponseEntity<AuthRequest> CheckAuthentication(){
+		AuthRequest authRequest = authService.getMemberFromRq();
+		return new ResponseEntity<>(authRequest, HttpStatus.OK);
 	}
 
 }
