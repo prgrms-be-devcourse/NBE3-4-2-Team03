@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 export default function MyPage() {
   const [activeTab, setActiveTab] = useState('profile');
@@ -21,7 +22,7 @@ export default function MyPage() {
   useEffect(() => {
     const fetchRequestedQuotes = async () => {
       try {
-        const response = await fetch('/api/estimates');
+        const response = await fetch('http://localhost:8080/estimate/request');
         if (!response.ok) {
           throw new Error('견적 데이터를 불러오는데 실패했습니다');
         }
@@ -120,12 +121,12 @@ export default function MyPage() {
                       <div>
                         <span className="text-lg font-semibold dark:text-white">견적 요청 #{quote.id}</span>
                       </div>
-                      <button 
+                      <Link 
+                        href={`/estimate/create?requestId=${quote.id}`}
                         className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-                        onClick={() => {/* 견적 작성 페이지로 이동 */}}
                       >
                         견적 작성하기
-                      </button>
+                      </Link>
                     </div>
                     <div className="grid grid-cols-2 gap-2 text-sm mb-6">
                     <div className="text-gray-600 dark:text-gray-400">요청자</div>
