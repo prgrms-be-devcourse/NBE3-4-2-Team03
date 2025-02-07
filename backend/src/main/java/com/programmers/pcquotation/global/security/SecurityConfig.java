@@ -25,10 +25,10 @@ public class SecurityConfig {
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests(authorizeRequests ->
 				authorizeRequests
-					.requestMatchers(HttpMethod.GET, "/seller/api/**")
-					.hasRole("SELLER")
-					.requestMatchers(HttpMethod.GET, "/seller")
-					.hasRole("SELLER")
+					//.requestMatchers(HttpMethod.GET, "/seller/api/**")
+					//.hasRole("SELLER")
+					//.requestMatchers(HttpMethod.GET, "/seller")
+					//.hasRole("SELLER")
 					.anyRequest()
 					.permitAll()
 			)

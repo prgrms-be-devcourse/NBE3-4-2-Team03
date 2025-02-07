@@ -26,9 +26,9 @@ public record ItemInfoResponse(
 	public static ItemInfoResponse from(Item item) {
 		return ItemInfoResponse.builder()
 			.id(item.getId())
+			.name(item.getName())
 			.categoryId(item.getCategory().getId())
 			.categoryName(item.getCategory().getCategory())
-			.name(item.getName())
 			.filename(item.getImgFilename())
 			.build();
 	}

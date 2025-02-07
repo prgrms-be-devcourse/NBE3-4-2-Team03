@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.programmers.pcquotation.domain.category.entity.Category;
 import com.programmers.pcquotation.domain.category.repository.CategoryRepository;
+import com.programmers.pcquotation.domain.estimate.repository.EstimateRepository;
 import com.programmers.pcquotation.domain.item.dto.ItemCreateRequest;
 import com.programmers.pcquotation.domain.item.dto.ItemCreateResponse;
 import com.programmers.pcquotation.domain.item.dto.ItemDeleteResponse;
@@ -27,6 +28,9 @@ import com.programmers.pcquotation.domain.item.repository.ItemRepository;
 class ItemServiceTest {
 	@InjectMocks // ItemService에 Mock 객체 자동 주입
 	private ItemService itemService;
+
+	@Mock
+	private EstimateRepository estimateRepository;
 
 	@Mock
 	private ItemRepository itemRepository;
@@ -142,6 +146,7 @@ class ItemServiceTest {
 	void deleteItemTest() {
 		// Given
 		Long itemId = 1L;
+		Item item = Item.createTestItem(itemId, "부품1", "image.png", null); // 아이템 객체 생성
 		when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
 
 		// When
@@ -152,7 +157,7 @@ class ItemServiceTest {
 		assertThat(response.message()).isEqualTo("부품 삭제 완료");
 
 		verify(itemRepository, times(1)).findById(itemId);
-		verify(itemRepository, times(1)).delete(item);
+		verify(estimateRepository, times(1)).deleteComponentsByItemId(itemId); // EstimateComponent 삭제 검증
+		verify(itemRepository, times(1)).delete(item); // 아이템 삭제 검증
 	}
-
 }
