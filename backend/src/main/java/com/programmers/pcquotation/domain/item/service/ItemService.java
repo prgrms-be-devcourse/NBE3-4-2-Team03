@@ -57,10 +57,10 @@ public class ItemService {
 		return items.stream()
 			.map(item -> new ItemInfoResponse(
 				item.getId(),
-				item.getCategory().getCategory(),
-				item.getCategory().getId(),
-				item.getName(),
-				item.getImgFilename()
+				item.getName(),                     // 부품 이름 (name)
+				item.getCategory().getId(),         // 카테고리 ID
+				item.getCategory().getCategory(),   // 카테고리 이름 (categoryName)
+				item.getImgFilename()               // 이미지 파일명
 			))
 			.collect(Collectors.toList());
 	}
@@ -68,21 +68,26 @@ public class ItemService {
 	//부품 수정
 	@Transactional
 	public ItemUpdateResponse updateItem(Long id, ItemUpdateRequest request) {
-
 		Item item = itemRepository.findById(id)
 			.orElseThrow(() -> new ItemNotFoundException(id));
 
 		Category category = categoryRepository.findById(request.categoryId())
 			.orElseThrow(() -> new IllegalArgumentException("유효하지 않은 카테고리 ID입니다."));
 
+		String imgFilename = request.imgFilename();
+
+		// imgFilename이 null이거나 비어있다면 기존의 filename을 사용
+		if (imgFilename == null || imgFilename.isEmpty()) {
+			imgFilename = item.getImgFilename(); // 기존 이미지 파일 이름을 가져옴
+		}
+
 		item.updateItem(
 			request.name(),
-			request.imgFilename(),
+			imgFilename,
 			category
 		);
 
 		return new ItemUpdateResponse(id, "부품 수정 완료");
-
 	}
 
 	//부품 삭제
