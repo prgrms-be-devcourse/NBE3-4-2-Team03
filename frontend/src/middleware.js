@@ -6,8 +6,10 @@ import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adap
 
 export async function middleware(req) {
   const cookieStore = await cookies();
+  const apiKey = cookieStore.get("apiKey")?.value;
   const accessToken = cookieStore.get("accessToken")?.value;
-  console.log(req);
+  const userType = cookieStore.get("userType")?.value;
+  const authorization = "Bearer " + apiKey +" " + accessToken +" " +userType;
 
 
 
@@ -21,11 +23,10 @@ export async function middleware(req) {
   if (isProtectedRouteAdmin(req.nextUrl.pathname)
   || isProtectedRouteSeller(req.nextUrl.pathname)
   || isProtectedRouteCustomer(req.nextUrl.pathname)) {
-
     const response = await fetch("http://localhost:8080/api/auth", {
         method: "GET",
         headers: {
-            "cookie": cookieStore.toString()
+            "Authorization":  authorization
         }
     });
 
@@ -33,23 +34,29 @@ export async function middleware(req) {
         return createUnauthorizedResponse();
         throw new Error("Failed to create estimate request");
     }
+    const respData = await response.json();
+    const isAdmin = respData?.userType === 'Admin';
+    const isSeller = respData?.userType  === 'Seller';
+    const isCustomer = respData?.userType === 'Customer';
 
-    const isAdmin = response.data?.userType === 'Admin';
-    const isSeller = response.data?.userType === 'Seller';
-    const isCustomer = response.data?.userType === 'Customer';
-
+    console.log(respData?.userType );
     if(isProtectedRouteAdmin(req.nextUrl.pathname)){
         if (!isAdmin) {
+          console.log("admin");
           return createUnauthorizedResponse();
         }
     }
     if(isProtectedRouteSeller(req.nextUrl.pathname)){
-        if (!isAdmin && !Seller) {
+        if (!isAdmin && !isSeller) {
+                  console.log("seller");
+
           return createUnauthorizedResponse();
         }
     }
     if(isProtectedRouteCustomer(req.nextUrl.pathname)){
-        if (!isAdmin && !Customer) {
+        if (!isAdmin && !isCustomer) {
+                          console.log("customer");
+
           return createUnauthorizedResponse();
         }
     }
@@ -84,16 +91,21 @@ function parseAccessToken(accessToken) {
   return { isLogin, isAccessTokenExpired, accessTokenPayload };
 }
 
-async function refreshTokens(cookieStore) {
+async function refreshTokens(cookieStore,authorization) {
     const meResponse = await fetch("http://localhost:8080/api/auth", {
         method: "GET",
         headers: {
-            "cookie": cookieStore.toString()
+            "Authorization":  authorization
         }
     });
 
-  const setCookieHeader = meResponse.response.headers.get("Set-Cookie");
-
+  try{
+    const setCookieHeader = meResponse.response.headers.get("Set-Cookie");
+  }
+  catch(error){
+    console.log(error);
+    return null;
+  }
   if (setCookieHeader) {
     const cookies = setCookieHeader.split(",");
 
@@ -146,12 +158,12 @@ function isProtectedRouteAdmin(pathname) {
 }
 function isProtectedRouteSeller(pathname){
   return (
-    pathname.startsWith("/seller")
+    pathname.startsWith("/sellers")
   );
 }
 function isProtectedRouteCustomer(pathname){
   return (
-    pathname.startsWith("/customer")
+    pathname.startsWith("/customers")
   );
 }
 
