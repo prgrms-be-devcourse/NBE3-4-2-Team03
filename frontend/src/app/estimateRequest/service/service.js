@@ -4,6 +4,8 @@ export async function createEstimateRequest(purpose, budget, otherRequest) {
         headers: {
             "Content-Type": "application/json",
         },
+        // 쿠키를 자동으로 포함시키기 위해 credentials 옵션 추가
+        credentials: 'include',
         body: JSON.stringify({ purpose, budget, otherRequest }),
     });
 
