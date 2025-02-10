@@ -8,9 +8,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter                 // JSON 직렬화를 위해 필요
+@Getter
 @Builder
-@NoArgsConstructor     // 기본 생성자
+@NoArgsConstructor
 @AllArgsConstructor
 public class ReceivedQuoteDTO {
 	private Integer id;                  // 받은 견적 ID

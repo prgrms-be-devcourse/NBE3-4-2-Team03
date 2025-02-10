@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor    // 모든 필드를 파라미터로 받는 생성자
 public class EstimateRequestResDto {
 	private Integer id;
+	private String customerId;
 	private String status;
 	private LocalDateTime createDate;
 	private Integer budget;
