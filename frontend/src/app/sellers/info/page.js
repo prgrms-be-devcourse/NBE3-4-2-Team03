@@ -167,7 +167,7 @@ export default function MyPage() {
                     <div className="text-gray-600 dark:text-gray-400">요청자</div>
                     <div className="dark:text-white">{quote.customerId}</div>
                       <div className="text-gray-600 dark:text-gray-400">요청일</div>
-                      <div className="dark:text-white">{quote.createDate}</div>
+                      <div className="dark:text-white">{new Date(quote.createDate).toLocaleDateString()}</div>
                       <div className="text-gray-600 dark:text-gray-400">예산</div>
                       <div className="dark:text-white">{quote.budget}</div>
                       <div className="text-gray-600 dark:text-gray-400">용도</div>
