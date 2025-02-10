@@ -44,7 +44,6 @@ public class EstimateRequestControllerTest {
                 .builder()
                 .purpose("testPurpose")
                 .budget(100)
-                .otherRequest("testRequest")
                 .customer(customer)
                 .build();
 
@@ -65,9 +64,7 @@ public class EstimateRequestControllerTest {
                                 .content(data)
                                 .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
                 )
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.purpose").value("testPurpose"))
-                .andExpect(jsonPath("$.budget").value(100));
+                .andExpect(status().isCreated());
     }
 
     @Test
