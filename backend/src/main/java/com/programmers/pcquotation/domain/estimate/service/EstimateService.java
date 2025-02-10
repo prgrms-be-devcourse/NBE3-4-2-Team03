@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.pcquotation.domain.estimate.dto.EstimateCreateRequest;
 import com.programmers.pcquotation.domain.estimate.dto.EstimateItemDto;
+import com.programmers.pcquotation.domain.estimate.dto.EstimateSellerResDto;
 import com.programmers.pcquotation.domain.estimate.dto.ReceivedQuoteDTO;
 import com.programmers.pcquotation.domain.estimate.entity.Estimate;
 import com.programmers.pcquotation.domain.estimate.entity.EstimateComponent;
@@ -69,6 +70,8 @@ public class EstimateService {
 	public List<ReceivedQuoteDTO> getEstimateByRequest(Integer id) {
 		List<Estimate> list = estimateRepository.getAllByEstimateRequest_Id(id);
 
+		System.out.print(list.size());
+
 		return list.stream().map(quoto -> {
 			return ReceivedQuoteDTO.builder()
 				.id(quoto.getId())
@@ -83,4 +86,26 @@ public class EstimateService {
 		}).toList();
 	}
 
+	public List<EstimateSellerResDto> getEstimateBySeller(String username) {
+
+		Seller seller = sellerService.findByUserName(username)
+			.orElseThrow(() -> new NoSuchElementException("존재하지 않는 판매자입니다."));
+		List<Estimate> list = estimateRepository.getAllBySeller(seller);
+
+		return list.stream().map(quoto -> {
+
+			return EstimateSellerResDto.builder()
+				.id(quoto.getId())
+				.purpose(quoto.getEstimateRequest().getPurpose())
+				.budget(quoto.getEstimateRequest().getBudget())
+				.customer(quoto.getEstimateRequest().getCustomer().getCustomerName())
+				.date(quoto.getEstimateRequest().getCreateDate())
+				.totalPrice(quoto.getTotalPrice())
+				.items(quoto.getEstimateComponents().stream()
+					.collect(Collectors.toMap(
+						item -> item.getItem().getCategory().getCategory(),
+						item -> item.getItem().getName())))
+				.build();
+		}).toList();
+	}
 }
