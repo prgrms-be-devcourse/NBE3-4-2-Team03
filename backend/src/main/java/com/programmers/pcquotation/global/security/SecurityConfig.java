@@ -36,6 +36,7 @@ public class SecurityConfig {
 		HttpSecurity httpSecurity = http.authorizeHttpRequests(authorizeRequests ->
 				authorizeRequests
 					// 판매자,구매자 정보 관련 권한 설정
+
 					.requestMatchers("/seller/**")
 					.hasRole("SELLER")
 					.requestMatchers("/customer/**")
@@ -43,7 +44,7 @@ public class SecurityConfig {
 
 					// 견적 요청 관련 권한 설정
 					.requestMatchers(HttpMethod.POST, "/estimate/request/**")
-					.hasAnyRole("CUSTOMER")
+					.hasRole("CUSTOMER")
 					.requestMatchers(HttpMethod.GET, "/estimate/request")
 					.hasAnyRole("CUSTOMER", "SELLER")
 
@@ -54,8 +55,8 @@ public class SecurityConfig {
 					//아이템 관련 권한 설정
 					.requestMatchers(HttpMethod.GET, "/api/admin/items/**")
 					.hasAnyRole("SELLER", "ADMIN")
-					// .requestMatchers("/api/admin/items/**")
-					// .hasRole("ADMIN") // 어드민 추가 이후 활성화
+					.requestMatchers("/api/admin/items/**")
+					.hasRole("ADMIN")
 
 					// 견적 관련 권한 설정
 					.requestMatchers(HttpMethod.GET, "/api/estimate/{id}")
@@ -75,6 +76,7 @@ public class SecurityConfig {
 					.requestMatchers("/api/admin/categories/**")
 					.hasAnyRole("ADMIN")
 					// 그 외 모든 요청 허용
+
 					.anyRequest().permitAll()
 			)
 			.cors(cors -> corsConfigurationSource())

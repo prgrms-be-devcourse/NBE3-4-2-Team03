@@ -88,6 +88,7 @@ public class AuthService {
 		return new SellerSignupResponse(seller, "회원가입 성공");
 	}
 
+
 	public LoginResponse processLoginCustomer(LoginRequest customerLoginRequest) {
 		String username = customerLoginRequest.getUsername();
 		Customer customer = customerService.findCustomerByUsername(username)
@@ -133,6 +134,9 @@ public class AuthService {
 		String username = loginRequest.getUsername();
 		Admin admin = adminService.findAdminByUsername(username)
 			.orElseThrow(IncorrectLoginAttemptException::new);
+		if (!passwordEncoder.matches(loginRequest.getPassword(), admin.getPassword())) {
+			throw new IncorrectLoginAttemptException();
+		}
 		String accessToken = this.getAccessToken(admin);
 		rq.setCookie("accessToken", accessToken);
 		rq.setCookie("apiKey", admin.getApiKey());
@@ -166,6 +170,9 @@ public class AuthService {
 			}
 			case Customer -> {
 				return customerService.findById(id).orElse(null);
+			}
+			case Admin -> {
+				return adminService.findById(id).orElse(null);
 			}
 		}
 		return null;
