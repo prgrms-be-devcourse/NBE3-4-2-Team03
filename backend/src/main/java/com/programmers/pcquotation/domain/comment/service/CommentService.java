@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.programmers.pcquotation.domain.comment.dto.CommentCreateRequest;
 import com.programmers.pcquotation.domain.comment.dto.CommentCreateResponse;
+import com.programmers.pcquotation.domain.comment.dto.CommentDeleteResponse;
 import com.programmers.pcquotation.domain.comment.dto.CommentInfoResponse;
 import com.programmers.pcquotation.domain.comment.dto.CommentUpdateRequest;
 import com.programmers.pcquotation.domain.comment.dto.CommentUpdateResponse;
@@ -84,5 +85,15 @@ public class CommentService {
 
 		return new CommentUpdateResponse(id, "댓글 수정 완료");
 
+	}
+
+	@Transactional
+	public CommentDeleteResponse deleteComment(Long id) {
+		Comment comment = commentRepository.findById(id)
+			.orElseThrow(() -> new CommentNotFoundException(id));
+
+		commentRepository.delete(comment);
+
+		return new CommentDeleteResponse(id, "댓글 삭제 완료");
 	}
 }
