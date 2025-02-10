@@ -54,6 +54,7 @@ public class EstimateRequestService {
 				.budget(request.getBudget())
 				.otherRequest(request.getOtherRequest())
 				.createDate(request.getCreateDate())
+				.status(request.getStatus())
 				.build();
 		}).toList();
 	}
@@ -75,6 +76,7 @@ public class EstimateRequestService {
 				.budget(request.getBudget())
 				.otherRequest(request.getOtherRequest())
 				.createDate(request.getCreateDate())
+				.status(request.getStatus())
 				.build();
 		}).toList();
 	}

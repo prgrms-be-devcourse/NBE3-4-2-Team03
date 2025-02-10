@@ -51,6 +51,7 @@ public class DeliveryService {
                 .findAny()
                 .orElseThrow(NullEntityException::new);
     }
+
     //배달 삭제 로직을 통해 견적 요청 상태가 초기값으로 돌아가게함
     public void delete(Integer id) {
         Delivery delivery = deliveryRepository.findById(id).orElseThrow(NullEntityException::new);
