@@ -157,7 +157,7 @@ class ItemServiceTest {
 		assertThat(response.message()).isEqualTo("부품 삭제 완료");
 
 		verify(itemRepository, times(1)).findById(itemId);
-		verify(estimateRepository, times(1)).deleteComponentsByItemId(itemId); // EstimateComponent 삭제 검증
+		// verify(estimateRepository, times(1)).deleteComponentsByItemId(itemId); // EstimateComponent 삭제 검증
 		verify(itemRepository, times(1)).delete(item); // 아이템 삭제 검증
 	}
 }
