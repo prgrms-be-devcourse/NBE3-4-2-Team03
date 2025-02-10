@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.programmers.pcquotation.domain.admin.entitiy.Admin;
+import com.programmers.pcquotation.domain.admin.service.AdminService;
 import com.programmers.pcquotation.domain.customer.dto.CustomerSignupRequest;
 import com.programmers.pcquotation.domain.customer.dto.CustomerSignupResponse;
 import com.programmers.pcquotation.domain.customer.entity.Customer;
@@ -40,6 +42,7 @@ public class AuthService {
 
 	private final CustomerService customerService;
 	private final SellerService sellerService;
+	private final AdminService adminService;
 	private final PasswordEncoder passwordEncoder;
 	private final Rq rq;
 
@@ -123,6 +126,22 @@ public class AuthService {
 			.apiKey(seller.getApiKey())
 			.accessToken(accessToken)
 			.userType(UserType.Seller)
+			.message("로그인 성공")
+			.build();
+	}
+	public LoginResponse processLoginAdmin(LoginRequest loginRequest) {
+		String username = loginRequest.getUsername();
+		Admin admin = adminService.findAdminByUsername(username)
+			.orElseThrow(IncorrectLoginAttemptException::new);
+		String accessToken = this.getAccessToken(admin);
+		rq.setCookie("accessToken", accessToken);
+		rq.setCookie("apiKey", admin.getApiKey());
+		rq.setCookie("userType", UserType.Admin.toString());
+
+		return LoginResponse.builder()
+			.apiKey(admin.getApiKey())
+			.accessToken(accessToken)
+			.userType(UserType.Admin)
 			.message("로그인 성공")
 			.build();
 	}

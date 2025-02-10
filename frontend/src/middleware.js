@@ -147,7 +147,7 @@ function parseCookie(cookieStr) {
 
 function isProtectedRouteAdmin(pathname) {
   return (
-    pathname.startsWith("/admin")
+    pathname.startsWith("/admin/info")
   );
 }
 function isProtectedRouteSeller(pathname){
