@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import com.programmers.pcquotation.domain.estimaterequest.controller.EstimateRequestController;
 import com.programmers.pcquotation.domain.estimaterequest.dto.EstimateRequestData;
+import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequestStatus;
 import com.programmers.pcquotation.domain.estimaterequest.exception.NullEntityException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -35,6 +36,7 @@ public class EstimateRequestService {
 			.budget(budget)
 			.otherRequest(otherRequest)
 			.customer(customer)
+			.status(EstimateRequestStatus.Wait)
 			.build());
 	}
 
@@ -82,5 +84,12 @@ public class EstimateRequestService {
 				.findById(id)
 				.orElseThrow(NullEntityException::new);
 		estimateRequest.UpdateEstimateRequest(estimateRequestData);
+	}
+
+	public void update(Integer id) {
+		EstimateRequest estimateRequest = estimateRequestRepository
+				.findById(id)
+				.orElseThrow(NullEntityException::new);
+		estimateRequest.UpdateDeliveryStatus(EstimateRequestStatus.Adopt);
 	}
 }

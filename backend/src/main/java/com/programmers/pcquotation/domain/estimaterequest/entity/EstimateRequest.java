@@ -4,13 +4,9 @@ import java.time.LocalDateTime;
 
 import com.programmers.pcquotation.domain.customer.entity.Customer;
 
+import com.programmers.pcquotation.domain.delivery.entity.DeliveryStatus;
 import com.programmers.pcquotation.domain.estimaterequest.dto.EstimateRequestData;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -41,9 +37,16 @@ public class EstimateRequest {
 	@ManyToOne
 	private Customer customer;
 
+	@Enumerated(EnumType.STRING)
+	private EstimateRequestStatus status; // 0: 대기 중, 1: 채택됨
+
 	public void UpdateEstimateRequest(EstimateRequestData estimateRequestData) {
 		this.purpose = estimateRequestData.purpose();
 		this.budget = estimateRequestData.budget();
 		this.otherRequest = estimateRequestData.otherRequest();
+	}
+
+	public void UpdateDeliveryStatus(EstimateRequestStatus estimateRequestStatus) {
+		this.status = estimateRequestStatus;
 	}
 }

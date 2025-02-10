@@ -4,6 +4,7 @@ import java.security.Principal;
 import java.util.List;
 
 import com.programmers.pcquotation.domain.estimaterequest.dto.EstimateRequestData;
+import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequestStatus;
 import com.programmers.pcquotation.global.enums.UserType;
 import com.programmers.pcquotation.global.rq.Rq;
 import org.springframework.http.HttpStatus;
@@ -24,11 +25,8 @@ public class EstimateRequestController {
 	private final EstimateRequestService estimateRequestService;
 	private final Rq rq;
 
-
-
 	@PostMapping
-	public ResponseEntity<String> createER(@RequestBody @Valid EstimateRequestData estimateRequestData,
-														Principal principal) {
+	public ResponseEntity<String> createER(@RequestBody @Valid EstimateRequestData estimateRequestData, Principal principal) {
 		Customer customer = estimateRequestService.findCustomer(principal.getName());
 		estimateRequestService.createEstimateRequest(
 			estimateRequestData.purpose(),
@@ -41,6 +39,11 @@ public class EstimateRequestController {
 	@PutMapping("/{id}")
 	public ResponseEntity<String> modifyER(@PathVariable Integer id, @RequestBody @Valid EstimateRequestData estimateRequestData){
 		estimateRequestService.modify(id, estimateRequestData);
+		return ResponseEntity.status(HttpStatus.OK).body("수정되었습니다");
+	}
+	@PutMapping("/{id}")
+	public ResponseEntity<String> updateER(@PathVariable Integer id){
+		estimateRequestService.update(id);
 		return ResponseEntity.status(HttpStatus.OK).body("수정되었습니다");
 	}
 
