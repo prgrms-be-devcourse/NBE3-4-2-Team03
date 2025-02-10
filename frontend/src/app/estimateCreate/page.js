@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect,useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
-
+import { Suspense } from 'react'
 const CategoryItemsComponent= ({category,items:parentItems,handleItemSelect,handleItemPrice:handleItemPrice})=>{
     const [items,setItems] = useState([])
     const [selectedItem,setSelectedItem] = useState(0)
@@ -93,14 +93,14 @@ export default function CreateEstimate() {
     const fetchData = async () => {
       try {
         // 카테고리 데이터 가져오기
-        const categoryResponse = await fetch('http://localhost:8080/api/categories');
+        const categoryResponse = await fetch('http://localhost:8080/api/admin/categories');
         if (!categoryResponse.ok) throw new Error('카테고리 데이터를 가져오는데 실패했습니다');
         const categoryData = await categoryResponse.json();
         
         setCategories(categoryData);
 
         // 부품 데이터 가져오기
-        const itemsResponse = await fetch('http://localhost:8080/api/items');
+        const itemsResponse = await fetch('http://localhost:8080/api/admin/items');
         if (!itemsResponse.ok) throw new Error('부품 데이터를 가져오는데 실패했습니다');
         const itemsData = await itemsResponse.json();
         const itemsByCategory =Object.groupBy(itemsData,(item)=>item.categoryName)
@@ -190,6 +190,7 @@ export default function CreateEstimate() {
     <div className="min-h-screen p-8 dark:bg-gray-900">
       <h1 className="text-2xl font-bold mb-8 dark:text-white">PC 견적 작성</h1>
       
+      <Suspense>
       {/* 견적 요청 정보 섹션 */}
       {requestInfo && (
         <div className="max-w-2xl mx-auto mb-8">
@@ -222,6 +223,7 @@ export default function CreateEstimate() {
           </div>
         </div>
       )}
+      </Suspense>
 
       <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-6">
