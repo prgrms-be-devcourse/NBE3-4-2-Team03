@@ -63,6 +63,7 @@ public class EstimateRequestService {
 		return requestRepositoryAll.stream().map(request -> {
 			return EstimateRequestResDto.builder()
 				.id(request.getId())
+				.customerId(request.getCustomer().getCustomerName())
 				.purpose(request.getPurpose())
 				.budget(request.getBudget())
 				.otherRequest(request.getOtherRequest())

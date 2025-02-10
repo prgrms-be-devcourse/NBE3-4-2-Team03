@@ -43,9 +43,6 @@ public class AuthService {
 	private final PasswordEncoder passwordEncoder;
 	private final Rq rq;
 
-
-
-
 	public CustomerSignupResponse processSignup(CustomerSignupRequest customerSignupRequest) {
 		if (!customerSignupRequest.getPassword().equals(customerSignupRequest.getConfirmPassword())) {
 			throw new PasswordMismatchException();
@@ -189,21 +186,10 @@ public class AuthService {
 
 		return Map.of("id", id, "username", username);
 	}
-		/*
-		private void setAuthentication(Customer customer) {
-			UserDetails user = new User(
-					customer.getUsername(),
-					customer.getPassword(),
-					customer.getAuthorities()
-			);
 
-			Authentication authentication = new UsernamePasswordAuthenticationToken(
-					user,
-					null,
-					user.getAuthorities()
-			);
-
-			SecurityContextHolder.getContext().setAuthentication(authentication);
-		}
-		*/
+	public void processLogout() {
+		rq.deleteCookie("accessToken");
+		rq.deleteCookie("apiKey");
+		rq.deleteCookie("userType");
+	}
 }

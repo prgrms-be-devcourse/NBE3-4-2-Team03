@@ -5,6 +5,7 @@ export async function createEstimateRequest(purpose, budget, otherRequest) {
             "Content-Type": "application/json",
         },
         body: JSON.stringify({ purpose, budget, otherRequest }),
+        credentials: 'include'
     });
 
     if (!response.ok) {

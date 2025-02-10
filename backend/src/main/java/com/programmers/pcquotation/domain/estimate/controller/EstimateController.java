@@ -1,5 +1,6 @@
 package com.programmers.pcquotation.domain.estimate.controller;
 
+import java.security.Principal;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.programmers.pcquotation.domain.estimate.dto.EstimateCreateRequest;
+import com.programmers.pcquotation.domain.estimate.dto.EstimateSellerResDto;
 import com.programmers.pcquotation.domain.estimate.dto.ReceivedQuoteDTO;
 import com.programmers.pcquotation.domain.estimate.service.EstimateService;
 
@@ -21,16 +23,23 @@ import lombok.AllArgsConstructor;
 public class EstimateController {
 	private final EstimateService estimateService;
 
-	@PostMapping("/api/estimates")
-	public ResponseEntity<String> createEstimate(@RequestBody EstimateCreateRequest request) {
-		estimateService.createEstimate(request);
+	@PostMapping("/api/estimate")
+	public ResponseEntity<String> createEstimate(@RequestBody EstimateCreateRequest request, Principal principal) {
+		estimateService.createEstimate(request, principal.getName());
 		return ResponseEntity.ok().body("");
 	}
 
-	@GetMapping("/api/estimates/{id}")
+	@GetMapping("/api/estimate/{id}")
 	public ResponseEntity<List<ReceivedQuoteDTO>> getEstimateByRequest(@PathVariable Integer id) {
 		List<ReceivedQuoteDTO> estimateByRequest = estimateService.getEstimateByRequest(id);
 		return new ResponseEntity<>(estimateByRequest, HttpStatus.OK);
+	}
+
+	@GetMapping("/api/estimate/seller/{username}")
+	public ResponseEntity<List<EstimateSellerResDto>> getEstimateByRequest(Principal principal,
+		@PathVariable String username) {
+		List<EstimateSellerResDto> estimateBySeller = estimateService.getEstimateBySeller(username);
+		return new ResponseEntity<>(estimateBySeller, HttpStatus.OK);
 	}
 
 }
