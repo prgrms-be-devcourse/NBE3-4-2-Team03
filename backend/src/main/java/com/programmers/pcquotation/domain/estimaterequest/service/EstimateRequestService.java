@@ -5,6 +5,11 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import com.programmers.pcquotation.domain.estimaterequest.controller.EstimateRequestController;
+import com.programmers.pcquotation.domain.estimaterequest.dto.EstimateRequestData;
+import com.programmers.pcquotation.domain.estimaterequest.exception.NullEntityException;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
 import com.programmers.pcquotation.domain.customer.entity.Customer;
@@ -70,5 +75,12 @@ public class EstimateRequestService {
 				.createDate(request.getCreateDate())
 				.build();
 		}).toList();
+	}
+	@Transactional
+	public void modify(Integer id, EstimateRequestData estimateRequestData) {
+		EstimateRequest estimateRequest = estimateRequestRepository
+				.findById(id)
+				.orElseThrow(NullEntityException::new);
+		estimateRequest.UpdateEstimateRequest(estimateRequestData);
 	}
 }

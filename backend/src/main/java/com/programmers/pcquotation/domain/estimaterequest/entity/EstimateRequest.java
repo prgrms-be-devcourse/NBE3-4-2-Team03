@@ -4,12 +4,14 @@ import java.time.LocalDateTime;
 
 import com.programmers.pcquotation.domain.customer.entity.Customer;
 
+import com.programmers.pcquotation.domain.estimaterequest.dto.EstimateRequestData;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -38,4 +40,10 @@ public class EstimateRequest {
 
 	@ManyToOne
 	private Customer customer;
+
+	public void UpdateEstimateRequest(EstimateRequestData estimateRequestData) {
+		this.purpose = estimateRequestData.purpose();
+		this.budget = estimateRequestData.budget();
+		this.otherRequest = estimateRequestData.otherRequest();
+	}
 }
