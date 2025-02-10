@@ -19,10 +19,8 @@ export async function middleware(req) {
   if (isLogin && isAccessTokenExpired) {
     await refreshTokens(cookieStore);
   }
-//어드민,판매자 구매자
-  if (isProtectedRouteAdmin(req.nextUrl.pathname)
-  || isProtectedRouteSeller(req.nextUrl.pathname)
-  || isProtectedRouteCustomer(req.nextUrl.pathname)) {
+
+
     const response = await fetch("http://localhost:8080/api/auth", {
         method: "GET",
         headers: {
@@ -31,7 +29,7 @@ export async function middleware(req) {
     });
 
     if (!response.ok) {
-        return createUnauthorizedResponse();
+        return createUnauthorizedResponse("/");
         throw new Error("Failed to create estimate request");
     }
     const respData = await response.json();
@@ -39,33 +37,32 @@ export async function middleware(req) {
     const isSeller = respData?.userType  === 'Seller';
     const isCustomer = respData?.userType === 'Customer';
 
-    console.log(respData?.userType );
+    if(req.nextUrl.pathname === "/"){
+        if(isSeller) return createUnauthorizedResponse("/sellers/info");
+        if(isCustomer) return createUnauthorizedResponse("/customers/info");
+        if(isAdmin) return createUnauthorizedResponse("/admin");
+        }
     if(isProtectedRouteAdmin(req.nextUrl.pathname)){
         if (!isAdmin) {
-          console.log("admin");
-          return createUnauthorizedResponse();
+          return createUnauthorizedResponse("/");
         }
     }
     if(isProtectedRouteSeller(req.nextUrl.pathname)){
         if (!isAdmin && !isSeller) {
-                  console.log("seller");
-
-          return createUnauthorizedResponse();
+          return createUnauthorizedResponse("/");
         }
     }
     if(isProtectedRouteCustomer(req.nextUrl.pathname)){
         if (!isAdmin && !isCustomer) {
-                          console.log("customer");
-
-          return createUnauthorizedResponse();
+          return createUnauthorizedResponse("/");
         }
     }
-  return NextResponse.next({
+    return NextResponse.next({
     headers: {
       cookie: cookieStore.toString(),
     },
   });
-}
+
 }
 
 function parseAccessToken(accessToken) {
@@ -152,8 +149,8 @@ function parseCookie(cookieStr) {
 
 function isProtectedRouteAdmin(pathname) {
   return (
-    pathname.startsWith("/admin/products") ||
-    pathname.startsWith("/admin/order")
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/estimateCreate")
   );
 }
 function isProtectedRouteSeller(pathname){
@@ -164,13 +161,14 @@ function isProtectedRouteSeller(pathname){
 function isProtectedRouteCustomer(pathname){
   return (
     pathname.startsWith("/customers") ||
-    pathname.startsWith("/delivery")
+    pathname.startsWith("/estimateRequest")
   );
 }
 
+
  
-function createUnauthorizedResponse(){
-  const loginUrl = new URL('/', process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000');
+function createUnauthorizedResponse(content){
+  const loginUrl = new URL(content, process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000');
 
   return NextResponse.redirect(loginUrl);
 }
