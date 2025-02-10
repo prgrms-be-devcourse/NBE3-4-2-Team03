@@ -38,6 +38,7 @@ public class Estimate {
 	@ManyToOne
 	private Seller seller;
 
+	@Setter
 	private Integer totalPrice;
 
 	@Setter
@@ -57,6 +58,11 @@ public class Estimate {
 		this.totalPrice = totalPrice;
 		this.createDate = LocalDateTime.now();
 		this.estimateComponents = estimateComponents;
+	}
+
+	public void addEstimateComponent(EstimateComponent component) {
+		this.estimateComponents.add(component);
+		component.setEstimate(this);
 	}
 
 }
