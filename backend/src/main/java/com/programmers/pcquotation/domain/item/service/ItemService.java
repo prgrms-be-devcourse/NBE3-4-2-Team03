@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.programmers.pcquotation.domain.category.entity.Category;
 import com.programmers.pcquotation.domain.category.repository.CategoryRepository;
-import com.programmers.pcquotation.domain.estimate.repository.EstimateRepository;
+import com.programmers.pcquotation.domain.estimate.repository.EstimateComponentRepository;
 import com.programmers.pcquotation.domain.item.dto.ItemCreateRequest;
 import com.programmers.pcquotation.domain.item.dto.ItemCreateResponse;
 import com.programmers.pcquotation.domain.item.dto.ItemDeleteResponse;
@@ -30,7 +30,7 @@ public class ItemService {
 	private final ItemRepository itemRepository;
 	private final ImageService imageService;
 	private final CategoryRepository categoryRepository;
-	private final EstimateRepository estimateRepository;
+	private final EstimateComponentRepository estimateComponentRepository;
 
 	//부품 생성
 	@Transactional
@@ -113,7 +113,7 @@ public class ItemService {
 		Item item = itemRepository.findById(id)
 			.orElseThrow(() -> new ItemNotFoundException(id));
 
-		estimateRepository.deleteComponentsByItemId(id);
+		estimateComponentRepository.deleteComponentsByItemId(id);
 
 		itemRepository.delete(item);
 
