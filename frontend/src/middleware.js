@@ -25,7 +25,7 @@ export async function middleware(req) {
     const response = await fetch("http://localhost:8080/api/auth", {
         method: "GET",
         headers: {
-            "Authorization":  authorization
+            "Authorization" : authorization
         }
     });
 
