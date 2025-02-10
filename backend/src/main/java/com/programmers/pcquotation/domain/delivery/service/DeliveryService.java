@@ -1,6 +1,7 @@
 package com.programmers.pcquotation.domain.delivery.service;
 
 import com.programmers.pcquotation.domain.delivery.entity.Delivery;
+import com.programmers.pcquotation.domain.delivery.entity.DeliveryDto;
 import com.programmers.pcquotation.domain.delivery.entity.DeliveryStatus;
 import com.programmers.pcquotation.domain.delivery.exception.NullEntityException;
 import com.programmers.pcquotation.domain.delivery.repository.DeliveryRepository;
@@ -26,22 +27,35 @@ public class DeliveryService {
                 .build());
     }
 
-    public List<Delivery> findAll() {
+    public List<DeliveryDto> findAll() {
         if (!deliveryRepository.findAll().isEmpty()){
-            return deliveryRepository.findAll();
+            return deliveryRepository
+                    .findAll()
+                    .stream()
+                    .map(DeliveryDto::new).toList();
         }else throw new NullEntityException();
     }
 
-    public Delivery findOne(Integer id) {
-        return deliveryRepository.findById(id).orElseThrow(NullEntityException::new);
+    public DeliveryDto findOne(Integer id) {
+        return deliveryRepository
+                .findById(id)
+                .stream()
+                .map(DeliveryDto::new)
+                .findAny()
+                .orElseThrow(NullEntityException::new);
     }
 
     public void delete(Integer id) {
-        deliveryRepository.delete(findOne(id)); //findOne 예외 처리
+        deliveryRepository
+                .delete(deliveryRepository.findById(id)
+                                .orElseThrow(NullEntityException::new));
     }
 
     @Transactional
     public void modify(Integer id, String address) {
-        findOne(id).updateAddress(address);  //findOne 예외 처리
+        deliveryRepository
+                .findById(id)
+                .orElseThrow(NullEntityException::new)
+                .updateAddress(address);
     }
 }

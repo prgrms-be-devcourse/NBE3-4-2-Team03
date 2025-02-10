@@ -1,5 +1,6 @@
 package com.programmers.pcquotation.domain.delivery.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.programmers.pcquotation.domain.estimate.entity.Estimate;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -17,7 +18,7 @@ public class Delivery {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     private Estimate estimate;
 
     @Enumerated(EnumType.STRING)
