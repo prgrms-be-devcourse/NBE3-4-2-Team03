@@ -36,9 +36,8 @@ public class EstimateController {
 	}
 
 	@GetMapping("/api/estimate/seller/{username}")
-	public ResponseEntity<List<EstimateSellerResDto>> getEstimateByRequest(Principal principal,
-		@PathVariable String username) {
-		List<EstimateSellerResDto> estimateBySeller = estimateService.getEstimateBySeller(username);
+	public ResponseEntity<List<EstimateSellerResDto>> getEstimateByRequest(Principal principal) {
+		List<EstimateSellerResDto> estimateBySeller = estimateService.getEstimateBySeller(principal.getName());
 		return new ResponseEntity<>(estimateBySeller, HttpStatus.OK);
 	}
 
