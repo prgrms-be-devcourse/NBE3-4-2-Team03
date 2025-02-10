@@ -19,17 +19,19 @@ const QuoteComponent = ({quote,onConfirm,onComment,onSelectQuote})=>{
     if (receivedQuotes.length>0)return;
     const fetchReceivedQuotes = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/estimates/${quote.id}`);
+        const response = await fetch(`http://localhost:8080/api/estimate/${quote.id}`);
         if (!response.ok) {
           throw new Error('받은 견적 데이터를 가져오는데 실패했습니다');
         }
         const data = await response.json();
+        console.log(data)
         setReceivedQuotes(data);
       } catch (error) {
         console.error('받은 견적 데이터 로딩 오류:', error);
       }
     };
     fetchReceivedQuotes();
+   
   }, [selected]);
 
   return (
