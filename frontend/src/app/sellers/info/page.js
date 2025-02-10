@@ -384,79 +384,80 @@ export default function MyPage() {
               </div>
 
               {/* 댓글 목록 */}
-              <div className="space-y-4 max-h-[400px] overflow-y-auto">
-                {comments.map((comment) => (
-                  <div key={comment.id} className="flex justify-end">
-                    <div className="flex-grow text-right">
-                      <div className="flex items-center gap-2 mb-1 justify-end">
-                        <span className="font-medium dark:text-white">{comment.author || '익명'}</span>
-                        <span className="text-sm text-gray-500 dark:text-gray-400">{comment.date}</span>
-                      </div>
-                      <div className={`inline-block max-w-[80%] rounded-lg px-4 py-2 ${comment.isCustomer ? 'bg-purple-500 text-white' : 'bg-gray-100 dark:bg-gray-700 dark:text-white'}`}>
-                        {comment.content}
-                      </div>
-                    </div>
-                    <div className="flex-shrink-0 ml-2">
-                      <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
-                        <span className="text-sm">{comment.author ? comment.author.charAt(0) : '?'}</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+<div className="space-y-4 max-h-[400px] overflow-y-auto">
+  {comments.map((comment) => (
+    <div key={comment.id} className={`flex ${comment.isOwnComment ? 'justify-end' : 'justify-start'}`}>
+      <div className={`flex-grow text-right`}>
+        <div className="flex items-center gap-2 mb-1">
+          <span className="font-medium dark:text-white">{comment.author || '구매자'}</span>
+          <span className="text-sm text-gray-500 dark:text-gray-400">{comment.date}</span>
+        </div>
+        <div className={`inline-block max-w-[80%] rounded-lg px-4 py-2 ${comment.isOwnComment ? 'bg-blue-500 text-white' : 'bg-gray-100 dark:bg-gray-700 dark:text-white'}`}>
+          {comment.content}
+        </div>
+      </div>
+      <div className="flex-shrink-0 ml-2">
+        <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
+          <span className="text-sm">
+            {comment.author ? comment.author.charAt(0) : '?'}
+          </span>
+        </div>
+      </div>
+    </div>
+  ))}
+</div>
 
-              {/* 문의사항 입력 폼 */}
-              <div className="border-t dark:border-gray-700 pt-4">
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={commentText}
-                    onChange={(e) => setCommentText(e.target.value)}
-                    placeholder="문의사항을 입력하세요..."
-                    className="flex-grow px-4 py-2 rounded-lg border dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  />
-                  <button
-                    onClick={async () => {
-                      if (commentText.trim()) {
-                        console.log(`Estimate ID: ${selectedQuoteForComment.id}`);
-                        console.log(`Author ID: ${sellerInfo.id}`);
+{/* 문의사항 입력 폼 */}
+<div className="border-t dark:border-gray-700 pt-4">
+  <div className="flex gap-2">
+    <input
+      type="text"
+      value={commentText}
+      onChange={(e) => setCommentText(e.target.value)}
+      placeholder="문의사항을 입력하세요..."
+      className="flex-grow px-4 py-2 rounded-lg border dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+    />
+    <button
+      onClick={async () => {
+        if (commentText.trim()) {
+          const newComment = {
+            estimateId: selectedQuoteForComment.id,
+            authorId: sellerInfo.id, // sellerInfo가 정의되어 있는지 확인
+            isOwnComment: true, // 또는 false, 현재 사용자의 역할에 따라 설정
+            content: commentText,
+            author: '구매자' // 기본적으로 '구매자'로 설정
+          };
 
-                        const newComment = {
-                          estimateId: selectedQuoteForComment.id,
-                          authorId: sellerInfo.id, // sellerInfo가 정의되어 있는지 확인
-                          content: commentText,
-                        };
+          try {
+            const response = await fetch('http://localhost:8080/api/estimates/comments', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(newComment),
+            });
 
-                        try {
-                          const response = await fetch('http://localhost:8080/api/estimates/comments', {
-                            method: 'POST',
-                            headers: {
-                              'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify(newComment),
-                          });
+            if (!response.ok) {
+              const errorResponse = await response.json(); // 서버에서 반환된 오류 메시지
+              throw new Error(`댓글 추가에 실패했습니다: ${errorResponse.message}`);
+            }
 
-                          if (!response.ok) {
-                            const errorResponse = await response.json(); // 서버에서 반환된 오류 메시지
-                            throw new Error(`댓글 추가에 실패했습니다: ${errorResponse.message}`);
-                          }
-
-                          setCommentText(''); // 입력 필드 초기화
-                          const updatedComments = await fetch(`http://localhost:8080/api/estimates/comments/${selectedQuoteForComment.id}`);
-                          const commentsData = await updatedComments.json();
-                          setComments(commentsData); // 댓글 목록 업데이트
-                        } catch (error) {
-                          console.error('댓글 추가 오류:', error);
-                        }
-                      }
-                    }}
-                    className="px-6 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition-colors disabled:opacity-50"
-                    disabled={!commentText.trim()}
-                  >
-                    전송
-                  </button>
-                </div>
-              </div>
+            setCommentText(''); // 입력 필드 초기화
+            const updatedComments = await fetch(`http://localhost:8080/api/estimates/comments/${selectedQuoteForComment.id}`);
+            const commentsData = await updatedComments.json();
+            setComments(commentsData); // 댓글 목록 업데이트
+          } catch (error) {
+            console.error('댓글 추가 오류:', error);
+          }
+        }
+      }}
+      className="px-6 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition-colors disabled:opacity-50"
+      disabled={!commentText.trim()}
+    >
+      전송
+    </button>
+  </div>
+</div>
             </div>
           </div>
         </div>
