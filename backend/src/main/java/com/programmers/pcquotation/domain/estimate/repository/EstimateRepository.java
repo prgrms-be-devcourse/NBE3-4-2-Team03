@@ -13,5 +13,7 @@ public interface EstimateRepository extends JpaRepository<Estimate, Integer> {
 	List<Estimate> getAllByEstimateRequest_Id(Integer estimateRequestId);
 
 	List<Estimate> getAllBySeller(@NotNull Seller seller);
+
+	Estimate getEstimateById(Integer id);
 }
 
