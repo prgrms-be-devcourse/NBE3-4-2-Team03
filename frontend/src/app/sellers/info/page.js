@@ -9,25 +9,32 @@ export default function MyPage() {
   const [commentText, setCommentText] = useState('');
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [requestedQuotes, setRequestedQuotes] = useState([]);
+  const [writtenQuotes, setWrittenQuotes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   // 임시 데이터 (나중에 API 연동 필요)
   const userInfo = {
-    username: "zxc123",
+    username: "seller1",
     customer_name: "홍길동",
     email: "hong@example.com",
   };
 
   useEffect(() => {
-    const fetchRequestedQuotes = async () => {
+    const fetchData = async () => {
+      setIsLoading(true);
       try {
-        const response = await fetch('http://localhost:8080/estimate/request');
-        if (!response.ok) {
-          throw new Error('견적 데이터를 불러오는데 실패했습니다');
+        if (activeTab === 'requested') {
+          const response = await fetch('http://localhost:8080/estimate/request');
+          if (!response.ok) throw new Error('견적 데이터를 불러오는데 실패했습니다');
+          const data = await response.json();
+          setRequestedQuotes(data);
+        } else if (activeTab === 'written') {
+          const response = await fetch(`http://localhost:8080/api/estimate/seller/${userInfo.username}`);
+          if (!response.ok) throw new Error('작성한 견적 데이터를 불러오는데 실패했습니다');
+          const data = await response.json();
+          setWrittenQuotes(data);
         }
-        const data = await response.json();
-        setRequestedQuotes(data);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -35,31 +42,10 @@ export default function MyPage() {
       }
     };
 
-    if (activeTab === 'requested') {
-      fetchRequestedQuotes();
+    if (activeTab === 'requested' || activeTab === 'written') {
+      fetchData();
     }
-  }, [activeTab]);
-
-  // 임시 데이터에 작성한 견적 데이터 추가
-  const writtenQuotes = [
-    {
-      id: 1,
-      customerId: "user123",
-      requestId: 1,
-      createDate: "2024-03-20",
-      totalPrice: "2,100,000원",
-      status: "검토중",
-      parts: {
-        cpu: "Intel Core i7-13700K",
-        motherboard: "ASUS ROG STRIX Z690-A",
-        memory: "Samsung DDR5-5600 32GB",
-        storage: "Samsung 990 PRO 2TB",
-        gpu: "NVIDIA GeForce RTX 4070",
-        case: "Lian Li O11 Dynamic",
-        power: "Corsair RM850x"
-      }
-    }
-  ];
+  }, [activeTab, userInfo.username]);
 
   return (
     <div className="min-h-screen p-8 dark:bg-gray-900">
@@ -122,7 +108,16 @@ export default function MyPage() {
                         <span className="text-lg font-semibold dark:text-white">견적 요청 #{quote.id}</span>
                       </div>
                       <Link 
-                        href={`/estimate/create?requestId=${quote.id}`}
+                        href={{
+                          pathname: '/estimate/create',
+                          query: { 
+                            requestId: quote.id,
+                            customerName: quote.customerId,
+                            budget: quote.budget,
+                            purpose: quote.purpose,
+                            createDate: quote.createDate,
+                          }
+                        }}
                         className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
                       >
                         견적 작성하기
@@ -149,66 +144,69 @@ export default function MyPage() {
       {/* 작성한 견적 탭 */}
       {activeTab === 'written' && (
         <div>
-          <div className="space-y-8">
-            {writtenQuotes.map(quote => (
-              <div key={quote.id} className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-                <div className="flex justify-between items-center mb-4">
-                  <div>
-                    <span className="text-lg font-semibold dark:text-white">견적 #{quote.id}</span>
-                    <span className="ml-3 text-sm text-gray-500 dark:text-gray-400">
-                      (요청 #{quote.requestId})
-                    </span>
-                  </div>
-                  <div className="flex gap-2">
-                    
-                    <button 
-                      className="px-3 py-1 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                      onClick={() => {/* 견적 수정 페이지로 이동 */}}
-                    >
-                      수정
-                    </button>
-                    <button 
-                      className="px-3 py-1 rounded-lg border border-red-300 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
-                      onClick={() => {
-                        if (window.confirm('정말로 이 견적을 삭제하시겠습니까?')) {
-                          // 견적 삭제 로직 구현
-                        }
-                      }}
-                    >
-                      삭제
-                    </button>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-2 text-sm mb-6">
-                  <div className="text-gray-600 dark:text-gray-400">요청자</div>
-                  <div className="dark:text-white">{quote.customerId}</div>
-                  <div className="text-gray-600 dark:text-gray-400">작성일</div>
-                  <div className="dark:text-white">{quote.createDate}</div>
-                  <div className="text-gray-600 dark:text-gray-400">총 견적금액</div>
-                  <div className="dark:text-white">{quote.totalPrice}</div>
-                </div>
-                <div className="border dark:border-gray-700 rounded-lg p-4">
-                  <h4 className="font-medium mb-3 dark:text-white">견적 구성</h4>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    {Object.entries(quote.parts).map(([part, name]) => (
-                      <div key={part} className="col-span-2 grid grid-cols-2">
-                        <div className="text-gray-600 dark:text-gray-400">
-                          {part === 'cpu' ? 'CPU' :
-                           part === 'motherboard' ? '메인보드' :
-                           part === 'memory' ? '메모리' :
-                           part === 'storage' ? '저장장치' :
-                           part === 'gpu' ? '그래픽카드' :
-                           part === 'case' ? '케이스' :
-                           part === 'power' ? '파워' : part}
-                        </div>
-                        <div className="dark:text-white">{name}</div>
+          {isLoading ? (
+            <div className="text-center py-8 dark:text-white">로딩중...</div>
+          ) : error ? (
+            <div className="text-center py-8 text-red-500">{error}</div>
+          ) : (
+            <div className="space-y-8">
+              {writtenQuotes.length === 0 ? (
+                <div className="text-center py-8 dark:text-white">작성한 견적이 없습니다.</div>
+              ) : (
+                writtenQuotes.map(quote => (
+                  <div key={quote.id} className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+                    <div className="flex justify-between items-center mb-4">
+                      <div>
+                        <span className="text-lg font-semibold dark:text-white">견적 #{quote.id}</span>
                       </div>
-                    ))}
+                      <div className="flex gap-2">
+                        
+                        <button 
+                          className="px-3 py-1 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                          onClick={() => {/* 견적 수정 페이지로 이동 */}}
+                        >
+                          수정
+                        </button>
+                        <button 
+                          className="px-3 py-1 rounded-lg border border-red-300 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
+                          onClick={() => {
+                            if (window.confirm('정말로 이 견적을 삭제하시겠습니까?')) {
+                              // 견적 삭제 로직 구현
+                            }
+                          }}
+                        >
+                          삭제
+                        </button>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-sm mb-6">
+                      <div className="text-gray-600 dark:text-gray-400">요청자</div>
+                      <div className="dark:text-white">{quote.customer}</div>
+                      <div className="text-gray-600 dark:text-gray-400">요청일</div>
+                      <div className="dark:text-white">{new Date(quote.date).toLocaleDateString()}</div>
+                      <div className="text-gray-600 dark:text-gray-400">용도</div>
+                      <div className="dark:text-white">{quote.purpose}</div>
+                      <div className="text-gray-600 dark:text-gray-400">예산</div>
+                      <div className="dark:text-white">{quote.budget.toLocaleString()}원</div>
+                      <div className="text-gray-600 dark:text-gray-400">총 견적금액</div>
+                      <div className="dark:text-white">{quote.totalPrice.toLocaleString()}원</div>
+                    </div>
+                    <div className="border dark:border-gray-700 rounded-lg p-4">
+                      <h4 className="font-medium mb-3 dark:text-white">견적 구성</h4>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        {Object.entries(quote.items).map(([key, value]) => (
+                          <div key={key} className="col-span-2 grid grid-cols-2">
+                            <div className="text-gray-600 dark:text-gray-400">{key}</div>
+                            <div className="dark:text-white">{value}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            ))}
-          </div>
+                ))
+              )}
+            </div>
+          )}
         </div>
       )}
 
