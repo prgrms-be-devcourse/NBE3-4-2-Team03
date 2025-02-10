@@ -41,11 +41,6 @@ public class EstimateRequestController {
 		estimateRequestService.modify(id, estimateRequestData);
 		return ResponseEntity.status(HttpStatus.OK).body("수정되었습니다");
 	}
-	@PutMapping("/{id}")
-	public ResponseEntity<String> updateER(@PathVariable Integer id){
-		estimateRequestService.update(id);
-		return ResponseEntity.status(HttpStatus.OK).body("수정되었습니다");
-	}
 
 	@GetMapping
 	public ResponseEntity<List<EstimateRequestResDto>> getER(Principal principal) {

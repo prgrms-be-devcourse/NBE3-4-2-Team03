@@ -85,11 +85,4 @@ public class EstimateRequestService {
 				.orElseThrow(NullEntityException::new);
 		estimateRequest.UpdateEstimateRequest(estimateRequestData);
 	}
-
-	public void update(Integer id) {
-		EstimateRequest estimateRequest = estimateRequestRepository
-				.findById(id)
-				.orElseThrow(NullEntityException::new);
-		estimateRequest.UpdateDeliveryStatus(EstimateRequestStatus.Adopt);
-	}
 }
