@@ -96,4 +96,17 @@ public class CommentService {
 
 		return new CommentDeleteResponse(id, "댓글 삭제 완료");
 	}
+
+	public List<CommentInfoResponse> getCommentsByEstimateId(Long estimateId) {
+		List<Comment> comments = commentRepository.findByEstimateId(estimateId);
+		return comments.stream()
+			.map(comment -> new CommentInfoResponse(
+				comment.getId(),
+				comment.getEstimate().getId(),
+				comment.getAuthor().getId(),
+				comment.getContent(),
+				comment.getCreateDate()
+			))
+			.collect(Collectors.toList());
+	}
 }

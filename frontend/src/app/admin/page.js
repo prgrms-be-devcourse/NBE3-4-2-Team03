@@ -229,7 +229,7 @@ export default function ItemList() {
             formData.append('image', new Blob([updatedItem.image], { type: updatedItem.image.type }), filename);
         } else {
             // 이미지가 없는 경우 기존 파일 이름 사용
-            formData.append('imgFilename', editingItem.filename); // 기존 이미지 파일 이름 사용
+            formData.append('image', editingItem.filename); // 기존 이미지 파일 이름 사용
         }
 
         fetch(`http://localhost:8080/api/admin/items/${editingItem.id}`, {
