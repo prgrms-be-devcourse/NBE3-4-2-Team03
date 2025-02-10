@@ -98,7 +98,6 @@ export default function ItemList() {
 
     useEffect(() => {
         fetchCategories();
-        fetchItems();
     }, []);
 
     const fetchCategories = () => {
@@ -114,8 +113,8 @@ export default function ItemList() {
             .catch((error) => console.error('카테고리 로딩 실패:', error));
     };
 
-    const fetchItems = () => {
-        fetch('http://localhost:8080/api/admin/items')
+    const fetchItems = (categoryId) => {
+        fetch(`http://localhost:8080/api/admin/items?categoryId=${categoryId}`)
             .then((response) => response.json())
             .then((data) => {
                 if (Array.isArray(data)) {
@@ -130,7 +129,9 @@ export default function ItemList() {
 
     const handleCategoryClick = (categoryId) => {
         setSelectedCategory(categoryId);
+        fetchItems(categoryId);
     };
+    
 
     const handleAddCategory = () => {
         if (!newCategoryName.trim()) return alert('카테고리 이름을 입력하세요.');
@@ -182,22 +183,22 @@ export default function ItemList() {
         if (!newItem.name) {
             return alert('부품 이름을 입력해주세요.'); // 이름 비어 있을 경우 경고 메시지
         }
-    
+
         // 이미지가 선택되지 않은 경우 경고 메시지 표시
         if (!newItem.image) {
             return alert('이미지를 선택하세요.');
         }
-    
+
         const formData = new FormData();
         formData.append('name', newItem.name);
         formData.append('categoryId', newItem.categoryId);
-    
+
         const uuid = crypto.randomUUID(); // UUID 생성
         const extension = newItem.image.name.split('.').pop(); // 파일 확장자 추출
         const filename = `${uuid}.${extension}`; // UUID와 확장자를 결합한 파일 이름
-    
+
         formData.append('image', new Blob([newItem.image], { type: newItem.image.type }), filename);
-    
+
         fetch('http://localhost:8080/api/admin/items', {
             method: 'POST',
             body: formData,
@@ -287,24 +288,43 @@ export default function ItemList() {
 
     return (
         <div className="min-h-screen p-8 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
-            <h1 className="text-3xl font-bold text-center mb-8">카테고리와 부품 관리자 페이지</h1>
+            <h1 className="text-3xl font-bold text-center mb-8">관리자 페이지</h1>
 
-            {/* 카테고리 추가 */}
-            <div className="flex justify-center mb-6 gap-4">
+            {/* 카테고리 추가, 수정, 삭제 버튼 */}
+            <div className="flex justify-center mb-6 gap-2">
                 <input
                     type="text"
                     value={newCategoryName}
                     onChange={(e) => setNewCategoryName(e.target.value)}
                     placeholder="새 카테고리 이름"
-                    className="px-4 py-2 border border-gray-300 rounded-lg dark:bg-gray-800 dark:text-white"
+                    className="px-3 py-1 border border-gray-300 rounded-lg text-sm dark:bg-gray-800 dark:text-white"
                 />
                 <button
                     onClick={handleAddCategory}
-                    className="px-4 py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition"
+                    className="px-3 py-1 w-28 bg-green-600 text-white rounded-lg text-sm shadow-md hover:bg-green-700 transition"
                 >
-                    카테고리 추가
+                    추가
+                </button>
+
+                {/* 카테고리 수정 & 삭제 */}
+                <button
+                    onClick={handleUpdateCategory}
+                    className={`px-3 py-1 w-28 rounded-lg text-sm shadow-md transition ${selectedCategory ? "bg-yellow-500 text-white hover:bg-yellow-600" : "bg-gray-300 text-gray-600 cursor-not-allowed"
+                        }`}
+                    disabled={!selectedCategory}
+                >
+                    수정
+                </button>
+                <button
+                    onClick={handleDeleteCategory}
+                    className={`px-3 py-1 w-28 rounded-lg text-sm shadow-md transition ${selectedCategory ? "bg-red-600 text-white hover:bg-red-700" : "bg-gray-300 text-gray-600 cursor-not-allowed"
+                        }`}
+                    disabled={!selectedCategory}
+                >
+                    삭제
                 </button>
             </div>
+
 
             {/* 카테고리 목록 */}
             <div className="flex flex-wrap justify-center gap-4 mb-8">
@@ -324,23 +344,7 @@ export default function ItemList() {
                 )}
             </div>
 
-            {/* 카테고리 수정 & 삭제 */}
-            {selectedCategory && (
-                <div className="flex justify-center gap-4 mb-6">
-                    <button
-                        onClick={handleUpdateCategory}
-                        className="px-4 py-2 bg-yellow-500 text-white rounded-lg shadow-md hover:bg-yellow-600 transition"
-                    >
-                        카테고리 수정
-                    </button>
-                    <button
-                        onClick={handleDeleteCategory}
-                        className="px-4 py-2 bg-red-600 text-white rounded-lg shadow-md hover:bg-red-700 transition"
-                    >
-                        카테고리 삭제
-                    </button>
-                </div>
-            )}
+
 
             {/* 부품 목록 */}
             {selectedCategory && (

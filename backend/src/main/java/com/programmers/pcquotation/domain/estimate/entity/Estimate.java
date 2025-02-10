@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.programmers.pcquotation.domain.comment.emtity.Comment;
 import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequest;
 import com.programmers.pcquotation.domain.seller.entitiy.Seller;
 
@@ -44,6 +45,9 @@ public class Estimate {
 	private List<EstimateComponent> estimateComponents = new ArrayList<>();
 
 	private LocalDateTime createDate;
+
+	@OneToMany(mappedBy = "estimate", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Comment> comments;
 
 	@Builder
 	public Estimate(EstimateRequest estimateRequest, Seller seller, Integer totalPrice,

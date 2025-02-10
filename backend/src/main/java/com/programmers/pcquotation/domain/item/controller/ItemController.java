@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.programmers.pcquotation.domain.item.dto.ItemCreateRequest;
@@ -37,9 +38,11 @@ public class ItemController {
 	}
 
 	@GetMapping
-	public List<ItemInfoResponse> getInfoList() //부품 조회
-	{
-		return itemService.getItemList();
+	public List<ItemInfoResponse> getInfoList(@RequestParam(required = false) Long categoryId) {
+		if (categoryId != null) {
+			return itemService.getItemsByCategory(categoryId);
+		}
+		return itemService.getItemList(); // 기존 방식 유지
 	}
 
 	@PutMapping("/{id}")
