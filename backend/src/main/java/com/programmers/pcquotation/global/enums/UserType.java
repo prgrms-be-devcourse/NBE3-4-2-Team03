@@ -15,6 +15,10 @@ public enum UserType {
 		if (value == null) {
 			return UserType.Nothing;
 		}
+		switch (value){
+			case "[ROLE_CUSTOMER]": return UserType.Customer;
+			case "[ROLE_SELLER]": return UserType.Seller;
+		}
 		try {
 			return UserType.valueOf(value);
 		} catch (IllegalArgumentException e) {

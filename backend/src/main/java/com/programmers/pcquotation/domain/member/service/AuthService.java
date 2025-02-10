@@ -15,6 +15,7 @@ import com.programmers.pcquotation.domain.customer.exception.CustomerAlreadyExis
 import com.programmers.pcquotation.domain.customer.exception.IncorrectLoginAttemptException;
 import com.programmers.pcquotation.domain.customer.exception.PasswordMismatchException;
 import com.programmers.pcquotation.domain.customer.service.CustomerService;
+import com.programmers.pcquotation.domain.member.dto.AuthRequest;
 import com.programmers.pcquotation.domain.member.entitiy.Member;
 import com.programmers.pcquotation.domain.member.dto.LoginRequest;
 import com.programmers.pcquotation.domain.member.dto.LoginResponse;
@@ -128,7 +129,15 @@ public class AuthService {
 			.message("로그인 성공")
 			.build();
 	}
-
+	public AuthRequest getMemberFromRq(){
+		Member member = rq.getMember();
+		String auth = member.getAuthorities().toString();
+		String userType =  UserType.fromString(auth).toString();
+		return AuthRequest
+				.builder()
+				.userType(userType)
+				.build();
+	}
 	public Member getMemberFromAccessToken(String accessToken,UserType userType) {
 		Map<String, Object> payload = this.payload(accessToken);
 

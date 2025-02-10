@@ -1,9 +1,11 @@
 package com.programmers.pcquotation.global.rq;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.http.ResponseCookie;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,9 +14,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
+import com.programmers.pcquotation.domain.customer.service.CustomerService;
+import com.programmers.pcquotation.domain.estimaterequest.exception.NullEntityException;
 import com.programmers.pcquotation.domain.member.entitiy.Member;
-import com.programmers.pcquotation.domain.seller.entitiy.Seller;
+import com.programmers.pcquotation.domain.member.service.AuthService;
 import com.programmers.pcquotation.domain.seller.service.SellerService;
+import com.programmers.pcquotation.global.enums.UserType;
+import com.programmers.pcquotation.global.security.CustomAuthenticationFilter;
+import com.programmers.pcquotation.global.security.CustomUserDetails;
+import com.programmers.pcquotation.global.security.CustomUserDetailsService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,30 +34,33 @@ import lombok.RequiredArgsConstructor;
 public class Rq {
 	private final HttpServletRequest req;
 	private final HttpServletResponse resp;
-	private final SellerService sellersService;
+	private final AuthService authService;
+	private final SellerService sellerService;
+	private final CustomUserDetailsService customUserDetailsService;
 
 	public void setLogin(Member member) {
-		UserDetails user = new User(
-			member.getUsername(),
-			"",
-			member.getAuthorities()
-		);
+		CustomUserDetails user = new CustomUserDetails(member);
 		Authentication authentication = new UsernamePasswordAuthenticationToken(
 			user,
 			user.getPassword(),
 			user.getAuthorities()
 		);
-
 		SecurityContextHolder.getContext().setAuthentication(authentication);
+
 	}
 
-	public Seller getMember() {
+	public Member getMember() {
+		String authorization = getHeader("Authorization");
+		if(authorization.isEmpty()) throw new NullEntityException();
+		String token = authorization.substring("Bearer ".length());
+		String[] tokenBits = token.split(" ", 3);
 		return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
 			.map(Authentication::getPrincipal)
 			.filter(UserDetails.class::isInstance)
 			.map(UserDetails.class::cast)
-			.map(UserDetails::getUsername)
-			.flatMap(sellersService::findByUserName)
+			.map(userDetails ->
+				customUserDetailsService
+					.loadUserByUsername(userDetails.getUsername(), UserType.valueOf(tokenBits[2])))
 			.orElse(null);
 	}
 

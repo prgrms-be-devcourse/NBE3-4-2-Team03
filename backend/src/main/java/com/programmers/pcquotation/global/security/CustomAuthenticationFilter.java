@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -58,7 +59,7 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 	private void refreshAccessToken(Member member, UserType userType) {
 		String newAccessToken = authService.getAccessToken(member);
 
-		rq.setHeader("Authorization", "Bearer " + member.getApiKey() + " " + newAccessToken + " " + userType);
+		rq.setHeader("Authorization", "Bearer " + member.getApiKey() + " " + newAccessToken + " " + userType.toString());
 		rq.setCookie("accessToken", newAccessToken);
 		rq.setCookie("userType", userType.toString());
 
