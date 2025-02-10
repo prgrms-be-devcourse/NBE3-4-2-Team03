@@ -249,7 +249,9 @@ export default function CreateEstimate() {
           <div className="flex justify-end gap-4">
             <button
               type="button"
-              onClick={() => window.history.back()}
+              onClick={()=>{
+                window.location.href='/sellers/info'
+              }}
               className="px-6 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
             >
               취소
