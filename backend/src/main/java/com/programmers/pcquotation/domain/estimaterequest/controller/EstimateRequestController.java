@@ -3,6 +3,9 @@ package com.programmers.pcquotation.domain.estimaterequest.controller;
 import java.security.Principal;
 import java.util.List;
 
+import com.programmers.pcquotation.domain.member.entitiy.Member;
+import com.programmers.pcquotation.global.enums.UserType;
+import com.programmers.pcquotation.global.rq.Rq;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class EstimateRequestController {
 	private final EstimateRequestService estimateRequestService;
+	private final Rq rq;
 
 	record EstimateRequestData(@NotBlank String purpose, Integer budget, String otherRequest) {
 	}
@@ -41,11 +45,21 @@ public class EstimateRequestController {
 	}
 
 	@GetMapping
-	public ResponseEntity<List<EstimateRequestResDto>> getER() {
-		//로그인 구현시 주석제거 해서 함수 변경
-		//Customer customer = estimateRequestService.findCustomer(principal.getName());
-		//List<EstimateRequest> estimateRequestList = estimateRequestService.getEstimateRequestByCustomerId(customer);
-		List<EstimateRequestResDto> list = estimateRequestService.getAllEstimateRequest();
+	public ResponseEntity<List<EstimateRequestResDto>> getER(Principal principal) {
+		String type = rq.getCookieValue("userType");
+		UserType userType =  UserType.fromString(type);
+		List<EstimateRequestResDto> list = null;
+
+		switch (userType) {
+			case Customer -> {
+				Customer customer = estimateRequestService.findCustomer(principal.getName());
+				list = estimateRequestService.getEstimateRequestByCustomerId(customer);
+			}
+			case Seller -> {
+				list = estimateRequestService.getAllEstimateRequest();
+			}
+		}
+
 		return new ResponseEntity<>(list, HttpStatus.OK);
 	}
 }

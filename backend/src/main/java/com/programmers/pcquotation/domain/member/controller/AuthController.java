@@ -32,11 +32,13 @@ public class AuthController {
         CustomerSignupResponse signupResponse = authService.processSignup(customerSignupRequest);
         return new ResponseEntity<>(signupResponse, HttpStatus.CREATED);
     }
+
 	@PostMapping("/signup/seller")
 	public ResponseEntity<SellerSignupResponse> signup(@RequestBody SellerSignupRequest sellerSignupRequest) {
 		SellerSignupResponse signupResponse = authService.processSignup(sellerSignupRequest);
 		return new ResponseEntity<>(signupResponse, HttpStatus.CREATED);
 	}
+
 	@PostMapping("/login/customer")
 	public ResponseEntity<LoginResponse> loginCustomer(@RequestBody LoginRequest customerLoginRequest) {
         LoginResponse loginResponse = authService.processLoginCustomer(customerLoginRequest);
@@ -54,4 +56,9 @@ public class AuthController {
 		return new ResponseEntity<>(authRequest, HttpStatus.OK);
 	}
 
+	@PostMapping("/logout")
+	public ResponseEntity<Void> logout() {
+		authService.processLogout();
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
 }
