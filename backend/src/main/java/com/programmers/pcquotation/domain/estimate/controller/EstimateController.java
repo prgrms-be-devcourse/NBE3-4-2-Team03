@@ -24,8 +24,8 @@ public class EstimateController {
 	private final EstimateService estimateService;
 
 	@PostMapping("/api/estimate")
-	public ResponseEntity<String> createEstimate(@RequestBody EstimateCreateRequest request) {
-		estimateService.createEstimate(request);
+	public ResponseEntity<String> createEstimate(@RequestBody EstimateCreateRequest request, Principal principal) {
+		estimateService.createEstimate(request, principal.getName());
 		return ResponseEntity.ok().body("");
 	}
 

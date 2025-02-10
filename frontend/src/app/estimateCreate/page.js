@@ -149,7 +149,6 @@ export default function CreateEstimate() {
     // 견적 데이터 구성
     const estimateSubmitData = {
       estimateRequestId: parseInt(requestId),
-      sellerId: "seller1", // 실제 판매자 ID로 변경 필요
       item: Object.values(estimateData)
         .filter(item => item !== null)
         .map(item => ({
@@ -163,6 +162,7 @@ export default function CreateEstimate() {
     try {
       const response = await fetch('http://localhost:8080/api/estimate', {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
