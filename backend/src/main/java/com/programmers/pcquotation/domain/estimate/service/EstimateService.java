@@ -81,7 +81,8 @@ public class EstimateService {
 				.items(quoto.getEstimateComponents().stream()
 					.collect(Collectors.toMap(
 						item -> item.getItem().getCategory().getCategory(),
-						item -> item.getItem().getName())))
+						item -> item.getItem().getName(),
+							(existingValue, newValue) -> existingValue)))
 				.build();
 		}).toList();
 	}
