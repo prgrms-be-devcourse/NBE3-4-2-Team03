@@ -150,7 +150,9 @@ export default function MyPage() {
   useEffect(() => {
     const fetchQuotes = async () => {
       try {
-        const response = await fetch('http://localhost:8080/estimate/request');
+        const response = await fetch('http://localhost:8080/estimate/request', {
+          credentials: 'include'
+        });
         if (!response.ok) {
           throw new Error('견적 데이터를 가져오는데 실패했습니다');
         }

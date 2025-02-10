@@ -41,11 +41,9 @@ public class EstimateRequestController {
 	}
 
 	@GetMapping
-	public ResponseEntity<List<EstimateRequestResDto>> getER() {
-		//로그인 구현시 주석제거 해서 함수 변경
-		//Customer customer = estimateRequestService.findCustomer(principal.getName());
-		//List<EstimateRequest> estimateRequestList = estimateRequestService.getEstimateRequestByCustomerId(customer);
-		List<EstimateRequestResDto> list = estimateRequestService.getAllEstimateRequest();
+	public ResponseEntity<List<EstimateRequestResDto>> getER(Principal principal) {
+		Customer customer = estimateRequestService.findCustomer(principal.getName());
+		List<EstimateRequestResDto> list = estimateRequestService.getEstimateRequestByCustomerId(customer);
 		return new ResponseEntity<>(list, HttpStatus.OK);
 	}
 }
