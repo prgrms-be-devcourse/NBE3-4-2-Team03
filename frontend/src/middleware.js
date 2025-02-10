@@ -147,12 +147,12 @@ function parseCookie(cookieStr) {
 
 function isProtectedRouteAdmin(pathname) {
   return (
-    pathname.startsWith("/admin") ||
-    pathname.startsWith("/estimateCreate")
+    pathname.startsWith("/admin")
   );
 }
 function isProtectedRouteSeller(pathname){
   return (
+    pathname.startsWith("/estimateCreate") ||
     pathname.startsWith("/sellers")
   );
 }

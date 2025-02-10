@@ -238,22 +238,22 @@ export default function MyPage() {
           </div>
       )}
 
-      {/* 요청한 견적 탭 */}
-      {activeTab === 'requested' && (
-          <div>
-            <div className="space-y-8">
-            {requestedQuotes.map(quote => (
-              <QuoteComponent key={quote.id} quote={quote} onConfirm={onConfirm} onComment={onComment} onSelectQuote={onSelcectQuote}/>             ))}
-          </div>
-          <Link href="/estimateRequest">
-            <button 
-              className="mt-4 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-            >
-              견적 요청하기
-            </button>
-          </Link>
+    {/* 요청한 견적 탭 */}
+    {activeTab === 'requested' && (
+        <div>
+          <div className="space-y-8">
+          {requestedQuotes.map(quote => (
+            <QuoteComponent key={quote.id} quote={quote} onConfirm={onConfirm} onComment={onComment} onSelectQuote={onSelcectQuote}/>             ))}
         </div>
-      )}
+        <Link href="/estimateRequest">
+          <button
+            className="mt-4 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+          >
+            견적 요청하기
+          </button>
+        </Link>
+      </div>
+    )}
 
       {selectedQuote && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
