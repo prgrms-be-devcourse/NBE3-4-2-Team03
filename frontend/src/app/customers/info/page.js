@@ -113,6 +113,12 @@ export default function MyPage() {
   const [commentText, setCommentText] = useState('');
   const [confirmQuote, setConfirmQuote] = useState(null);
   const [requestedQuotes, setRequestedQuotes] = useState([]);
+  const [customerInfo, setCustomerInfo] = useState({
+    id: '',
+    username: '',
+    customerName: '',
+    email: ''
+  });
 
   /**
    * 
@@ -136,6 +142,10 @@ export default function MyPage() {
     setSelectedQuoteForComment(quote)
   }
 
+  useEffect(() => {
+    getCustomerInfo();
+  }, [])
+
   // 견적 요청 목록 조회
   useEffect(() => {
     const fetchQuotes = async () => {
@@ -157,14 +167,18 @@ export default function MyPage() {
     }
   }, [activeTab]);
 
- 
-
-  // 임시 데이터 (나중에 API 연동 필요)
-  const userInfo = {
-    username: "zxc123",
-    customer_name: "홍길동",
-    email: "hong@example.com",
-  };
+  const getCustomerInfo = () => {
+    fetch("http://localhost:8080/customer", {
+      method: "GET",
+      credentials: "include",
+    })
+        .then((response) => {
+          return response.json();
+        })
+        .then((data) => {
+          setCustomerInfo(data);
+        });
+  }
 
   const handleLogout = async (e) => {
     e.preventDefault();
@@ -204,11 +218,11 @@ export default function MyPage() {
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
             <div className="grid grid-cols-2 gap-4">
               <div className="text-gray-600 dark:text-gray-400">아이디</div>
-              <div className="dark:text-white">{userInfo.username}</div>
+              <div className="dark:text-white">{customerInfo.username}</div>
               <div className="text-gray-600 dark:text-gray-400">이름</div>
-              <div className="dark:text-white">{userInfo.customer_name}</div>
+              <div className="dark:text-white">{customerInfo.customerName}</div>
               <div className="text-gray-600 dark:text-gray-400">이메일</div>
-              <div className="dark:text-white">{userInfo.email}</div>
+              <div className="dark:text-white">{customerInfo.email}</div>
             </div>
             <button className="mt-6 text-blue-500 hover:text-blue-400 dark:text-blue-400 dark:hover:text-blue-300">
               회원정보 수정

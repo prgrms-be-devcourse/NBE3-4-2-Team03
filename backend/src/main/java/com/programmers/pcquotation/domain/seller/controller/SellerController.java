@@ -26,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 public class SellerController {
 	private final SellerService sellerService;
 	private final BusinessConfirmationService businessConfirmationService;
-	private final Rq rq;
 
 	@GetMapping
 	@Transactional(readOnly = true)
