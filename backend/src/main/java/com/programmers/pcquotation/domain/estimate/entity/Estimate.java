@@ -60,4 +60,9 @@ public class Estimate {
 		this.estimateComponents = estimateComponents;
 	}
 
+	public void addEstimateComponent(EstimateComponent component) {
+		this.estimateComponents.add(component);
+		component.setEstimate(this);
+	}
+
 }

@@ -83,7 +83,7 @@ public class EstimateService {
 					.collect(Collectors.toMap(
 						item -> item.getItem().getCategory().getCategory(),
 						item -> item.getItem().getName(),
-							(existingValue, newValue) -> existingValue)))
+						(existingValue, newValue) -> existingValue)))
 				.build();
 		}).toList();
 	}
@@ -113,24 +113,36 @@ public class EstimateService {
 		}).toList();
 	}
 
+	@Transactional
 	public void deleteEstimate(Integer id) {
-		estimateRepository.deleteById(id);
+		// 견적서가 존재하는지 확인
+		Estimate estimate = estimateRepository.findById(id)
+			.orElseThrow(() -> new NoSuchElementException("존재하지 않는 견적서입니다."));
+		
+		// 연관된 EstimateComponent들 먼저 제거
+		estimate.getEstimateComponents().clear();
+		
+		// 견적서 삭제
+		estimateRepository.delete(estimate);
 	}
 
 	public void updateEstimate(EstimateUpdateReqDto request) {
 		Estimate estimateById = estimateRepository.getEstimateById(request.getEstimateId());
 
+		// 기존 컴포넌트들을 모두 제거
+		estimateById.getEstimateComponents().clear();
+
+		// 새로운 총 가격 설정
 		estimateById.setTotalPrice(getTotalPrice(request.getItem()));
 
-		List<EstimateComponent> components = request.getItem().stream()
-			.map(itemDto -> {
+		// 새로운 컴포넌트들 생성 및 설정
+		request.getItem().stream()
+			.forEach(itemDto -> {
 				Item item = itemRepository.findById(itemDto.getItem())
 					.orElseThrow(() -> new NoSuchElementException("존재하지 않는 아이템입니다."));
-				return EstimateComponent.createComponent(item, itemDto.getPrice(), estimateById);
-			})
-			.toList();
-
-		estimateById.setEstimateComponents(components);
+				EstimateComponent component = EstimateComponent.createComponent(item, itemDto.getPrice(), estimateById);
+				estimateById.addEstimateComponent(component);
+			});
 
 		estimateRepository.save(estimateById);
 	}

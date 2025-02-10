@@ -152,7 +152,7 @@ function isProtectedRouteAdmin(pathname) {
 }
 function isProtectedRouteSeller(pathname){
   return (
-    pathname.startsWith("/estimateCreate") ||
+    pathname.startsWith("/estimate/create") ||
     pathname.startsWith("/sellers")
   );
 }
