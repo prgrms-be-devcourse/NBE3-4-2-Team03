@@ -13,6 +13,7 @@ export async function middleware(req) {
 
 
 
+
   const { isLogin, isAccessTokenExpired, accessTokenPayload } =
     parseAccessToken(accessToken);
 
@@ -28,10 +29,7 @@ export async function middleware(req) {
         }
     });
 
-    if (!response.ok) {
-        return createUnauthorizedResponse("/");
-        throw new Error("Failed to create estimate request");
-    }
+
     const respData = await response.json();
     const isAdmin = respData?.userType === 'Admin';
     const isSeller = respData?.userType  === 'Seller';
@@ -41,7 +39,7 @@ export async function middleware(req) {
         if(isSeller) return createUnauthorizedResponse("/sellers/info");
         if(isCustomer) return createUnauthorizedResponse("/customers/info");
         if(isAdmin) return createUnauthorizedResponse("/admin");
-        }
+    }
     if(isProtectedRouteAdmin(req.nextUrl.pathname)){
         if (!isAdmin) {
           return createUnauthorizedResponse("/");
@@ -149,12 +147,12 @@ function parseCookie(cookieStr) {
 
 function isProtectedRouteAdmin(pathname) {
   return (
-    pathname.startsWith("/admin") ||
-    pathname.startsWith("/estimateCreate")
+    pathname.startsWith("/admin")
   );
 }
 function isProtectedRouteSeller(pathname){
   return (
+    pathname.startsWith("/estimateCreate") ||
     pathname.startsWith("/sellers")
   );
 }
