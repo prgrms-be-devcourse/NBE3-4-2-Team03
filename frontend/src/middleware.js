@@ -25,7 +25,7 @@ export async function middleware(req) {
     const response = await fetch("http://localhost:8080/api/auth", {
         method: "GET",
         headers: {
-            "Authorization":  authorization
+            "Authorization" : authorization
         }
     });
 
@@ -152,7 +152,7 @@ function isProtectedRouteAdmin(pathname) {
 }
 function isProtectedRouteSeller(pathname){
   return (
-    pathname.startsWith("/estimateCreate") ||
+    pathname.startsWith("/estimate/create") ||
     pathname.startsWith("/sellers")
   );
 }

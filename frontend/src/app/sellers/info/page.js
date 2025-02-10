@@ -37,7 +37,7 @@ export default function MyPage() {
           const data = await response.json();
           setRequestedQuotes(data);
         } else if (activeTab === 'written') {
-          const response = await fetch(`http://localhost:8080/api/estimate/seller/${sellerInfo.username}`, {
+          const response = await fetch(`http://localhost:8080/api/estimate/seller`, {
             credentials: 'include'
           });
           if (!response.ok) throw new Error('작성한 견적 데이터를 불러오는데 실패했습니다');
@@ -149,7 +149,7 @@ export default function MyPage() {
                       </div>
                       <Link 
                         href={{
-                          pathname: '/estimateCreate',
+                          pathname: '/estimate/create',
                           query: {
                             requestId: quote.id,
                             customerName: quote.customerId,
@@ -200,22 +200,45 @@ export default function MyPage() {
                         <span className="text-lg font-semibold dark:text-white">견적 #{quote.id}</span>
                       </div>
                       <div className="flex gap-2">
-
                         <button
                           className="px-3 py-1 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                          onClick={() => {/* 견적 수정 페이지로 이동 */}}
+                          onClick={() => {
+                          
+                            router.push(`/estimate/update?estimateId=${quote.id}&requestId=${quote.estimateRequestId}&customerName=${quote.customer}&budget=${quote.budget}&purpose=${quote.purpose}&createDate=${quote.date}`);
+                          }}
                         >
                           수정
                         </button>
                         <button
                           className="px-3 py-1 rounded-lg border border-red-300 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
-                          onClick={() => {
+                          onClick={async () => {
                             if (window.confirm('정말로 이 견적을 삭제하시겠습니까?')) {
-                              // 견적 삭제 로직 구현
+                              try {
+                                const response = await fetch(`http://localhost:8080/api/estimate/${quote.id}`, {
+                                  method: 'DELETE',
+                                  credentials: 'include'
+                                });
+                                
+                                if (!response.ok) {
+                                  throw new Error('견적 삭제에 실패했습니다');
+                                }
+                                
+                                // 성공적으로 삭제된 경우 목록 업데이트
+                                setWrittenQuotes(prev => prev.filter(q => q.id !== quote.id));
+                              } catch (error) {
+                                console.error('견적 삭제 오류:', error);
+                                alert('견적 삭제 중 오류가 발생했습니다.');
+                              }
                             }
                           }}
                         >
                           삭제
+                        </button>
+                        <button
+                          className="px-3 py-1 rounded-lg border border-purple-300 dark:border-purple-800 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors"
+                          onClick={() => setSelectedQuoteForComment(quote)}
+                        >
+                          문의하기
                         </button>
                       </div>
                     </div>
