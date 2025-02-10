@@ -2,6 +2,14 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
+// 쿠키에서 값을 가져오는 헬퍼 함수
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return '';
+}
+
 /**
  *
  * @param {{id:number}} quote
@@ -13,36 +21,51 @@ import Link from 'next/link';
 const QuoteComponent = ({quote,onConfirm,onComment,onSelectQuote})=>{
   const [selected,setSelected] = useState(false)
   const [receivedQuotes,setReceivedQuotes] = useState([])
+
   // 받은 견적 목록 조회
   useEffect(() => {
     if (!selected)return;
     if (receivedQuotes.length>0)return;
     const fetchReceivedQuotes = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/estimate/${quote.id}`);
+        const response = await fetch(`http://localhost:8080/api/estimate/${quote.id}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${getCookie('apiKey')} ${getCookie('accessToken')} ${getCookie('userType')}`
+          },
+          credentials: 'include'
+        });
+
         if (!response.ok) {
-          throw new Error('받은 견적 데이터를 가져오는데 실패했습니다');
+          const errorData = await response.text();
+          try {
+            const parsedError = JSON.parse(errorData);
+            throw new Error(parsedError.message || '받은 견적 데이터를 가져오는데 실패했습니다');
+          } catch (e) {
+            throw new Error(errorData || '받은 견적 데이터를 가져오는데 실패했습니다');
+          }
         }
+
         const data = await response.json();
-        console.log(data)
+        console.log('Received quotes data:', data);  // 데이터 확인용
         setReceivedQuotes(data);
       } catch (error) {
         console.error('받은 견적 데이터 로딩 오류:', error);
       }
     };
     fetchReceivedQuotes();
-   
-  }, [selected]);
+  }, [selected, quote.id]);
 
   return (
-
       <div key={quote.id}
            className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm"
       >
         <div className="flex justify-between items-center mb-4">
    <span className="text-lg font-semibold dark:text-white">
      견적 요청 #{quote.id}
-    
+
    </span>
           <button
               onClick={()=>setSelected(p=>!p)}
@@ -139,12 +162,17 @@ export default function MyPage() {
   useEffect(() => {
     const fetchQuotes = async () => {
       try {
-        const response = await fetch('http://localhost:8080/estimate/request');
+        const response = await fetch('http://localhost:8080/estimate/request', {
+          headers: {
+            'Authorization': `Bearer ${getCookie('apiKey')} ${getCookie('accessToken')} ${getCookie('userType')}`
+          },
+          credentials: 'include'
+        });
         if (!response.ok) {
           throw new Error('견적 데이터를 가져오는데 실패했습니다');
         }
         const data = await response.json();
-
+        console.log('Fetched quotes:', data);  // 데이터 확인용
         setRequestedQuotes(data);
       } catch (error) {
         console.error('견적 데이터 로딩 오류:', error);
@@ -155,8 +183,6 @@ export default function MyPage() {
       fetchQuotes();
     }
   }, [activeTab]);
-
-
 
   // 임시 데이터 (나중에 API 연동 필요)
   const userInfo = {
@@ -183,12 +209,11 @@ export default function MyPage() {
           >
             요청한 견적
           </button>
-
         </div>
 
         {/* 회원정보 탭 */}
         {activeTab === 'profile' && (
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6">
               <div className="grid grid-cols-2 gap-4">
                 <div className="text-gray-600 dark:text-gray-400">아이디</div>
                 <div className="dark:text-white">{userInfo.username}</div>
@@ -197,34 +222,35 @@ export default function MyPage() {
                 <div className="text-gray-600 dark:text-gray-400">이메일</div>
                 <div className="dark:text-white">{userInfo.email}</div>
               </div>
-              <button className="mt-6 text-blue-500 hover:text-blue-400 dark:text-blue-400 dark:hover:text-blue-300">
-                회원정보 수정
-              </button>
+              <div className="mt-6 flex justify-end">
+                <Link href="/profile/edit" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                  회원정보 수정
+                </Link>
+              </div>
             </div>
         )}
 
         {/* 요청한 견적 탭 */}
         {activeTab === 'requested' && (
-            <div>
-              <div className="space-y-8">
-                {requestedQuotes.map(quote => (
-                    <QuoteComponent key={quote.id} quote={quote} onConfirm={onConfirm} onComment={onComment} onSelectQuote={onSelcectQuote}/>             ))}
-              </div>
-              <Link href="/estimateRequest/request">
-                <button
-                    className="mt-4 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-                >
-                  견적 요청하기
-                </button>
-              </Link>
+            <div className="space-y-6">
+              {requestedQuotes.map(quote => (
+                  <QuoteComponent
+                      key={quote.id}
+                      quote={quote}
+                      onConfirm={onConfirm}
+                      onComment={onComment}
+                      onSelectQuote={onSelcectQuote}
+                  />
+              ))}
             </div>
         )}
 
+        {/* 견적 상세 모달 */}
         {selectedQuote && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full">
                 <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-xl font-semibold dark:text-white">견적 상세정보</h3>
+                  <h3 className="text-xl font-semibold dark:text-white">견적 상세</h3>
                   <button
                       onClick={() => setSelectedQuote(null)}
                       className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
@@ -234,44 +260,15 @@ export default function MyPage() {
                 </div>
 
                 <div className="space-y-6">
-                  <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-gray-600 dark:text-gray-400">판매자</div>
+                    <div className="dark:text-white">{selectedQuote.seller}</div>
+                    <div className="text-gray-600 dark:text-gray-400">견적 날짜</div>
+                    <div className="dark:text-white">{selectedQuote.date}</div>
+                  </div>
+
+                  <div className="border-t dark:border-gray-700 pt-4">
                     <div className="flex justify-between items-center">
-                      <div>
-                        <span className="font-medium dark:text-white text-lg">{selectedQuote.seller}</span>
-                        <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">견적 받은 날짜: {selectedQuote.date}</div>
-                      </div>
-                      <span className="px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300">
-                    {selectedQuote.status}
-                  </span>
-                    </div>
-                  </div>
-
-                  <div className="border dark:border-gray-700 rounded-lg overflow-hidden">
-                    <h4 className="font-medium p-4 bg-gray-50 dark:bg-gray-700 dark:text-white border-b dark:border-gray-600">
-                      견적 구성 부품
-                    </h4>
-                    <div className="divide-y dark:divide-gray-700">
-                      {Object.entries(selectedQuote.items).map(([part, name]) => (
-                          <div key={part} className="p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                            <div className="grid grid-cols-[140px_1fr] gap-4 items-center">
-                              <div className="text-gray-600 dark:text-gray-400 font-medium">
-                                {part === 'cpu' ? 'CPU' :
-                                    part === 'motherboard' ? '메인보드' :
-                                        part === 'memory' ? '메모리' :
-                                            part === 'storage' ? '저장장치' :
-                                                part === 'gpu' ? '그래픽카드' :
-                                                    part === 'case' ? '케이스' :
-                                                        part === 'power' ? '파워' : part}
-                              </div>
-                              <div className="dark:text-white">{name}</div>
-                            </div>
-                          </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                    <div className="flex justify-between items-center mb-4">
                       <span className="font-medium dark:text-white">총 견적금액</span>
                       <span className="text-xl font-semibold text-blue-600 dark:text-blue-400">
                     {selectedQuote.totalPrice}
@@ -288,7 +285,8 @@ export default function MyPage() {
                       <button
                           className="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors"
                           onClick={() => {
-                            setShowConfirmModal(true);
+                            setConfirmQuote(selectedQuote);
+                            setSelectedQuote(null);
                           }}
                       >
                         견적 채택하기
@@ -300,6 +298,7 @@ export default function MyPage() {
             </div>
         )}
 
+        {/* 문의하기 모달 */}
         {selectedQuoteForComment && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
               <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -407,7 +406,10 @@ export default function MyPage() {
                 <p className="text-gray-600 dark:text-gray-300 mb-6">입력하신 주소로 배송됩니다. 계속하시겠습니까?</p>
                 <div className="flex justify-end gap-3">
                   <button
-                      onClick={() => setConfirmQuote(null)}
+                      onClick={() => {
+                        setConfirmQuote(null);
+                        setDeliveryAddress('');
+                      }}
                       className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300"
                   >
                     아니오
@@ -419,7 +421,10 @@ export default function MyPage() {
                             method: 'POST',
                             headers: {
                               'Content-Type': 'application/json',
+                              'Accept': 'application/json',
+                              'Authorization': `Bearer ${getCookie('apiKey')} ${getCookie('accessToken')} ${getCookie('userType')}`
                             },
+                            credentials: 'include',
                             body: JSON.stringify({ address: deliveryAddress })
                           });
 
@@ -427,8 +432,21 @@ export default function MyPage() {
 
                           // 성공 처리
                           alert('견적이 채택되었습니다.');
+
+                          // 견적 목록 새로고침
+                          const updatedResponse = await fetch('http://localhost:8080/api/estimate', {
+                            headers: {
+                              'Authorization': `Bearer ${getCookie('apiKey')} ${getCookie('accessToken')} ${getCookie('userType')}`
+                            },
+                            credentials: 'include'
+                          });
+                          if (updatedResponse.ok) {
+                            const updatedData = await updatedResponse.json();
+                            setRequestedQuotes(updatedData);
+                          }
+
                           setConfirmQuote(null);
-                          // 필요한 경우 견적 목록 새로고침
+                          setDeliveryAddress('');
                         } catch (error) {
                           console.error('배송 요청 오류:', error);
                           alert('견적 채택 중 오류가 발생했습니다.');
@@ -444,4 +462,4 @@ export default function MyPage() {
         )}
       </div>
   );
-} 
+}

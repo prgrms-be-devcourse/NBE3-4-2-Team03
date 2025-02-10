@@ -163,7 +163,8 @@ function isProtectedRouteSeller(pathname){
 }
 function isProtectedRouteCustomer(pathname){
   return (
-    pathname.startsWith("/customers")
+    pathname.startsWith("/customers") ||
+    pathname.startsWith("/delivery")
   );
 }
 
