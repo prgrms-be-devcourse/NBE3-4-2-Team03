@@ -245,7 +245,7 @@ export default function MyPage() {
             {requestedQuotes.map(quote => (
               <QuoteComponent key={quote.id} quote={quote} onConfirm={onConfirm} onComment={onComment} onSelectQuote={onSelcectQuote}/>             ))}
           </div>
-          <Link href="/estimateRequest/request">
+          <Link href="/estimateRequest">
             <button 
               className="mt-4 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
             >
