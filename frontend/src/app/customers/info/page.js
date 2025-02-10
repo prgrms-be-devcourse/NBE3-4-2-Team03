@@ -54,7 +54,7 @@ const QuoteComponent = ({quote,onConfirm,onComment,onSelectQuote})=>{
  </div>
  <div className="grid grid-cols-2 gap-2 text-sm mb-6">
    <div className="text-gray-600 dark:text-gray-400">요청일</div>
-   <div className="dark:text-white">{quote.createDate}</div>
+   <div className="dark:text-white">{new Date(quote.createDate).toLocaleDateString()}</div>
    <div className="text-gray-600 dark:text-gray-400">예산</div>
    <div className="dark:text-white">{quote.budget}</div>
    <div className="text-gray-600 dark:text-gray-400">용도</div>
@@ -72,7 +72,7 @@ const QuoteComponent = ({quote,onConfirm,onComment,onSelectQuote})=>{
            </div>
            <div className="grid grid-cols-2 gap-2 text-sm">
              <div className="text-gray-600 dark:text-gray-400">받은날짜</div>
-             <div className="dark:text-white">{receivedQuote.date}</div>
+             <div className="dark:text-white">{new Date(receivedQuote.date).toLocaleDateString()}</div>
              <div className="text-gray-600 dark:text-gray-400">견적금액</div>
              <div className="dark:text-white">{receivedQuote.totalPrice}</div>
            </div>
@@ -273,7 +273,7 @@ export default function MyPage() {
                 <div className="flex justify-between items-center">
                   <div>
                     <span className="font-medium dark:text-white text-lg">{selectedQuote.seller}</span>
-                    <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">견적 받은 날짜: {selectedQuote.date}</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">견적 받은 날짜: {new Date(selectedQuote.date).toLocaleDateString()}</div>
                   </div>
                   <span className="px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300">
                     {selectedQuote.status}
