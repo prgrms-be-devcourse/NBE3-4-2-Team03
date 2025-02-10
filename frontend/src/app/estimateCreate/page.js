@@ -103,12 +103,7 @@ export default function CreateEstimate() {
         const itemsResponse = await fetch('http://localhost:8080/api/items');
         if (!itemsResponse.ok) throw new Error('부품 데이터를 가져오는데 실패했습니다');
         const itemsData = await itemsResponse.json();
-        // const itemsByCategory =Object.groupBy(itemsData,(item)=>item.categoryName)
-        const itemsByCategory = itemsData.reduce((acc, item) => {
-          if (!acc[item.categoryName]) acc[item.categoryName] = [];  
-          acc[item.categoryName].push(item);
-          return acc;
-        }, {});
+        const itemsByCategory =Object.groupBy(itemsData,(item)=>item.categoryName)
         
         setItems(itemsByCategory);
       } catch (error) {

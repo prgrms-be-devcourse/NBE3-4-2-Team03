@@ -109,7 +109,7 @@ export default function MyPage() {
                       </div>
                       <Link 
                         href={{
-                          pathname: '/estimate/create',
+                          pathname: '/estimateCreate',
                           query: { 
                             requestId: quote.id,
                             customerName: quote.customerId,
