@@ -47,7 +47,7 @@ class EstimateControllerTest {
 			""";
 
 		ResultActions resultActions = mvc.perform(
-			post("/api/estimates")
+			post("/api/estimate")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody)
 				.characterEncoding(StandardCharsets.UTF_8)
@@ -64,7 +64,7 @@ class EstimateControllerTest {
 	@DisplayName("견적요청 별 견적작성 조회")
 	void v2() throws Exception {
 		ResultActions resultActions = mvc.perform(
-			get("/api/estimates/{id}", 1)
+			get("/api/estimate/{id}", 1)
 				.contentType(MediaType.APPLICATION_JSON)
 				.characterEncoding(StandardCharsets.UTF_8)
 		).andDo(print());
