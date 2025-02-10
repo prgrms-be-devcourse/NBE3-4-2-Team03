@@ -19,7 +19,7 @@ export default function EstimateForm() {
             setPurpose("");
             setBudget("0");
             setOtherRequest("");
-            // 홈 페이지로 리디렉션
+
             router.push("/customers/info");
         } catch (error) {
             alert("요청 실패: " + error);

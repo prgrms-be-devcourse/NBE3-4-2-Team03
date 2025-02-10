@@ -32,12 +32,12 @@ public class EstimateService {
 	private final ItemRepository itemRepository;
 
 	@Transactional
-	public void createEstimate(EstimateCreateRequest request) {
+	public void createEstimate(EstimateCreateRequest request, String sellerName) {
 
 		EstimateRequest estimateRequest = estimateRequestService.getEstimateRequestById(request.getEstimateRequestId())
 			.orElseThrow(() -> new NoSuchElementException("존재하지 않는 견적 요청입니다."));
 
-		Seller seller = sellerService.findByUserName(request.getSellerId())
+		Seller seller = sellerService.findByUserName(sellerName)
 			.orElseThrow(() -> new NoSuchElementException("존재하지 않는 판매자입니다."));
 
 		Estimate estimate = Estimate.builder()
@@ -90,7 +90,9 @@ public class EstimateService {
 
 		Seller seller = sellerService.findByUserName(username)
 			.orElseThrow(() -> new NoSuchElementException("존재하지 않는 판매자입니다."));
+		System.out.println(seller.getUsername());
 		List<Estimate> list = estimateRepository.getAllBySeller(seller);
+		System.out.println(list.size());
 
 		return list.stream().map(quoto -> {
 

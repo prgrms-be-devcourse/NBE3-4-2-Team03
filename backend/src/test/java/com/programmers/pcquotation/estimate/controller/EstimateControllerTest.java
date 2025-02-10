@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,7 @@ class EstimateControllerTest {
 	private MockMvc mvc;
 
 	@Test
+	@WithMockUser("seller1")
 	@DisplayName("견적작성 테스트")
 	void v1() throws Exception {
 		String requestBody = """

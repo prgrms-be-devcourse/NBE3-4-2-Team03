@@ -1,9 +1,10 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-
+import { useRouter } from "next/navigation";
 
 export default function MyPage() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState('profile');
   const [selectedQuote, setSelectedQuote] = useState(null);
   const [selectedQuoteForComment, setSelectedQuoteForComment] = useState(null);
@@ -13,25 +14,32 @@ export default function MyPage() {
   const [writtenQuotes, setWrittenQuotes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [sellerInfo, setSellerInfo] = useState({
+    id: '',
+    username: '',
+    companyName: '',
+    email: ''
+  });
 
-  // 임시 데이터 (나중에 API 연동 필요)
-  const userInfo = {
-    username: "seller1",
-    customer_name: "홍길동",
-    email: "hong@example.com",
-  };
+  useEffect(() => {
+    getSellerInfo()
+  }, [])
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
         if (activeTab === 'requested') {
-          const response = await fetch('http://localhost:8080/estimate/request');
+          const response = await fetch('http://localhost:8080/estimate/request', {
+            credentials: 'include'
+          });
           if (!response.ok) throw new Error('견적 데이터를 불러오는데 실패했습니다');
           const data = await response.json();
           setRequestedQuotes(data);
         } else if (activeTab === 'written') {
-          const response = await fetch(`http://localhost:8080/api/estimate/seller/${userInfo.username}`);
+          const response = await fetch(`http://localhost:8080/api/estimate/seller/${sellerInfo.username}`, {
+            credentials: 'include'
+          });
           if (!response.ok) throw new Error('작성한 견적 데이터를 불러오는데 실패했습니다');
           const data = await response.json();
           setWrittenQuotes(data);
@@ -46,7 +54,32 @@ export default function MyPage() {
     if (activeTab === 'requested' || activeTab === 'written') {
       fetchData();
     }
-  }, [activeTab, userInfo.username]);
+  }, [activeTab, sellerInfo.username]);
+
+  const getSellerInfo = () => {
+    fetch("http://localhost:8080/seller", {
+      method: "GET",
+      credentials: "include",
+    })
+        .then((response) => {
+          return response.json();
+        })
+        .then((data) => {
+          setSellerInfo(data);
+        });
+  }
+
+  const handleLogout = async (e) => {
+    e.preventDefault();
+    const response = await fetch("http://localhost:8080/api/auth/logout", {
+      method: 'POST',
+      credentials: 'include'
+    });
+
+    if (response.ok) {
+      router.replace("/");
+    }
+  }
 
   return (
     <div className="min-h-screen p-8 dark:bg-gray-900">
@@ -75,28 +108,34 @@ export default function MyPage() {
 
       {/* 회원정보 탭 */}
       {activeTab === 'profile' && (
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="text-gray-600 dark:text-gray-400">아이디</div>
-            <div className="dark:text-white">{userInfo.username}</div>
-            <div className="text-gray-600 dark:text-gray-400">이름</div>
-            <div className="dark:text-white">{userInfo.customer_name}</div>
-            <div className="text-gray-600 dark:text-gray-400">이메일</div>
-            <div className="dark:text-white">{userInfo.email}</div>
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="text-gray-600 dark:text-gray-400">아이디</div>
+              <div className="dark:text-white">{sellerInfo.username}</div>
+              <div className="text-gray-600 dark:text-gray-400">이름</div>
+              <div className="dark:text-white">{sellerInfo.companyName}</div>
+              <div className="text-gray-600 dark:text-gray-400">이메일</div>
+              <div className="dark:text-white">{sellerInfo.email}</div>
+            </div>
+            <button className="mt-6 text-blue-500 hover:text-blue-400 dark:text-blue-400 dark:hover:text-blue-300">
+              회원정보 수정
+            </button>
+            <div>
+              <button onClick={handleLogout}
+                      className="mt-6 text-blue-500 hover:text-blue-400 dark:text-blue-400 dark:hover:text-blue-300">
+                로그아웃
+              </button>
+            </div>
           </div>
-          <button className="mt-6 text-blue-500 hover:text-blue-400 dark:text-blue-400 dark:hover:text-blue-300">
-            회원정보 수정
-          </button>
-        </div>
       )}
 
       {/* 요청한 견적 탭 */}
       {activeTab === 'requested' && (
-        <div>
-          {isLoading ? (
-            <div className="text-center py-8 dark:text-white">로딩중...</div>
-          ) : error ? (
-            <div className="text-center py-8 text-red-500">{error}</div>
+          <div>
+            {isLoading ? (
+                <div className="text-center py-8 dark:text-white">로딩중...</div>
+            ) : error ? (
+                <div className="text-center py-8 text-red-500">{error}</div>
           ) : (
             <div className="space-y-8">
               {requestedQuotes.length === 0 ? (
@@ -111,7 +150,7 @@ export default function MyPage() {
                       <Link 
                         href={{
                           pathname: '/estimateCreate',
-                          query: { 
+                          query: {
                             requestId: quote.id,
                             customerName: quote.customerId,
                             budget: quote.budget,
@@ -161,14 +200,14 @@ export default function MyPage() {
                         <span className="text-lg font-semibold dark:text-white">견적 #{quote.id}</span>
                       </div>
                       <div className="flex gap-2">
-                        
-                        <button 
+
+                        <button
                           className="px-3 py-1 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                           onClick={() => {/* 견적 수정 페이지로 이동 */}}
                         >
                           수정
                         </button>
-                        <button 
+                        <button
                           className="px-3 py-1 rounded-lg border border-red-300 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
                           onClick={() => {
                             if (window.confirm('정말로 이 견적을 삭제하시겠습니까?')) {
@@ -359,7 +398,7 @@ export default function MyPage() {
                         // 댓글 추가 로직 구현 필요
                         const newComment = {
                           id: Date.now(),
-                          author: userInfo.customer_name,
+                          author: sellerInfo.companyName,
                           text: commentText,
                           date: new Date().toLocaleString(),
                           isCustomer: true
