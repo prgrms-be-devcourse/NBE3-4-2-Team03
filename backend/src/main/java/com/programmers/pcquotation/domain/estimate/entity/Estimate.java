@@ -38,6 +38,7 @@ public class Estimate {
 	@ManyToOne
 	private Seller seller;
 
+	@Setter
 	private Integer totalPrice;
 
 	@Setter

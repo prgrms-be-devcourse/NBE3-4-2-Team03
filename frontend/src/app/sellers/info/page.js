@@ -37,7 +37,7 @@ export default function MyPage() {
           const data = await response.json();
           setRequestedQuotes(data);
         } else if (activeTab === 'written') {
-          const response = await fetch(`http://localhost:8080/api/estimate/seller/${sellerInfo.username}`, {
+          const response = await fetch(`http://localhost:8080/api/estimate/seller`, {
             credentials: 'include'
           });
           if (!response.ok) throw new Error('작성한 견적 데이터를 불러오는데 실패했습니다');

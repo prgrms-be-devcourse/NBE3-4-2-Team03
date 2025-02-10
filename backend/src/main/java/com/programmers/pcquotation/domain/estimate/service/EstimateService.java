@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.programmers.pcquotation.domain.estimate.dto.EstimateCreateRequest;
 import com.programmers.pcquotation.domain.estimate.dto.EstimateItemDto;
 import com.programmers.pcquotation.domain.estimate.dto.EstimateSellerResDto;
+import com.programmers.pcquotation.domain.estimate.dto.EstimateUpdateReqDto;
 import com.programmers.pcquotation.domain.estimate.dto.ReceivedQuoteDTO;
 import com.programmers.pcquotation.domain.estimate.entity.Estimate;
 import com.programmers.pcquotation.domain.estimate.entity.EstimateComponent;
@@ -110,5 +111,27 @@ public class EstimateService {
 						item -> item.getItem().getName())))
 				.build();
 		}).toList();
+	}
+
+	public void deleteEstimate(Integer id) {
+		estimateRepository.deleteById(id);
+	}
+
+	public void updateEstimate(EstimateUpdateReqDto request) {
+		Estimate estimateById = estimateRepository.getEstimateById(request.getEstimateId());
+
+		estimateById.setTotalPrice(getTotalPrice(request.getItem()));
+
+		List<EstimateComponent> components = request.getItem().stream()
+			.map(itemDto -> {
+				Item item = itemRepository.findById(itemDto.getItem())
+					.orElseThrow(() -> new NoSuchElementException("존재하지 않는 아이템입니다."));
+				return EstimateComponent.createComponent(item, itemDto.getPrice(), estimateById);
+			})
+			.toList();
+
+		estimateById.setEstimateComponents(components);
+
+		estimateRepository.save(estimateById);
 	}
 }
