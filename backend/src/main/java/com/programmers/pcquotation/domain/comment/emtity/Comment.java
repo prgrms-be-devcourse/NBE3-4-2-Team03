@@ -23,13 +23,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class Comment {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-
-	private String content;
-
-	private LocalDateTime createDate;
 
 	@ManyToOne
 	@JoinColumn(name = "estimate_id")
@@ -38,5 +35,9 @@ public class Comment {
 	@ManyToOne
 	@JoinColumn(name = "author_id")
 	private Customer author;
+
+	private String content;
+
+	private LocalDateTime createDate;
 
 }
