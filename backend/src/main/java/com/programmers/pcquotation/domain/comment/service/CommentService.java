@@ -9,7 +9,10 @@ import org.springframework.stereotype.Service;
 import com.programmers.pcquotation.domain.comment.dto.CommentCreateRequest;
 import com.programmers.pcquotation.domain.comment.dto.CommentCreateResponse;
 import com.programmers.pcquotation.domain.comment.dto.CommentInfoResponse;
+import com.programmers.pcquotation.domain.comment.dto.CommentUpdateRequest;
+import com.programmers.pcquotation.domain.comment.dto.CommentUpdateResponse;
 import com.programmers.pcquotation.domain.comment.emtity.Comment;
+import com.programmers.pcquotation.domain.comment.exception.CommentNotFoundException;
 import com.programmers.pcquotation.domain.comment.repository.CommentRepository;
 import com.programmers.pcquotation.domain.customer.entity.Customer;
 import com.programmers.pcquotation.domain.customer.repository.CustomerRepository;
@@ -58,6 +61,28 @@ public class CommentService {
 				comment.getCreateDate()
 			))
 			.collect(Collectors.toList());
+
+	}
+
+	@Transactional
+	public CommentUpdateResponse updateComment(Long id, CommentUpdateRequest request) {
+		Comment comment = commentRepository.findById(id)
+			.orElseThrow(() -> new CommentNotFoundException(id));
+
+		Integer estimateId = comment.getEstimate().getId();
+		Estimate estimate = estimateRepository.findById(estimateId)
+			.orElseThrow(() -> new IllegalArgumentException("유효하지 않은 견적 ID입니다."));
+
+		Customer customer = customerRepository.findById(id)
+			.orElseThrow(() -> new IllegalArgumentException("유효하지 않은 작성자 ID입니다."));
+
+		comment.updateComment(
+			estimate,
+			customer,
+			request.content()
+		);
+
+		return new CommentUpdateResponse(id, "댓글 수정 완료");
 
 	}
 }

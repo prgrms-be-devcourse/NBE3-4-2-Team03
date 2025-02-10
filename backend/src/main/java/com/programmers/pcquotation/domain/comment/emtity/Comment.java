@@ -40,4 +40,14 @@ public class Comment {
 
 	private LocalDateTime createDate;
 
+	public void updateComment(
+		Estimate estimate,
+		Customer author,
+		String content
+	) {
+		this.estimate = estimate;
+		this.author = author;
+		this.content = content;
+
+	}
 }
