@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.programmers.pcquotation.domain.customer.entity.Customer;
 import com.programmers.pcquotation.domain.estimate.entity.Estimate;
+import com.programmers.pcquotation.domain.seller.entitiy.Seller;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -33,8 +34,12 @@ public class Comment {
 	private Estimate estimate;
 
 	@ManyToOne
-	@JoinColumn(name = "author_id")
-	private Customer author;
+	@JoinColumn(name = "customer_id")
+	private Customer customer;
+
+	@ManyToOne
+	@JoinColumn(name = "seller_id")
+	private Seller seller;
 
 	private String content;
 
@@ -42,11 +47,13 @@ public class Comment {
 
 	public void updateComment(
 		Estimate estimate,
-		Customer author,
+		Customer customer,
+		Seller seller,
 		String content
 	) {
 		this.estimate = estimate;
-		this.author = author;
+		this.customer = customer;
+		this.seller = seller;
 		this.content = content;
 
 	}

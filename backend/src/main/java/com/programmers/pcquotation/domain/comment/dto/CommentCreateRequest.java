@@ -11,7 +11,10 @@ public record CommentCreateRequest(
 	Integer estimateId,
 
 	@NotNull
-	Long authorId,
+	Long customerId,
+
+	@NotNull
+	Long sellerId,
 
 	@NotEmpty
 	String content,

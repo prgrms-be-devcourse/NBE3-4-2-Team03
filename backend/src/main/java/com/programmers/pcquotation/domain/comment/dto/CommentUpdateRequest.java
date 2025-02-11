@@ -14,6 +14,8 @@ public record CommentUpdateRequest(
 	@NotNull
 	Integer estimateId,
 	@NotNull
-	Long authorId
+	Long customerId,
+	@NotNull
+	Long sellerId
 ) {
 }

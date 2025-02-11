@@ -15,7 +15,9 @@ public record CommentInfoResponse(
 	Integer estimateId,
 
 	@NonNull
-	Long authorId,
+	Long customerId,
+	@NonNull
+	Long sellerId,
 
 	@NotBlank
 	String content,
