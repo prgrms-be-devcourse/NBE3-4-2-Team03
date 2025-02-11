@@ -46,7 +46,7 @@ public class EstimateRequestController {
 	@DeleteMapping("/{id}")
 	public ResponseEntity<String> DeleteER(@PathVariable Integer id){
 		estimateRequestService.Delete(id);
-		return ResponseEntity.status(HttpStatus.OK).body("수정되었습니다");
+		return ResponseEntity.status(HttpStatus.OK).body("삭제되었습니다");
 	}
 
 	@GetMapping
