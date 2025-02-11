@@ -210,7 +210,7 @@ export default function ItemList() {
                 return response.json();
             })
             .then(() => {
-                fetchItems(); // 아이템 목록 새로고침
+                fetchItems(newItem.categoryId); // 아이템 목록 새로고침
             })
             .catch((error) => console.error('부품 추가 실패:', error));
     };
@@ -243,7 +243,7 @@ export default function ItemList() {
                 return response.json();
             })
             .then(() => {
-                fetchItems(); // 아이템 목록 새로고침
+                fetchItems(updatedItem.categoryId); // 아이템 목록 새로고침
             })
             .catch((error) => console.error('부품 수정 실패:', error));
     };
@@ -269,7 +269,7 @@ export default function ItemList() {
         }))
             .then(() => {
                 setSelectedItems(new Set());
-                fetchItems();
+                fetchItems(selectedCategory);
             })
             .catch((error) => console.error('부품 삭제 실패:', error));
     };
