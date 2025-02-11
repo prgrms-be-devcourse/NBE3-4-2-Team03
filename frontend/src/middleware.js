@@ -38,11 +38,11 @@ export async function middleware(req) {
     if(req.nextUrl.pathname === "/" || req.nextUrl.pathname === "/admin/login"){
         if(isSeller) return createUnauthorizedResponse("/sellers/info");
         else if(isCustomer) return createUnauthorizedResponse("/customers/info");
-        else if(isAdmin) return createUnauthorizedResponse("/admin/info");
+        else if(isAdmin) return createUnauthorizedResponse("/admin/management");
     }
      if(isProtectedRouteAdmin(req.nextUrl.pathname)){
          if (!isAdmin) {
-           return createUnauthorizedResponse("/");
+           return createUnauthorizedResponse("/admin/login");
          }
      }
     else if(isProtectedRouteSeller(req.nextUrl.pathname)){
@@ -147,7 +147,7 @@ function parseCookie(cookieStr) {
 
 function isProtectedRouteAdmin(pathname) {
   return (
-    pathname.startsWith("/admin/info")
+    pathname.startsWith("/admin/management")
   );
 }
 function isProtectedRouteSeller(pathname){
