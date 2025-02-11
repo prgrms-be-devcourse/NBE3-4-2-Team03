@@ -9,6 +9,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,12 +42,14 @@ public class InitData {
 	@Bean
 	public ApplicationRunner baseInitDataApplicationRunner() {
 		return args -> {
-			self.insertAdmin();
-			self.insertCustomer();
-			self.insertSeller();
-			self.insertCPU();
-			self.insertGPU();
-			self.insertRAM();
+			if( System.getProperty("org.junit.jupiter.api.Test") != null) {
+				self.insertAdmin();
+				self.insertCustomer();
+				self.insertSeller();
+				self.insertCPU();
+				self.insertGPU();
+				self.insertRAM();
+			}
 
 
 		};
