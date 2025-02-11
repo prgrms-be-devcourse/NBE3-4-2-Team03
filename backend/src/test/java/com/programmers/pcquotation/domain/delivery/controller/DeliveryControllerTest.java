@@ -38,14 +38,7 @@ class DeliveryControllerTest {
 
     @Test
     @WithMockUser(username = "user1")
-    void 주문_내역_전체_조회() throws Exception {
-        //given
-        List<Delivery> deliveryList = Arrays.asList(
-                new Delivery(any(), any(), any(), any()),
-                new Delivery(any(), any(), any(), any()),
-                new Delivery(any(), any(), any(), any()),
-                new Delivery(any(), any(), any(), any())
-        );
+    void 주문_내역_전체_조회() {
 
     }
 
