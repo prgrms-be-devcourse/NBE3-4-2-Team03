@@ -33,12 +33,14 @@ public class InitData {
 		};
 	}
 	public void work1() {
-		Admin admin = Admin
-			.builder()
-			.username("admin")
-			.password(passwordEncoder.encode("password"))
-			.build();
-		admin.setApiKey(UUID.randomUUID().toString());
-		adminService.create(admin);
+		if(adminService.findAdminByUsername("admin").isEmpty()) {
+			Admin admin = Admin
+				.builder()
+				.username("admin")
+				.password(passwordEncoder.encode("password"))
+				.build();
+			admin.setApiKey(UUID.randomUUID().toString());
+			adminService.create(admin);
+		}
 	}
 }
