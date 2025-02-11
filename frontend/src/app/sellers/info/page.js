@@ -14,6 +14,7 @@ export default function MyPage() {
   const [writtenQuotes, setWrittenQuotes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [deliveryInfo, setDeliveryInfo] = useState({});
   const [sellerInfo, setSellerInfo] = useState({
     id: '',
     username: '',
@@ -58,6 +59,32 @@ export default function MyPage() {
     }
   }, [activeTab]);
 
+  // 배송 정보를 가져오는 useEffect 추가
+  useEffect(() => {
+    const fetchDeliveryInfo = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/delivery', {
+          credentials: 'include'
+        });
+        if (response.ok) {
+          const data = await response.json();
+          // deliveryId를 key로 하는 객체로 변환
+          const deliveryMap = {};
+          data.forEach(delivery => {
+            deliveryMap[delivery.estimateId] = delivery;
+          });
+          setDeliveryInfo(deliveryMap);
+        }
+      } catch (error) {
+        console.error('배송 정보 조회 실패:', error);
+      }
+    };
+
+    if (activeTab === 'written') {
+      fetchDeliveryInfo();
+    }
+  }, [activeTab]);
+
   const getSellerInfo = () => {
     fetch("http://localhost:8080/seller", {
       method: "GET",
@@ -81,7 +108,6 @@ export default function MyPage() {
     }
   }
 
-  // 상태에 따른 스타일과 텍스트를 반환하는 함수
   const getStatusStyle = (status) => {
     switch(status) {
       case 'ADOPT':
@@ -226,8 +252,11 @@ export default function MyPage() {
                         <div className="text-center py-8 dark:text-white">작성한 견적이 없습니다.</div>
                     ) : (
                         writtenQuotes.map(quote => {
-                          const requestStatus = quote.estimateRequest?.status || 'WAIT';
+                          console.log('개별 견적 데이터:', quote);
+                          const requestStatus = quote.status || 'WAIT';
                           const statusStyle = getStatusStyle(requestStatus);
+                          const delivery = deliveryInfo[quote.id];
+
                           return (
                               <div key={quote.id} className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
                                 <div className="flex justify-between items-center mb-4">
@@ -240,11 +269,25 @@ export default function MyPage() {
                                 </div>
                                 <div className="grid grid-cols-2 gap-2 text-sm">
                                   <div className="text-gray-600 dark:text-gray-400">요청자</div>
-                                  <div className="dark:text-white">{quote.customerId}</div>
-                                  <div className="text-gray-600 dark:text-gray-400">견적 작성일</div>
-                                  <div className="dark:text-white">{new Date(quote.createDate).toLocaleDateString()}</div>
+                                  <div className="dark:text-white">{quote.customer}</div>
+                                  <div className="text-gray-600 dark:text-gray-400">요청일</div>
+                                  <div className="dark:text-white">{new Date(quote.date).toLocaleDateString()}</div>
                                   <div className="text-gray-600 dark:text-gray-400">총 견적 금액</div>
                                   <div className="dark:text-white">{quote.totalPrice.toLocaleString()}원</div>
+                                  <div className="text-gray-600 dark:text-gray-400">견적 상세</div>
+                                  <div className="dark:text-white whitespace-pre-wrap">{quote.details || '-'}</div>
+                                  {delivery && (
+                                      <>
+                                        <div className="text-gray-600 dark:text-gray-400">배송 주소</div>
+                                        <div className="dark:text-white">{delivery.address || '-'}</div>
+                                        <div className="text-gray-600 dark:text-gray-400">배송 상태</div>
+                                        <div className="dark:text-white">
+                              <span className="px-2 py-1 bg-blue-100 text-blue-600 rounded-full text-sm">
+                                {delivery.status || '배송 준비중'}
+                              </span>
+                                        </div>
+                                      </>
+                                  )}
                                 </div>
                               </div>
                           );
