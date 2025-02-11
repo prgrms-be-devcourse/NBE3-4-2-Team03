@@ -35,22 +35,22 @@ export async function middleware(req) {
     const isSeller = respData?.userType  === 'Seller';
     const isCustomer = respData?.userType === 'Customer';
 
-    if(req.nextUrl.pathname === "/"){
+    if(req.nextUrl.pathname === "/" || req.nextUrl.pathname === "/admin/login"){
         if(isSeller) return createUnauthorizedResponse("/sellers/info");
-        if(isCustomer) return createUnauthorizedResponse("/customers/info");
-        if(isAdmin) return createUnauthorizedResponse("/admin");
+        else if(isCustomer) return createUnauthorizedResponse("/customers/info");
+        else if(isAdmin) return createUnauthorizedResponse("/admin/info");
     }
-    if(isProtectedRouteAdmin(req.nextUrl.pathname)){
-        if (!isAdmin) {
-          return createUnauthorizedResponse("/");
-        }
-    }
-    if(isProtectedRouteSeller(req.nextUrl.pathname)){
+     if(isProtectedRouteAdmin(req.nextUrl.pathname)){
+         if (!isAdmin) {
+           return createUnauthorizedResponse("/");
+         }
+     }
+    else if(isProtectedRouteSeller(req.nextUrl.pathname)){
         if (!isAdmin && !isSeller) {
           return createUnauthorizedResponse("/");
         }
     }
-    if(isProtectedRouteCustomer(req.nextUrl.pathname)){
+    else if(isProtectedRouteCustomer(req.nextUrl.pathname)){
         if (!isAdmin && !isCustomer) {
           return createUnauthorizedResponse("/");
         }
@@ -147,7 +147,7 @@ function parseCookie(cookieStr) {
 
 function isProtectedRouteAdmin(pathname) {
   return (
-    pathname.startsWith("/admin")
+    pathname.startsWith("/admin/info")
   );
 }
 function isProtectedRouteSeller(pathname){

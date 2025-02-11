@@ -6,15 +6,10 @@ import { useRouter } from "next/navigation";
 
 export default function LoginSignupView() {
   const router = useRouter();
-  const [loginType, setLoginType] = useState("CUSTOMER");
   const [formData, setFormData] = useState({
     username: '',
     password: ''
   });
-
-  const handleLoginTypeChange = (type) => {
-    setLoginType(type);
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -26,12 +21,7 @@ export default function LoginSignupView() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
-    if (loginType === "SELLER") {
-      await requestLogin("http://localhost:8080/api/auth/login/seller", "/sellers/info")
-    } else if (loginType === "CUSTOMER") {
-      await requestLogin("http://localhost:8080/api/auth/login/customer", "/customers/info")
-    }
+    await requestLogin("http://localhost:8080/api/auth/login/admin", "/admin/info")
   }
 
   const requestLogin = async (url, destination) => {
@@ -56,29 +46,14 @@ export default function LoginSignupView() {
   }
 
   return (
+<div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+<main className="flex flex-col gap-8 row-start-2 items-center">
+  {
     <div className="flex justify-between mb-6">
       <div>
-        <button
-          onClick={() => handleLoginTypeChange("CUSTOMER")}
-          className={`w-1/2 py-2 rounded-lg focus:outline-none p-4 ${
-            loginType === "CUSTOMER"
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200 text-gray-700"
-          }`}
-        >
-          구매자 로그인
-        </button>
-        <button
-          onClick={() => handleLoginTypeChange("SELLER")}
-          className={`w-1/2 py-2 rounded-lg focus:outline-none p-4 ${
-            loginType === "SELLER"
-              ? "bg-green-600 text-white"
-              : "bg-gray-200 text-gray-700"
-          }`}
-        >
-          판매자 로그인
-        </button>
-
+        <div className ="">
+            관리자 로그인
+        </div>
         <form onSubmit={handleLogin}>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-600">
@@ -89,7 +64,7 @@ export default function LoginSignupView() {
               name="username"
               value={formData.username}
               onChange={handleChange}
-              className="w-full mt-2 px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full mt-2 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
@@ -103,7 +78,7 @@ export default function LoginSignupView() {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full mt-2 px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full mt-2 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
@@ -117,23 +92,14 @@ export default function LoginSignupView() {
         </form>
 
         <div className="my-4 border-t border-gray-300"></div>
-
-        <div className="text-center">
-          {loginType === "CUSTOMER" ? (
-            <Link href="/signup/customer">
-              <span className="text-blue-600 hover:underline cursor-pointer">
-                구매자 회원가입
-              </span>
-            </Link>
-          ) : (
-            <Link href="/signup/seller">
-              <span className="text-blue-600 hover:underline cursor-pointer">
-                판매자 회원가입
-              </span>
-            </Link>
-          )}
-        </div>
       </div>
+    </div>
+    }
+      </main>
+
+      <footer className="row-start-3 text-sm text-gray-500 dark:text-gray-400">
+        © 2025 PC Builder. All rights reserved.
+      </footer>
     </div>
   );
 }

@@ -27,41 +27,43 @@ export default function EstimateForm() {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="p-4 border rounded text-white">
-            <div className="mb-4">
-                <label className="block mb-2 text-white">목적:</label>
-                <input
-                    type="text"
-                    value={purpose}
-                    onChange={(e) => setPurpose(e.target.value)}
-                    required
-                    className="border p-2 w-full text-black rounded"
-                />
+        <form onSubmit={handleSubmit} className="max-w-2xl mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+            <div className="space-y-6">
+                <div>
+                    <label className="block mb-2 font-medium dark:text-white">목적:</label>
+                    <input
+                        type="text"
+                        value={purpose}
+                        onChange={(e) => setPurpose(e.target.value)}
+                        required
+                        className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300"
+                    />
+                </div>
+                <div>
+                    <label className="block mb-2 font-medium dark:text-white">예산:</label>
+                    <input
+                        type="number"
+                        value={budget}
+                        onFocus={(e) => e.target.value === "0" && setBudget("")}
+                        onChange={(e) => setBudget(e.target.value)}
+                        required
+                        step="10000"
+                        className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300"
+                    />
+                </div>
+                <div>
+                    <label className="block mb-2 font-medium dark:text-white">기타 요청 사항:</label>
+                    <textarea
+                        value={otherRequest}
+                        onChange={(e) => setOtherRequest(e.target.value)}
+                        className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300"
+                        rows={8}
+                    />
+                </div>
+                <button type="submit" className="w-full py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition">
+                    견적 요청
+                </button>
             </div>
-            <div className="mb-4">
-                <label className="block mb-2 text-white">예산:</label>
-                <input
-                    type="number"
-                    value={budget}
-                    onFocus={(e) => e.target.value === "0" && setBudget("")}
-                    onChange={(e) => setBudget(e.target.value)}
-                    required
-                    step="10000"
-                    className="border p-2 w-full text-black rounded"
-                />
-            </div>
-            <div className="mb-4">
-                <label className="block mb-2 text-white">기타 요청 사항:</label>
-                <textarea
-                    value={otherRequest}
-                    onChange={(e) => setOtherRequest(e.target.value)}
-                    className="border p-2 w-full text-black rounded"
-                    rows={8} // 크기를 두 배로 늘림
-                />
-            </div>
-            <button type="submit" className="mt-2 p-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-                견적 요청
-            </button>
         </form>
     );
 }

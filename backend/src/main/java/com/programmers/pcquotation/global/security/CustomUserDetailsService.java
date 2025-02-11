@@ -5,6 +5,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.programmers.pcquotation.domain.admin.service.AdminService;
 import com.programmers.pcquotation.domain.customer.service.CustomerService;
 import com.programmers.pcquotation.domain.member.entitiy.Member;
 import com.programmers.pcquotation.domain.member.service.AuthService;
@@ -18,12 +19,15 @@ import lombok.RequiredArgsConstructor;
 public class CustomUserDetailsService implements UserDetailsService {
 	private final CustomerService customerService;
 	private final SellerService sellerService;
+	private  final AdminService adminService;
 
 	public Member loadUserByUsername(String username, UserType userType) throws UsernameNotFoundException {
 		Member member = switch (userType) {
 			case Customer -> customerService.findCustomerByUsername(username)
 				.orElseThrow(() -> new UsernameNotFoundException("해당 유저가 존재하지 않습니다. username = " + username));
 			case Seller -> sellerService.findByUserName(username)
+				.orElseThrow(() -> new UsernameNotFoundException("해당 유저가 존재하지 않습니다. username = " + username));
+			case Admin -> adminService.findAdminByUsername(username)
 				.orElseThrow(() -> new UsernameNotFoundException("해당 유저가 존재하지 않습니다. username = " + username));
 			default -> throw new UsernameNotFoundException("잘못된 UserType입니다.");
 		};
