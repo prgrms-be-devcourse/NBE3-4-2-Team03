@@ -93,14 +93,18 @@ export default function CreateEstimate() {
     const fetchData = async () => {
       try {
         // 카테고리 데이터 가져오기
-        const categoryResponse = await fetch('http://localhost:8080/api/admin/categories');
+          const categoryResponse = await fetch('http://localhost:8080/api/admin/categories', {
+              credentials: 'include'
+          });
         if (!categoryResponse.ok) throw new Error('카테고리 데이터를 가져오는데 실패했습니다');
         const categoryData = await categoryResponse.json();
         
         setCategories(categoryData);
 
         // 부품 데이터 가져오기
-        const itemsResponse = await fetch('http://localhost:8080/api/admin/items');
+        const itemsResponse = await fetch('http://localhost:8080/api/admin/items', {
+            credentials: 'include'
+        });
         if (!itemsResponse.ok) throw new Error('부품 데이터를 가져오는데 실패했습니다');
         const itemsData = await itemsResponse.json();
         const itemsByCategory =Object.groupBy(itemsData,(item)=>item.categoryName)
