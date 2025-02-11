@@ -54,103 +54,105 @@ export default function CustomerSignup() {
   };
 
   return (
-      <div className="max-w-lg mx-auto p-8 bg-white shadow-md rounded-md">
-        <h1 className="text-2xl font-bold text-center mb-4">회원가입</h1>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-8">
+        <div className="w-full max-w-lg bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8">
+          <h1 className="text-2xl font-bold text-center mb-4">회원가입</h1>
 
-        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+          {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-gray-700">아이디:</label>
-            <input
-                type="text"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-            />
-          </div>
+          <form onSubmit={handleSubmit}>
+            <div className="mb-4">
+              <label className="block text-gray-700 dark:text-gray-300">아이디:</label>
+              <input
+                  type="text"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  className="w-full p-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+              />
+            </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700">비밀번호:</label>
-            <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-            />
-          </div>
+            <div className="mb-4">
+              <label className="block text-gray-700 dark:text-gray-300">비밀번호:</label>
+              <input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="w-full p-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+              />
+            </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700">비밀번호 확인:</label>
-            <input
-                type="password"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-            />
-          </div>
+            <div className="mb-4">
+              <label className="block text-gray-700 dark:text-gray-300">비밀번호 확인:</label>
+              <input
+                  type="password"
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className="w-full p-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+              />
+            </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700">이름:</label>
-            <input
-                type="text"
-                name="customerName"
-                value={formData.customerName}
-                onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-            />
-          </div>
+            <div className="mb-4">
+              <label className="block text-gray-700 dark:text-gray-300">이름:</label>
+              <input
+                  type="text"
+                  name="customerName"
+                  value={formData.customerName}
+                  onChange={handleChange}
+                  className="w-full p-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+              />
+            </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700">이메일:</label>
-            <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-            />
-          </div>
+            <div className="mb-4">
+              <label className="block text-gray-700 dark:text-gray-300">이메일:</label>
+              <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="w-full p-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+              />
+            </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700">비밀번호 질문:</label>
-            <input
-                type="text"
-                name="verificationQuestion"
-                value={formData.verificationQuestion}
-                onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-            />
-          </div>
+            <div className="mb-4">
+              <label className="block text-gray-700 dark:text-gray-300">비밀번호 질문:</label>
+              <input
+                  type="text"
+                  name="verificationQuestion"
+                  value={formData.verificationQuestion}
+                  onChange={handleChange}
+                  className="w-full p-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+              />
+            </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700">비밀번호 답변:</label>
-            <input
-                type="text"
-                name="verificationAnswer"
-                value={formData.verificationAnswer}
-                onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-            />
-          </div>
+            <div className="mb-4">
+              <label className="block text-gray-700 dark:text-gray-300">비밀번호 답변:</label>
+              <input
+                  type="text"
+                  name="verificationAnswer"
+                  value={formData.verificationAnswer}
+                  onChange={handleChange}
+                  className="w-full p-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+              />
+            </div>
 
-          <button
-              type="submit"
-              className="w-full p-3 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-blue-500 hover:bg-blue-600"
-          >
-            회원가입
-          </button>
-        </form>
+            <button
+                type="submit"
+                className="w-full p-3 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-blue-500 hover:bg-blue-600"
+            >
+              회원가입
+            </button>
+          </form>
+        </div>
       </div>
   );
 }

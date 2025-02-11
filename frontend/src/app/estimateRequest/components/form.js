@@ -36,7 +36,7 @@ export default function EstimateForm() {
                         value={purpose}
                         onChange={(e) => setPurpose(e.target.value)}
                         required
-                        className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300"
                     />
                 </div>
                 <div>
@@ -48,7 +48,7 @@ export default function EstimateForm() {
                         onChange={(e) => setBudget(e.target.value)}
                         required
                         step="10000"
-                        className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300"
                     />
                 </div>
                 <div>
@@ -56,7 +56,7 @@ export default function EstimateForm() {
                     <textarea
                         value={otherRequest}
                         onChange={(e) => setOtherRequest(e.target.value)}
-                        className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300"
                         rows={8}
                     />
                 </div>
