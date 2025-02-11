@@ -108,6 +108,6 @@ public class ImageService {
 
 	private boolean checkInvalidExt(String originalFilename) {
 		String ext = extractExt(originalFilename);
-		return !ext.equals("png") && !ext.equals("jpg") && !ext.equals("jpeg");
+		return !ext.equals("png") && !ext.equals("jpg") && !ext.equals("jpeg") && !ext.equals("webp");
 	}
 }
