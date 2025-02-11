@@ -26,16 +26,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @Transactional
 class DeliveryControllerTest {
 
-    @Autowired
-    private MockMvc mvc;
-
-    @MockitoBean
-    private DeliveryService deliveryService;
-
-    @MockitoBean
-    private DeliveryRepository deliveryRepository;
-
-
     @Test
     @WithMockUser(username = "user1")
     void 주문_내역_전체_조회() {
