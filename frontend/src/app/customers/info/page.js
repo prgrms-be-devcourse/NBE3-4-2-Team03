@@ -11,22 +11,29 @@ import { useRouter } from "next/navigation";
  * @param {({id:number})=>{}} onSelectQuote
  * @returns
  */
-const QuoteComponent = ({quote,onConfirm,onComment,onSelectQuote})=>{
-  const [selected,setSelected] = useState(false)
-  const [receivedQuotes,setReceivedQuotes] = useState([])
+const QuoteComponent = ({ quote, onConfirm, onComment, onSelectQuote }) => {
+  const [selected, setSelected] = useState(false)
+  const [receivedQuotes, setReceivedQuotes] = useState([])
+
   // 받은 견적 목록 조회
   useEffect(() => {
     if (!selected)return;
     if (receivedQuotes.length>0)return;
     const fetchReceivedQuotes = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/estimate/${quote.id}`);
+        const response = await fetch(`http://localhost:8080/api/estimate/${quote.id}`, {
+          credentials: 'include'  // 인증 정보 포함
+        });
         if (!response.ok) {
           throw new Error('받은 견적 데이터를 가져오는데 실패했습니다');
         }
         const data = await response.json();
-        console.log(data)
-        setReceivedQuotes(data);
+        console.log('받은 견적 데이터:', data);
+        // 판매자 정보를 포함한 데이터 설정
+        setReceivedQuotes(data.map(quote => ({
+          ...quote,
+          sellerId: quote.sellerId  // 서버에서 받은 판매자 ID
+        })));
       } catch (error) {
         console.error('받은 견적 데이터 로딩 오류:', error);
       }
@@ -37,71 +44,71 @@ const QuoteComponent = ({quote,onConfirm,onComment,onSelectQuote})=>{
 
   return (
 
-      <div key={quote.id}
-           className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm"
-      >
-        <div className="flex justify-between items-center mb-4">
-   <span className="text-lg font-semibold dark:text-white">
-     견적 요청 #{quote.id}
+    <div key={quote.id}
+      className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm"
+    >
+      <div className="flex justify-between items-center mb-4">
+        <span className="text-lg font-semibold dark:text-white">
+          견적 요청 #{quote.id}
 
-   </span>
-          <button
-              onClick={()=>setSelected(p=>!p)}
-              className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-          >
-            {selected?"닫기":"열기"}
-          </button>
-        </div>
-        <div className="grid grid-cols-2 gap-2 text-sm mb-6">
-          <div className="text-gray-600 dark:text-gray-400">요청일</div>
-          <div className="dark:text-white">{new Date(quote.createDate).toLocaleDateString()}</div>
-          <div className="text-gray-600 dark:text-gray-400">예산</div>
-          <div className="dark:text-white">{quote.budget}</div>
-          <div className="text-gray-600 dark:text-gray-400">용도</div>
-          <div className="dark:text-white">{quote.purpose}</div>
-        </div>
-        {/* 받은 견적 목록 */}
-        {selected && receivedQuotes.length > 0 && (
-            <div className="mt-6 border-t dark:border-gray-700 pt-4">
-              <h3 className="text-md font-semibold mb-4 dark:text-white">받은 견적 ({receivedQuotes.length})</h3>
-              <div className="space-y-4">
-                {receivedQuotes.map(receivedQuote => (
-                    <div key={receivedQuote.id} className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="font-medium dark:text-white">{receivedQuote.seller}</span>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2 text-sm">
-                        <div className="text-gray-600 dark:text-gray-400">받은날짜</div>
-                        <div className="dark:text-white">{new Date(receivedQuote.date).toLocaleDateString()}</div>
-                        <div className="text-gray-600 dark:text-gray-400">견적금액</div>
-                        <div className="dark:text-white">{receivedQuote.totalPrice}</div>
-                      </div>
-                      <div className="mt-3 flex gap-2">
-                        <button
-                            className="text-sm text-blue-500 hover:text-blue-400"
-                            onClick={() => onSelectQuote(receivedQuote)}
-                        >
-                          상세보기
-                        </button>
-                        <button
-                            className="text-sm text-green-600 hover:text-green-500"
-                            onClick={()=>onConfirm(receivedQuote)}
-                        >
-                          채택하기
-                        </button>
-                        <button
-                            className="text-sm text-purple-600 hover:text-purple-500"
-                            onClick={()=>onComment(receivedQuote)}
-                        >
-                          문의하기
-                        </button>
-                      </div>
-                    </div>
-                ))}
-              </div>
-            </div>
-        )}
+        </span>
+        <button
+          onClick={() => setSelected(p => !p)}
+          className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+        >
+          {selected ? "닫기" : "열기"}
+        </button>
       </div>
+      <div className="grid grid-cols-2 gap-2 text-sm mb-6">
+        <div className="text-gray-600 dark:text-gray-400">요청일</div>
+        <div className="dark:text-white">{quote.createDate}</div>
+        <div className="text-gray-600 dark:text-gray-400">예산</div>
+        <div className="dark:text-white">{quote.budget}</div>
+        <div className="text-gray-600 dark:text-gray-400">용도</div>
+        <div className="dark:text-white">{quote.purpose}</div>
+      </div>
+      {/* 받은 견적 목록 */}
+      {selected && receivedQuotes.length > 0 && (
+        <div className="mt-6 border-t dark:border-gray-700 pt-4">
+          <h3 className="text-md font-semibold mb-4 dark:text-white">받은 견적 ({receivedQuotes.length})</h3>
+          <div className="space-y-4">
+            {receivedQuotes.map(receivedQuote => (
+              <div key={receivedQuote.id} className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="font-medium dark:text-white">{receivedQuote.seller}</span>
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div className="text-gray-600 dark:text-gray-400">받은날짜</div>
+                  <div className="dark:text-white">{receivedQuote.date}</div>
+                  <div className="text-gray-600 dark:text-gray-400">견적금액</div>
+                  <div className="dark:text-white">{receivedQuote.totalPrice}</div>
+                </div>
+                <div className="mt-3 flex gap-2">
+                  <button
+                    className="text-sm text-blue-500 hover:text-blue-400"
+                    onClick={() => onSelectQuote(receivedQuote)}
+                  >
+                    상세보기
+                  </button>
+                  <button
+                    className="text-sm text-green-600 hover:text-green-500"
+                    onClick={() => onConfirm(receivedQuote)}
+                  >
+                    채택하기
+                  </button>
+                  <button
+                    className="text-sm text-purple-600 hover:text-purple-500"
+                    onClick={() => onComment(receivedQuote)}
+                  >
+                    문의하기
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -113,6 +120,7 @@ export default function MyPage() {
   const [commentText, setCommentText] = useState('');
   const [confirmQuote, setConfirmQuote] = useState(null);
   const [requestedQuotes, setRequestedQuotes] = useState([]);
+  const [comments, setComments] = useState([]);
   const [deliveryAddress, setDeliveryAddress] = useState('');
   const [customerInfo, setCustomerInfo] = useState({
     id: '',
@@ -125,27 +133,27 @@ export default function MyPage() {
    *
    * @param {{id:number}} quote
    */
-  const onSelcectQuote = (quote)=>{
+  const onSelcectQuote = (quote) => {
     setSelectedQuote(quote);
   }
   /**
    *
    * @param {{id:number}} quote
    */
-  const onConfirm = (quote)=>{
+  const onConfirm = (quote) => {
     setConfirmQuote(quote);
   }
   /**
    *
    * @param {{id:number}} quoteId
    */
-  const onComment =(quote)=>{
+  const onComment = (quote) => {
     setSelectedQuoteForComment(quote)
   }
 
   useEffect(() => {
     getCustomerInfo();
-  }, [])
+  }, []);
 
   // 견적 요청 목록 조회
   useEffect(() => {
@@ -170,18 +178,33 @@ export default function MyPage() {
     }
   }, [activeTab]);
 
-  const getCustomerInfo = () => {
-    fetch("http://localhost:8080/customer", {
-      method: "GET",
-      credentials: "include",
-    })
-        .then((response) => {
-          return response.json();
-        })
-        .then((data) => {
-          setCustomerInfo(data);
-        });
-  }
+  const getCustomerInfo = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/customer", {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('고객 정보를 가져오는데 실패했습니다.');
+      }
+
+      const data = await response.json();
+      console.log('받은 고객 정보:', data);
+
+      if (!data.id) {
+        throw new Error('고객 ID가 없습니다. 다시 로그인해주세요.');
+      }
+
+      setCustomerInfo(data);
+    } catch (error) {
+      console.error('고객 정보 조회 실패:', error);
+      alert(error.message);
+    }
+  };
 
   const handleLogout = async (e) => {
     e.preventDefault();
@@ -194,6 +217,114 @@ export default function MyPage() {
       router.replace("/");
     }
   }
+
+
+  // 댓글 조회 함수
+  const fetchComments = async (estimateId) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/estimates/comments/${estimateId}`, {
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        console.error('서버 응답:', errorData);
+        setComments([]);
+        return;
+      }
+
+      const data = await response.json();
+      console.log('받은 댓글 데이터:', data);
+      
+      const commentsWithType = data.map(comment => ({
+        ...comment,
+        type: comment.type || 'CUSTOMER'
+      }));
+      
+      setComments(commentsWithType);
+    } catch (error) {
+      console.error('댓글 불러오기 실패:', error);
+      setComments([]);
+    }
+  };
+
+  // handleSendComment 함수도 수정
+  const handleSendComment = async () => {
+    if (!commentText.trim()) {
+      alert('댓글 내용을 입력해주세요.');
+      return;
+    }
+
+    try {
+      if (!selectedQuoteForComment?.id) {
+        console.error('견적 ID 누락:', selectedQuoteForComment);
+        throw new Error('견적 정보가 없습니다.');
+      }
+
+      const newComment = {
+        estimateId: parseInt(selectedQuoteForComment.id),
+        customerId: parseInt(customerInfo.id),
+        content: commentText,
+        createDate: new Date().toISOString(),
+        type: window.location.pathname.includes('/sellers') ? 'SELLER' : 'CUSTOMER'  // URL에 따라 타입 결정
+      };
+
+      console.log('전송할 댓글 데이터:', newComment);
+
+      const response = await fetch('http://localhost:8080/api/estimates/comments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify(newComment),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('서버 응답 상세:', errorData);
+        throw new Error(errorData.message || '댓글 전송에 실패했습니다.');
+      }
+
+      const result = await response.json();
+      console.log('댓글 전송 성공:', result);
+
+      setCommentText('');
+      await fetchComments(selectedQuoteForComment.id);
+    } catch (error) {
+      console.error('댓글 전송 실패:', error);
+      alert(error.message);
+    }
+  };
+
+  // customerInfo 상태가 변경될 때마다 로그 출력
+  useEffect(() => {
+    console.log('customerInfo 업데이트됨:', customerInfo);
+  }, [customerInfo]);
+
+  // selectedQuoteForComment 상태가 변경될 때마다 로그 출력
+  useEffect(() => {
+    console.log('selectedQuoteForComment 업데이트됨:', selectedQuoteForComment);
+  }, [selectedQuoteForComment]);
+
+  // 날짜 포맷팅 함수 추가
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('ko-KR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(date);
+  };
+
+  // selectedQuoteForComment가 변경될 때마다 댓글을 조회하는 useEffect 추가
+  useEffect(() => {
+    if (selectedQuoteForComment?.id) {
+      fetchComments(selectedQuoteForComment.id);
+    }
+  }, [selectedQuoteForComment]);
 
   return (
       <div className="min-h-screen p-8 dark:bg-gray-900">
@@ -284,8 +415,8 @@ export default function MyPage() {
                         <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">견적 받은 날짜: {new Date(selectedQuote.date).toLocaleDateString()}</div>
                       </div>
                       <span className="px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300">
-                    {selectedQuote.status}
-                  </span>
+                        {selectedQuote.status}
+                      </span>
                     </div>
                   </div>
 
@@ -317,8 +448,8 @@ export default function MyPage() {
                     <div className="flex justify-between items-center mb-4">
                       <span className="font-medium dark:text-white">총 견적금액</span>
                       <span className="text-xl font-semibold text-blue-600 dark:text-blue-400">
-                    {selectedQuote.totalPrice}
-                  </span>
+                        {selectedQuote.totalPrice}
+                      </span>
                     </div>
 
                     <div className="flex justify-end gap-3 mt-4">
@@ -343,94 +474,72 @@ export default function MyPage() {
             </div>
         )}
 
-        {selectedQuoteForComment && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-xl font-semibold dark:text-white">문의하기</h3>
-                  <button
-                      onClick={() => setSelectedQuoteForComment(null)}
-                      className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                  >
-                    ✕
-                  </button>
-                </div>
+      {selectedQuoteForComment && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-semibold dark:text-white">문의하기</h3>
+              <button
+                onClick={() => setSelectedQuoteForComment(null)}
+                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              >
+                ✕
+              </button>
+            </div>
 
-                <div className="space-y-6">
-                  <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                    <span className="font-medium dark:text-white">{selectedQuoteForComment.seller}</span>
-                    <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">
-                  총 견적금액: {selectedQuoteForComment.totalPrice}
-                </span>
-                  </div>
+            {/* 댓글 입력 영역을 위로 이동 */}
+            <div className="flex gap-2 mb-6 border-b pb-4 dark:border-gray-700">
+              <input
+                type="text"
+                value={commentText}
+                onChange={(e) => setCommentText(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSendComment();
+                  }
+                }}
+                placeholder="문의사항을 입력하세요..."
+                className="flex-grow px-4 py-2 border dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white"
+              />
+              <button
+                onClick={handleSendComment}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                전송
+              </button>
+            </div>
 
-                  {/* 댓글 목록 */}
-                  <div className="space-y-4 max-h-[400px] overflow-y-auto">
-                    {selectedQuoteForComment.comments?.map((comment) => (
-                        <div
-                            key={comment.id}
-                            className={`flex gap-4 ${comment.isCustomer ? 'flex-row-reverse' : ''}`}
-                        >
-                          <div className="flex-shrink-0">
-                            <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
-                        <span className="text-sm">
-                          {comment.author.charAt(0)}
-                        </span>
-                            </div>
-                          </div>
-                          <div className={`flex-grow ${comment.isCustomer ? 'text-right' : ''}`}>
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="font-medium dark:text-white">{comment.author}</span>
-                              <span className="text-sm text-gray-500 dark:text-gray-400">{comment.date}</span>
-                            </div>
-                            <div className={`inline-block max-w-[80%] rounded-lg px-4 py-2 ${
-                                comment.isCustomer
-                                    ? 'bg-purple-500 text-white'
-                                    : 'bg-gray-100 dark:bg-gray-700 dark:text-white'
-                            }`}>
-                              {comment.text}
-                            </div>
-                          </div>
-                        </div>
-                    ))}
-                  </div>
-
-                  {/* 댓글 입력 폼 */}
-                  <div className="border-t dark:border-gray-700 pt-4">
-                    <div className="flex gap-2">
-                      <input
-                          type="text"
-                          value={commentText}
-                          onChange={(e) => setCommentText(e.target.value)}
-                          placeholder="문의사항을 입력하세요..."
-                          className="flex-grow px-4 py-2 rounded-lg border dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      />
-                      <button
-                          onClick={() => {
-                            if (commentText.trim()) {
-                              // 댓글 추가 로직 구현 필요
-                              const newComment = {
-                                id: Date.now(),
-                                author: userInfo.customer_name,
-                                text: commentText,
-                                date: new Date().toLocaleString(),
-                                isCustomer: true
-                              };
-                              // API 호출 및 상태 업데이트 로직 필요
-                              setCommentText('');
-                            }
-                          }}
-                          className="px-6 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition-colors disabled:opacity-50"
-                          disabled={!commentText.trim()}
-                      >
-                        전송
-                      </button>
+            {/* 댓글 목록 */}
+            <div className="space-y-2">
+              {[...comments]
+                .sort((a, b) => new Date(a.createDate) - new Date(b.createDate))
+                .map((comment) => (
+                  <div key={comment.id} className="border-b dark:border-gray-700 pb-2">
+                    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-1">
+                      <span className={`font-semibold ${
+                        comment.type === 'SELLER' ? 'text-blue-600 dark:text-blue-400' : 'text-green-600 dark:text-green-400'
+                      }`}>
+                        {comment.type === 'SELLER' ? '판매자' : '구매자'}
+                      </span>
+                      <span className="text-gray-400">|</span>
+                      <span>{formatDate(comment.createDate)}</span>
+                    </div>
+                    <div className="pl-2 dark:text-white">
+                      {comment.content}
                     </div>
                   </div>
-                </div>
-              </div>
+                ))}
             </div>
-        )}
+
+            {comments.length === 0 && (
+              <div className="text-center text-gray-500 dark:text-gray-400 py-4">
+                아직 댓글이 없습니다.
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
         {/* 채택 확인 모달 */}
         {Boolean(confirmQuote) && (
@@ -515,4 +624,4 @@ export default function MyPage() {
         )}
       </div>
   );
-}
+} 

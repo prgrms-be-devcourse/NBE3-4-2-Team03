@@ -55,4 +55,9 @@ public class CommentController {
 		return commentService.deleteComment(id);
 	}
 
+	@GetMapping("/{estimateId}")
+	public List<CommentInfoResponse> getCommentsByEstimateId(@PathVariable Long estimateId) {
+		return commentService.getCommentsByEstimateId(estimateId);
+	}
+
 }
