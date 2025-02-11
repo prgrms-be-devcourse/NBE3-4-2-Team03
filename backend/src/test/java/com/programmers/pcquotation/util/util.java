@@ -1,4 +1,4 @@
-package com.programmers.pcquotation.member.controller;
+package com.programmers.pcquotation.util;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -20,20 +20,20 @@ import com.programmers.pcquotation.domain.seller.entitiy.Seller;
 import com.programmers.pcquotation.domain.seller.service.SellerService;
 
 public class util {
-	static Seller registerSeller(String username, String password, MockMvc mvc, SellerService sellerService) throws Exception {
+	public static Seller registerSeller(String username, String password, MockMvc mvc, SellerService sellerService) throws Exception {
 		ResultActions resultActions = mvc
 			.perform(post("/api/auth/signup/seller")
 				.content(String.format("""
 					{
 					    "username": "%s",
 					    "password": "%s",
-					    "confirmPassword": "password1234",
-					    "companyName": "너구리",
-					    "email": "abc@gmail.com",
+					    "confirmPassword": "%s",
+					    "companyName": "너6구리",
+					    "email": "%s@gmail.com",
 					    "verificationQuestion": "바나나는",
 					    "verificationAnswer": "길어"
 					}
-					""".stripIndent(), username, password))
+					""".stripIndent(), username, password,password, username))
 				.contentType(
 					new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
 				)
@@ -41,12 +41,12 @@ public class util {
 			.andExpect(status().isCreated())
 			.andExpect(jsonPath("$.message").value("회원가입 성공"))
 			.andDo(print());
-		Optional<Seller> sellers = sellerService.findByUserName("test1234");
+		Optional<Seller> sellers = sellerService.findByUserName(username);
 		assertNotNull(sellers.get());
 		return sellers.get();
 	}
 
-	static String loginSeller(String username, String password, MockMvc mvc, SellerService sellerService) throws Exception {
+	public static String loginSeller(String username, String password,MockMvc mvc, SellerService sellerService) throws Exception {
 		registerSeller(username,password, mvc,sellerService);
 		ResultActions resultActions = mvc
 			.perform(post("/api/auth/login/seller")
@@ -71,20 +71,21 @@ public class util {
 		return jsonNode.get("apiKey").asText() + " " + jsonNode.get("accessToken").asText() + " " + jsonNode.get("userType").asText();
 	}
 
-	static Customer registerCustomer(String username, String password, MockMvc mvc, CustomerService customerService) throws Exception {
+	public static Customer registerCustomer(String username, String password, MockMvc mvc,
+		CustomerService customerService) throws Exception {
 		ResultActions resultActions = mvc
 			.perform(post("/api/auth/signup/customer")
 				.content(String.format("""
 					{
 					    "username": "%s",
 					    "password": "%s",
-					    "confirmPassword": "password1234",
-					    "companyName": "너구리",
-					    "email": "abc@gmail.com",
+					    "confirmPassword": "%s",
+					    "companyName": "너구5리",
+					    "email": "%s@gmaidl.com",
 					    "verificationQuestion": "바나나는",
 					    "verificationAnswer": "길어"
 					}
-					""".stripIndent(), username, password))
+					""".stripIndent(), username, password,password, username))
 				.contentType(
 					new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
 				)
@@ -97,7 +98,7 @@ public class util {
 		return customer.get();
 	}
 
-	static String loginCustomer(String username, String password, MockMvc mvc, CustomerService customerService) throws Exception {
+	public static String loginCustomer(String username, String password, MockMvc mvc, CustomerService customerService) throws Exception {
 		registerCustomer(username,password, mvc,customerService);
 		ResultActions resultActions = mvc
 			.perform(post("/api/auth/login/customer")

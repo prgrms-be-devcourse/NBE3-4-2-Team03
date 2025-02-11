@@ -50,6 +50,11 @@ public class AuthController {
 		LoginResponse loginResponse = authService.processLoginSeller(loginRequest);
 		return new ResponseEntity<>(loginResponse, HttpStatus.OK);
 	}
+	@PostMapping("/login/admin")
+	public ResponseEntity<LoginResponse> loginAdmin(@RequestBody LoginRequest loginRequest) {
+		LoginResponse loginResponse = authService.processLoginAdmin(loginRequest);
+		return new ResponseEntity<>(loginResponse, HttpStatus.OK);
+	}
 	@GetMapping
 	public ResponseEntity<AuthRequest> CheckAuthentication(){
 		AuthRequest authRequest = authService.getMemberFromRq();

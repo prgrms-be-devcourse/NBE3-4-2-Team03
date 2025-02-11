@@ -3,16 +3,13 @@ package com.programmers.pcquotation.domain.estimaterequest.controller;
 import java.security.Principal;
 import java.util.List;
 
-import com.programmers.pcquotation.domain.member.entitiy.Member;
+import com.programmers.pcquotation.domain.estimaterequest.dto.EstimateRequestData;
+import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequestStatus;
 import com.programmers.pcquotation.global.enums.UserType;
 import com.programmers.pcquotation.global.rq.Rq;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.programmers.pcquotation.domain.customer.entity.Customer;
 import com.programmers.pcquotation.domain.estimaterequest.dto.EstimateRequestResDto;
@@ -20,7 +17,6 @@ import com.programmers.pcquotation.domain.estimaterequest.service.EstimateReques
 import com.programmers.pcquotation.global.rq.Rq;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -30,19 +26,27 @@ public class EstimateRequestController {
 	private final EstimateRequestService estimateRequestService;
 	private final Rq rq;
 
-	record EstimateRequestData(@NotBlank String purpose, Integer budget, String otherRequest) {
-	}
-
 	@PostMapping
-	public ResponseEntity<EstimateRequestData> createER(@RequestBody @Valid EstimateRequestData estimateRequestData,
-		Principal principal) {
+	public ResponseEntity<String> createER(@RequestBody @Valid EstimateRequestData estimateRequestData, Principal principal) {
 		Customer customer = estimateRequestService.findCustomer(principal.getName());
 		estimateRequestService.createEstimateRequest(
-			estimateRequestData.purpose,
-			estimateRequestData.budget,
-			estimateRequestData.otherRequest,
+			estimateRequestData.purpose(),
+			estimateRequestData.budget(),
+			estimateRequestData.otherRequest(),
 			customer);
-		return new ResponseEntity<>(estimateRequestData, HttpStatus.CREATED);
+		return ResponseEntity.status(HttpStatus.CREATED).body("견적 요청이 생성되었습니다");
+	}
+
+	@PutMapping("/{id}")
+	public ResponseEntity<String> modifyER(@PathVariable Integer id, @RequestBody @Valid EstimateRequestData estimateRequestData){
+		estimateRequestService.modify(id, estimateRequestData);
+		return ResponseEntity.status(HttpStatus.OK).body("수정되었습니다");
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> DeleteER(@PathVariable Integer id){
+		estimateRequestService.Delete(id);
+		return ResponseEntity.status(HttpStatus.OK).body("삭제되었습니다");
 	}
 
 	@GetMapping

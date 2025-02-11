@@ -4,12 +4,12 @@ import Link from 'next/link';
 import { useRouter } from "next/navigation";
 
 /**
- * 
- * @param {{id:number}} quote 
- * @param {({id:number})=>{}} onConfirm 
- * @param {({id:number})=>{}} onComment 
- * @param {({id:number})=>{}} onSelectQuote 
- * @returns 
+ *
+ * @param {{id:number}} quote
+ * @param {({id:number})=>{}} onConfirm
+ * @param {({id:number})=>{}} onComment
+ * @param {({id:number})=>{}} onSelectQuote
+ * @returns
  */
 const QuoteComponent = ({ quote, onConfirm, onComment, onSelectQuote }) => {
   const [selected, setSelected] = useState(false)
@@ -17,8 +17,8 @@ const QuoteComponent = ({ quote, onConfirm, onComment, onSelectQuote }) => {
 
   // 받은 견적 목록 조회
   useEffect(() => {
-    if (!selected) return;
-    if (receivedQuotes.length > 0) return;
+    if (!selected)return;
+    if (receivedQuotes.length>0)return;
     const fetchReceivedQuotes = async () => {
       try {
         const response = await fetch(`http://localhost:8080/api/estimate/${quote.id}`, {
@@ -39,6 +39,7 @@ const QuoteComponent = ({ quote, onConfirm, onComment, onSelectQuote }) => {
       }
     };
     fetchReceivedQuotes();
+
   }, [selected]);
 
   return (
@@ -120,6 +121,7 @@ export default function MyPage() {
   const [confirmQuote, setConfirmQuote] = useState(null);
   const [requestedQuotes, setRequestedQuotes] = useState([]);
   const [comments, setComments] = useState([]);
+  const [deliveryAddress, setDeliveryAddress] = useState('');
   const [customerInfo, setCustomerInfo] = useState({
     id: '',
     username: '',
@@ -128,22 +130,22 @@ export default function MyPage() {
   });
 
   /**
-   * 
+   *
    * @param {{id:number}} quote
    */
   const onSelcectQuote = (quote) => {
     setSelectedQuote(quote);
   }
   /**
-   * 
+   *
    * @param {{id:number}} quote
    */
   const onConfirm = (quote) => {
     setConfirmQuote(quote);
   }
   /**
-   * 
-   * @param {{id:number}} quoteId 
+   *
+   * @param {{id:number}} quoteId
    */
   const onComment = (quote) => {
     setSelectedQuoteForComment(quote)
@@ -215,7 +217,7 @@ export default function MyPage() {
       router.replace("/");
     }
   }
-  
+
 
   // 댓글 조회 함수
   const fetchComments = async (estimateId) => {
@@ -233,13 +235,13 @@ export default function MyPage() {
 
       const data = await response.json();
       console.log('받은 댓글 데이터:', data);
-      
+
       // 기존 댓글에 type 필드가 없는 경우 기본값 설정
       const commentsWithType = data.map(comment => ({
         ...comment,
         type: comment.type || 'CUSTOMER' // type이 없으면 기본값으로 CUSTOMER 설정
       }));
-      
+
       setComments(commentsWithType);
     } catch (error) {
       console.error('댓글 불러오기 실패:', error);
@@ -272,7 +274,7 @@ export default function MyPage() {
 
       const response = await fetch('http://localhost:8080/api/estimates/comments', {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json'
         },
         credentials: 'include',
@@ -326,67 +328,94 @@ export default function MyPage() {
   }, [selectedQuoteForComment]);
 
   return (
+      <div className="min-h-screen p-8 dark:bg-gray-900">
+        <h1 className="text-2xl font-bold mb-8 dark:text-white">구매자 페이지</h1>
 
-    <div className="min-h-screen p-8 dark:bg-gray-900">
-      <h1 className="text-2xl font-bold mb-8 dark:text-white">구매자 페이지</h1>
-
-      {/* 탭 메뉴 */}
-      <div className="flex gap-4 mb-8 border-b dark:border-gray-700">
-        <button
-          className={`pb-2 px-4 ${activeTab === 'profile' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500'}`}
-          onClick={() => setActiveTab('profile')}
-        >
-          회원정보
-        </button>
-        <button
-          className={`pb-2 px-4 ${activeTab === 'requested' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500'}`}
-          onClick={() => setActiveTab('requested')}
-        >
-          요청한 견적
-        </button>
-
-      </div>
-
-      {/* 회원정보 탭 */}
-      {activeTab === 'profile' && (
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="text-gray-600 dark:text-gray-400">아이디</div>
-            <div className="dark:text-white">{customerInfo.username}</div>
-            <div className="text-gray-600 dark:text-gray-400">이름</div>
-            <div className="dark:text-white">{customerInfo.customerName}</div>
-            <div className="text-gray-600 dark:text-gray-400">이메일</div>
-            <div className="dark:text-white">{customerInfo.email}</div>
-          </div>
-          <button className="mt-6 text-blue-500 hover:text-blue-400 dark:text-blue-400 dark:hover:text-blue-300">
-            회원정보 수정
+        {/* 탭 메뉴 */}
+        <div className="flex gap-4 mb-8 border-b dark:border-gray-700">
+          <button
+              className={`pb-2 px-4 ${activeTab === 'profile' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500'}`}
+              onClick={() => setActiveTab('profile')}
+          >
+            회원정보
           </button>
-          <div>
-            <button onClick={handleLogout}
-              className="mt-6 text-blue-500 hover:text-blue-400 dark:text-blue-400 dark:hover:text-blue-300">
-              로그아웃
-            </button>
-          </div>
-        </div>
-      )}
+          <button
+              className={`pb-2 px-4 ${activeTab === 'requested' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500'}`}
+              onClick={() => setActiveTab('requested')}
+          >
+            요청한 견적
+          </button>
 
-      {/* 요청한 견적 탭 */}
-      {activeTab === 'requested' && (
-        <div>
-          <div className="space-y-8">
-            {requestedQuotes.map(quote => (
-              <QuoteComponent key={quote.id} quote={quote} onConfirm={onConfirm} onComment={onComment} onSelectQuote={onSelcectQuote} />))}
-          </div>
-          <Link href="/estimateRequest/request">
-            <button
-              className="mt-4 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-            >
-              견적 요청하기
-            </button>
-          </Link>
         </div>
-      )}
 
+        {/* 회원정보 탭 */}
+        {activeTab === 'profile' && (
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-gray-600 dark:text-gray-400">아이디</div>
+                <div className="dark:text-white">{customerInfo.username}</div>
+                <div className="text-gray-600 dark:text-gray-400">이름</div>
+                <div className="dark:text-white">{customerInfo.customerName}</div>
+                <div className="text-gray-600 dark:text-gray-400">이메일</div>
+                <div className="dark:text-white">{customerInfo.email}</div>
+              </div>
+              <button className="mt-6 text-blue-500 hover:text-blue-400 dark:text-blue-400 dark:hover:text-blue-300">
+                회원정보 수정
+              </button>
+              <div>
+                <button onClick={handleLogout}
+                        className="mt-6 text-blue-500 hover:text-blue-400 dark:text-blue-400 dark:hover:text-blue-300">
+                  로그아웃
+                </button>
+              </div>
+            </div>
+        )}
+
+        {/* 요청한 견적 탭 */}
+        {activeTab === 'requested' && (
+            <div>
+              <div className="space-y-8">
+                {requestedQuotes.map(quote => (
+                    <QuoteComponent key={quote.id} quote={quote} onConfirm={onConfirm} onComment={onComment} onSelectQuote={onSelcectQuote}/>             ))}
+              </div>
+              <Link href="/estimateRequest">
+                <button
+                    className="mt-4 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+                >
+                  견적 요청하기
+                </button>
+              </Link>
+            </div>
+        )}
+
+        {/* 주문 조회 */}
+        <Link href="/delivery">
+          <button className="px-4 py-2 hover:text-blue-600 border border-gray-300 rounded-lg hover:border-blue-600 transition-colors">
+            주문조회
+          </button>
+        </Link>
+
+        {selectedQuote && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-xl font-semibold dark:text-white">견적 상세정보</h3>
+                  <button
+                      onClick={() => setSelectedQuote(null)}
+                      className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <span className="font-medium dark:text-white text-lg">{selectedQuote.seller}</span>
+                        <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">견적 받은 날짜: {new Date(selectedQuote.date).toLocaleDateString()}</div>
+                      </div>
+                      <span className="px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300">
       {selectedQuote && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -410,62 +439,62 @@ export default function MyPage() {
                   <span className="px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300">
                     {selectedQuote.status}
                   </span>
-                </div>
-              </div>
-
-              <div className="border dark:border-gray-700 rounded-lg overflow-hidden">
-                <h4 className="font-medium p-4 bg-gray-50 dark:bg-gray-700 dark:text-white border-b dark:border-gray-600">
-                  견적 구성 부품
-                </h4>
-                <div className="divide-y dark:divide-gray-700">
-                  {Object.entries(selectedQuote.items).map(([part, name]) => (
-                    <div key={part} className="p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                      <div className="grid grid-cols-[140px_1fr] gap-4 items-center">
-                        <div className="text-gray-600 dark:text-gray-400 font-medium">
-                          {part === 'cpu' ? 'CPU' :
-                            part === 'motherboard' ? '메인보드' :
-                              part === 'memory' ? '메모리' :
-                                part === 'storage' ? '저장장치' :
-                                  part === 'gpu' ? '그래픽카드' :
-                                    part === 'case' ? '케이스' :
-                                      part === 'power' ? '파워' : part}
-                        </div>
-                        <div className="dark:text-white">{name}</div>
-                      </div>
                     </div>
-                  ))}
-                </div>
-              </div>
+                  </div>
 
-              <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                <div className="flex justify-between items-center mb-4">
-                  <span className="font-medium dark:text-white">총 견적금액</span>
-                  <span className="text-xl font-semibold text-blue-600 dark:text-blue-400">
+                  <div className="border dark:border-gray-700 rounded-lg overflow-hidden">
+                    <h4 className="font-medium p-4 bg-gray-50 dark:bg-gray-700 dark:text-white border-b dark:border-gray-600">
+                      견적 구성 부품
+                    </h4>
+                    <div className="divide-y dark:divide-gray-700">
+                      {Object.entries(selectedQuote.items).map(([part, name]) => (
+                          <div key={part} className="p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                            <div className="grid grid-cols-[140px_1fr] gap-4 items-center">
+                              <div className="text-gray-600 dark:text-gray-400 font-medium">
+                                {part === 'cpu' ? 'CPU' :
+                                    part === 'motherboard' ? '메인보드' :
+                                        part === 'memory' ? '메모리' :
+                                            part === 'storage' ? '저장장치' :
+                                                part === 'gpu' ? '그래픽카드' :
+                                                    part === 'case' ? '케이스' :
+                                                        part === 'power' ? '파워' : part}
+                              </div>
+                              <div className="dark:text-white">{name}</div>
+                            </div>
+                          </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="font-medium dark:text-white">총 견적금액</span>
+                      <span className="text-xl font-semibold text-blue-600 dark:text-blue-400">
                     {selectedQuote.totalPrice}
                   </span>
-                </div>
+                    </div>
 
-                <div className="flex justify-end gap-3 mt-4">
-                  <button
-                    onClick={() => setSelectedQuote(null)}
-                    className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                  >
-                    닫기
-                  </button>
-                  <button
-                    className="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors"
-                    onClick={() => {
-                      setShowConfirmModal(true);
-                    }}
-                  >
-                    견적 채택하기
-                  </button>
+                    <div className="flex justify-end gap-3 mt-4">
+                      <button
+                          onClick={() => setSelectedQuote(null)}
+                          className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      >
+                        닫기
+                      </button>
+                      <button
+                          className="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors"
+                          onClick={() => {
+                            setShowConfirmModal(true);
+                          }}
+                      >
+                        견적 채택하기
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      )}
+        )}
 
       {selectedQuoteForComment && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -534,33 +563,87 @@ export default function MyPage() {
         </div>
       )}
 
-      {/* 채택 확인 모달 */}
-      {Boolean(confirmQuote) && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-sm w-full">
-            <h3 className="text-lg font-semibold mb-4 dark:text-white">견적 채택</h3>
-            <p className="text-gray-600 dark:text-gray-300 mb-6">견적을 채택하시겠습니까?</p>
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => setConfirmQuote(null)}
-                className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300"
-              >
-                아니오
-              </button>
-              <button
-                onClick={() => {
-                  console.log(confirmQuote.id)
-                  // 채택 로직 구현
-                  setConfirmQuote(null);
-                }}
-                className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
-              >
-                예
-                </button>
+        {/* 채택 확인 모달 */}
+        {Boolean(confirmQuote) && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-sm w-full">
+                <h3 className="text-lg font-semibold mb-4 dark:text-white">견적 채택</h3>
+                <div className="mb-4">
+                  <label className="block text-gray-700 dark:text-gray-300 mb-2">배송 주소</label>
+                  <input
+                      type="text"
+                      className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      placeholder="배송받으실 주소를 입력해주세요"
+                      value={deliveryAddress}
+                      onChange={(e) => setDeliveryAddress(e.target.value)}
+                  />
+                </div>
+                <p className="text-gray-600 dark:text-gray-300 mb-6">
+                  입력하신 주소로 배송됩니다. 계속하시겠습니까?
+                </p>
+                <div className="flex justify-end gap-3">
+                  <button
+                      onClick={() => {
+                        setConfirmQuote(null);
+                        setDeliveryAddress('');
+                      }}
+                      className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300"
+                  >
+                    아니오
+                  </button>
+                  <button
+                      onClick={async () => {
+                        try {
+                          if (!deliveryAddress.trim()) {
+                            alert('배송 주소를 입력해주세요.');
+                            return;
+                          }
+
+                          const response = await fetch(`http://localhost:8080/delivery?id=${confirmQuote.id}`, {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                            },
+                            credentials: 'include',
+                            body: JSON.stringify({
+                              address: deliveryAddress
+                            })
+                          });
+
+                          if (!response.ok) {
+                            throw new Error('배송 요청 실패');
+                          }
+
+                          const responseText = await response.text();
+                          alert(responseText || '견적이 채택되었습니다.');
+                          setConfirmQuote(null);
+                          setDeliveryAddress('');
+
+                          // 견적 목록 새로고침
+                          if (activeTab === 'requested') {
+                            const quotesResponse = await fetch('http://localhost:8080/estimate/request', {
+                              credentials: 'include'
+                            });
+                            if (!quotesResponse.ok) {
+                              throw new Error('견적 데이터를 가져오는데 실패했습니다');
+                            }
+                            const quotesData = await quotesResponse.json();
+                            setRequestedQuotes(quotesData);
+                          }
+                        } catch (error) {
+                          console.error('배송 요청 오류:', error);
+                          alert('견적 채택 중 오류가 발생했습니다.');
+                        }
+                      }}
+                      className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+                      disabled={!deliveryAddress.trim()}
+                  >
+                    예
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
   );
 } 

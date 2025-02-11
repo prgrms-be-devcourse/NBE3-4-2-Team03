@@ -18,6 +18,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.pcquotation.domain.estimate.controller.EstimateController;
+import com.programmers.pcquotation.domain.seller.service.SellerService;
+import com.programmers.pcquotation.util.util;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -27,14 +29,18 @@ class EstimateControllerTest {
 	@Autowired
 	private MockMvc mvc;
 
+	@Autowired
+	private SellerService sellerService;
+
 	@Test
-	@WithMockUser("seller1")
+	@WithMockUser(username = "seller123", roles = {"SELLER"})
 	@DisplayName("견적작성 테스트")
 	void v1() throws Exception {
+		String token  = "Bearer " + util.loginSeller("seller123","zzzzz",mvc,sellerService);
 		String requestBody = """
 			{
 			   "estimateRequestId" : 1,
-			   "sellerId" : "seller1",
+			   "sellerId" : "seller123",
 			   "item" : [
 			     {
 			       "item" : 1,
@@ -53,6 +59,7 @@ class EstimateControllerTest {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody)
 				.characterEncoding(StandardCharsets.UTF_8)
+				.header("Authorization",  token)
 		).andDo(print());
 
 		// 응답 상태 코드 확인
@@ -63,12 +70,17 @@ class EstimateControllerTest {
 	}
 
 	@Test
+	@WithMockUser(username = "seller123", roles = {"SELLER"})
 	@DisplayName("견적요청 별 견적작성 조회")
 	void v2() throws Exception {
+		String token  = "Bearer " + util.loginSeller("seller123","zzzzz",mvc,sellerService);
+
 		ResultActions resultActions = mvc.perform(
 			get("/api/estimate/{id}", 1)
 				.contentType(MediaType.APPLICATION_JSON)
 				.characterEncoding(StandardCharsets.UTF_8)
+				.header("Authorization",  token)
+
 		).andDo(print());
 
 		// 응답 상태 코드 확인
