@@ -2,6 +2,7 @@ package com.programmers.pcquotation.domain.estimaterequest.dto;
 
 import java.time.LocalDateTime;
 
+import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequestStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class EstimateRequestResDto {
 	private Integer id;
 	private String customerId;
-	private String status;
+	private EstimateRequestStatus status;
 	private LocalDateTime createDate;
 	private Integer budget;
 	private String purpose;

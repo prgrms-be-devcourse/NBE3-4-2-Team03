@@ -1,4 +1,4 @@
-import EstimateForm from "../components/form";
+import EstimateForm from "./components/form";
 
 export default function EstimatePage() {
     return (

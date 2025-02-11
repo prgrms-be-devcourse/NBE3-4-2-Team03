@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import com.programmers.pcquotation.domain.customer.entity.Customer;
 import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequest;
 
+import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequestStatus;
 import lombok.Getter;
 
 @Getter
@@ -15,6 +16,7 @@ public class EstimateRequestReqDto {
 	private String otherRequest;
 	LocalDateTime createDate;
 	private Customer customer;
+	private EstimateRequestStatus status;
 
 	public EstimateRequestReqDto(EstimateRequest estimateRequest) {
 		this.id = estimateRequest.getId();
@@ -23,5 +25,6 @@ public class EstimateRequestReqDto {
 		this.otherRequest = estimateRequest.getOtherRequest();
 		this.createDate = estimateRequest.getCreateDate();
 		this.customer = estimateRequest.getCustomer();
+		this.status = estimateRequest.getStatus();
 	}
 }
