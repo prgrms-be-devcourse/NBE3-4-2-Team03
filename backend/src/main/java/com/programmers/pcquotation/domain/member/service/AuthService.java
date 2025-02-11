@@ -196,6 +196,9 @@ public class AuthService {
 			case Seller -> {
 				return sellerService.findByApiKey(apiKey);
 			}
+			case Admin -> {
+				return adminService.findByApiKey(apiKey);
+			}
 		}
 
 		return Optional.empty();
