@@ -21,7 +21,7 @@ export default function LoginSignupView() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    await requestLogin("http://localhost:8080/api/auth/login/admin", "/admin/info")
+    await requestLogin("http://localhost:8080/api/auth/login/admin", "/admin/management")
   }
 
   const requestLogin = async (url, destination) => {
@@ -46,17 +46,15 @@ export default function LoginSignupView() {
   }
 
   return (
-<div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-<main className="flex flex-col gap-8 row-start-2 items-center">
-  {
-    <div className="flex justify-between mb-6">
-      <div>
-        <div className ="">
-            관리자 로그인
-        </div>
-        <form onSubmit={handleLogin}>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-600">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white flex flex-col items-center justify-center p-8">
+      <div className="w-full max-w-[400px] bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+        <h2 className="text-3xl font-bold text-center mb-6 dark:text-white">
+          관리자 로그인
+        </h2>
+
+        <form onSubmit={handleLogin} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               아이디
             </label>
             <input
@@ -64,13 +62,13 @@ export default function LoginSignupView() {
               name="username"
               value={formData.username}
               onChange={handleChange}
-              className="w-full mt-2 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300"
               required
             />
           </div>
 
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-600">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               비밀번호
             </label>
             <input
@@ -78,28 +76,25 @@ export default function LoginSignupView() {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full mt-2 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300"
               required
             />
           </div>
 
           <button
             type="submit"
-            className="w-full py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none"
+            className="w-full py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition mt-6"
           >
             로그인
           </button>
         </form>
 
-        <div className="my-4 border-t border-gray-300"></div>
+        <div className="mt-6 pt-6 border-t border-gray-300 dark:border-gray-600">
+          <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+            © 2025 PC Builder. All rights reserved.
+          </p>
+        </div>
       </div>
-    </div>
-    }
-      </main>
-
-      <footer className="row-start-3 text-sm text-gray-500 dark:text-gray-400">
-        © 2025 PC Builder. All rights reserved.
-      </footer>
     </div>
   );
 }
