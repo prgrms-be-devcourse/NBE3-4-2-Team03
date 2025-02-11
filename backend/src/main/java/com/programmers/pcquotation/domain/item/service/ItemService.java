@@ -115,4 +115,8 @@ public class ItemService {
 
 		return new ItemDeleteResponse(id, "부품 삭제 완료");
 	}
+
+	public Item findByName(String name){
+		return itemRepository.findByName(name).orElse(null);
+	}
 }
