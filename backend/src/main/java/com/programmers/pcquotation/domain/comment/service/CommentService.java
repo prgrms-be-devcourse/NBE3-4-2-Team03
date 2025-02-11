@@ -32,17 +32,20 @@ public class CommentService {
 	private final CustomerRepository customerRepository;
 
 	@Transactional
+
 	public CommentCreateResponse addComment(final CommentCreateRequest request) {
+
 		Estimate estimate = estimateRepository.findById(request.estimateId())
 			.orElseThrow(() -> new IllegalArgumentException("유효하지 않은 견적 ID입니다."));
-		Customer customer = customerRepository.findById(request.authorId())
-			.orElseThrow(() -> new IllegalArgumentException("유효하지 않은 작성자 ID입니다."));
+		Customer customer = customerRepository.findById(request.customerId())
+			.orElseThrow(() -> new IllegalArgumentException("유효하지 않은 구매자 ID입니다."));
 
 		Comment comment = Comment.builder()
 			.estimate(estimate)
-			.author(customer)
+			.customer(customer)
 			.content(request.content())
 			.createDate(LocalDateTime.now())
+			.type(request.type())
 			.build();
 
 		Comment savedComment = commentRepository.save(comment);
@@ -57,9 +60,10 @@ public class CommentService {
 			.map(comment -> new CommentInfoResponse(
 				comment.getId(),
 				comment.getEstimate().getId(),
-				comment.getAuthor().getId(),
+				comment.getCustomer().getId(),
 				comment.getContent(),
-				comment.getCreateDate()
+				comment.getCreateDate(),
+				comment.getType()
 			))
 			.collect(Collectors.toList());
 
@@ -70,21 +74,9 @@ public class CommentService {
 		Comment comment = commentRepository.findById(id)
 			.orElseThrow(() -> new CommentNotFoundException(id));
 
-		Integer estimateId = comment.getEstimate().getId();
-		Estimate estimate = estimateRepository.findById(estimateId)
-			.orElseThrow(() -> new IllegalArgumentException("유효하지 않은 견적 ID입니다."));
-
-		Customer customer = customerRepository.findById(id)
-			.orElseThrow(() -> new IllegalArgumentException("유효하지 않은 작성자 ID입니다."));
-
-		comment.updateComment(
-			estimate,
-			customer,
-			request.content()
-		);
+		comment.updateComment(request.content());
 
 		return new CommentUpdateResponse(id, "댓글 수정 완료");
-
 	}
 
 	@Transactional
@@ -95,5 +87,19 @@ public class CommentService {
 		commentRepository.delete(comment);
 
 		return new CommentDeleteResponse(id, "댓글 삭제 완료");
+	}
+
+	public List<CommentInfoResponse> getCommentsByEstimateId(Long estimateId) {
+		List<Comment> comments = commentRepository.findByEstimateId(estimateId);
+		return comments.stream()
+			.map(comment -> new CommentInfoResponse(
+				comment.getId(),
+				comment.getEstimate().getId(),
+				comment.getCustomer().getId(),
+				comment.getContent(),
+				comment.getCreateDate(),
+				comment.getType()
+			))
+			.collect(Collectors.toList());
 	}
 }

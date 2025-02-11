@@ -36,9 +36,11 @@ public class SecurityConfig {
 		HttpSecurity httpSecurity = http.authorizeHttpRequests(authorizeRequests ->
 				authorizeRequests
 					// 판매자,구매자 정보 관련 권한 설정
-
+					.requestMatchers(HttpMethod.GET,"/seller/business/**")
+					.permitAll()
 					.requestMatchers("/seller/**")
 					.hasRole("SELLER")
+
 					.requestMatchers("/customer/**")
 					.hasRole("CUSTOMER")
 

@@ -29,21 +29,21 @@ import lombok.Setter;
 @Builder
 @Entity
 public class Customer implements Member {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Column(unique = true)
-    private String username;
-    private String password;
-    private String customerName;
-    @Column(unique = true)
-    private String email;
-    private String verificationQuestion;
-    private String verificationAnswer;
-    @Column(unique = true)
-    private String apiKey;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	@Column(unique = true)
+	private String username;
+	private String password;
+	private String customerName;
+	@Column(unique = true)
+	private String email;
+	private String verificationQuestion;
+	private String verificationAnswer;
+	@Column(unique = true)
+	private String apiKey;
 
-	@OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Comment> comments;
 
 	public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -63,13 +63,14 @@ public class Customer implements Member {
 		return username;
 	}
 
-    @Override
-    public String getApiKey() {
-        return apiKey;
-    }
-    @Override
-    public String getPassword() {
-        return password;
-    }
+	@Override
+	public String getApiKey() {
+		return apiKey;
+	}
+
+	@Override
+	public String getPassword() {
+		return password;
+	}
 
 }

@@ -25,5 +25,7 @@ public class AdminService {
 	public void create(Admin admin){
 		adminRepository.save(admin);
 	}
-
+	public Optional<Member> findByApiKey(String apiKey) {
+		return adminRepository.findByApiKey(apiKey).map(admin-> admin);
+	}
 }

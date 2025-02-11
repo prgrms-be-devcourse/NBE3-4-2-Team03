@@ -11,5 +11,6 @@ import com.programmers.pcquotation.domain.seller.entitiy.Seller;
 @Repository
 public interface AdminRepository extends JpaRepository<Admin, Long> {
 	Optional<Admin> findByUsername(String username);
+	Optional<Admin> findByApiKey(String apiKey);
 
 }
