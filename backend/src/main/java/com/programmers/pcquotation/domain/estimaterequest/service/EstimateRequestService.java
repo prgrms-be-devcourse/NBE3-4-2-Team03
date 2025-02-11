@@ -5,6 +5,12 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import com.programmers.pcquotation.domain.estimaterequest.controller.EstimateRequestController;
+import com.programmers.pcquotation.domain.estimaterequest.dto.EstimateRequestData;
+import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequestStatus;
+import com.programmers.pcquotation.domain.estimaterequest.exception.NullEntityException;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
 import com.programmers.pcquotation.domain.customer.entity.Customer;
@@ -16,6 +22,7 @@ import com.programmers.pcquotation.domain.estimaterequest.repository.EstimateReq
 import lombok.RequiredArgsConstructor;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class EstimateRequestService {
 	private final EstimateRequestRepository estimateRequestRepository;
@@ -30,6 +37,7 @@ public class EstimateRequestService {
 			.budget(budget)
 			.otherRequest(otherRequest)
 			.customer(customer)
+			.status(EstimateRequestStatus.Wait)
 			.build());
 	}
 
@@ -47,6 +55,7 @@ public class EstimateRequestService {
 				.budget(request.getBudget())
 				.otherRequest(request.getOtherRequest())
 				.createDate(request.getCreateDate())
+				.status(request.getStatus())
 				.build();
 		}).toList();
 	}
@@ -68,7 +77,21 @@ public class EstimateRequestService {
 				.budget(request.getBudget())
 				.otherRequest(request.getOtherRequest())
 				.createDate(request.getCreateDate())
+				.status(request.getStatus())
 				.build();
 		}).toList();
+	}
+
+	public void modify(Integer id, EstimateRequestData estimateRequestData) {
+		EstimateRequest estimateRequest = estimateRequestRepository
+				.findById(id)
+				.orElseThrow(NullEntityException::new);
+		estimateRequest.UpdateEstimateRequest(estimateRequestData);
+	}
+
+	public void Delete(Integer id) {
+		estimateRequestRepository.delete(estimateRequestRepository
+				.findById(id)
+				.orElseThrow(NullEntityException::new));
 	}
 }
