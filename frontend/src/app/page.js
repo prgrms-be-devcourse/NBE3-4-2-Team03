@@ -3,8 +3,8 @@ import LoginSignupView from "./main/components/login-signup-view";
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
+      <main className="flex flex-col gap-8 items-center p-8">
         {/* <Image
           className="dark:invert"
           src="/pc-builder-logo.svg"
@@ -25,7 +25,7 @@ export default function Home() {
         </p>
       </main>
       
-      <footer className="row-start-3 text-sm text-gray-500 dark:text-gray-400">
+      <footer className="text-sm text-center text-gray-500 dark:text-gray-400 p-8">
         © 2025 PC Builder. All rights reserved.
       </footer>
     </div>
