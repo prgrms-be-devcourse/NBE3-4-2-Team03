@@ -170,19 +170,18 @@ const fetchComments = async (estimateId) => {
     if (!response.ok) {
       const errorData = await response.json().catch(() => null);
       console.error('서버 응답:', errorData);
-      setComments([]); // 빈 배열로 초기화
+      setComments([]);
       return;
     }
 
     const data = await response.json();
     console.log('받은 댓글 데이터:', data);
-
-    // 기존 댓글에 type 필드가 없는 경우 기본값 설정
+    
     const commentsWithType = data.map(comment => ({
       ...comment,
-      type: comment.type || 'CUSTOMER' // type이 없으면 기본값으로 CUSTOMER 설정
+      type: comment.type || 'CUSTOMER'
     }));
-
+    
     setComments(commentsWithType);
   } catch (error) {
     console.error('댓글 불러오기 실패:', error);

@@ -229,19 +229,18 @@ export default function MyPage() {
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
         console.error('서버 응답:', errorData);
-        setComments([]); // 빈 배열로 초기화
+        setComments([]);
         return;
       }
 
       const data = await response.json();
       console.log('받은 댓글 데이터:', data);
-
-      // 기존 댓글에 type 필드가 없는 경우 기본값 설정
+      
       const commentsWithType = data.map(comment => ({
         ...comment,
-        type: comment.type || 'CUSTOMER' // type이 없으면 기본값으로 CUSTOMER 설정
+        type: comment.type || 'CUSTOMER'
       }));
-
+      
       setComments(commentsWithType);
     } catch (error) {
       console.error('댓글 불러오기 실패:', error);
@@ -416,29 +415,8 @@ export default function MyPage() {
                         <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">견적 받은 날짜: {new Date(selectedQuote.date).toLocaleDateString()}</div>
                       </div>
                       <span className="px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300">
-      {selectedQuote && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-semibold dark:text-white">견적 상세정보</h3>
-              <button
-                onClick={() => setSelectedQuote(null)}
-                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="space-y-6">
-              <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <span className="font-medium dark:text-white text-lg">{selectedQuote.seller}</span>
-                    <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">견적 받은 날짜: {selectedQuote.date}</div>
-                  </div>
-                  <span className="px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300">
-                    {selectedQuote.status}
-                  </span>
+                        {selectedQuote.status}
+                      </span>
                     </div>
                   </div>
 
@@ -470,8 +448,8 @@ export default function MyPage() {
                     <div className="flex justify-between items-center mb-4">
                       <span className="font-medium dark:text-white">총 견적금액</span>
                       <span className="text-xl font-semibold text-blue-600 dark:text-blue-400">
-                    {selectedQuote.totalPrice}
-                  </span>
+                        {selectedQuote.totalPrice}
+                      </span>
                     </div>
 
                     <div className="flex justify-end gap-3 mt-4">
