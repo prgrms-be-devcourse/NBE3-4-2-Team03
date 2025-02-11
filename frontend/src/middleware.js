@@ -25,7 +25,7 @@ export async function middleware(req) {
     const response = await fetch("http://localhost:8080/api/auth", {
         method: "GET",
         headers: {
-            "Authorization":  authorization
+            "Authorization" : authorization
         }
     });
 
@@ -40,11 +40,11 @@ export async function middleware(req) {
         if(isCustomer) return createUnauthorizedResponse("/customers/info");
         if(isAdmin) return createUnauthorizedResponse("/admin");
     }
-    if(isProtectedRouteAdmin(req.nextUrl.pathname)){
-        if (!isAdmin) {
-          return createUnauthorizedResponse("/");
-        }
-    }
+    // if(isProtectedRouteAdmin(req.nextUrl.pathname)){
+    //     if (!isAdmin) {
+    //       return createUnauthorizedResponse("/");
+    //     }
+    // }
     if(isProtectedRouteSeller(req.nextUrl.pathname)){
         if (!isAdmin && !isSeller) {
           return createUnauthorizedResponse("/");
@@ -152,7 +152,7 @@ function isProtectedRouteAdmin(pathname) {
 }
 function isProtectedRouteSeller(pathname){
   return (
-    pathname.startsWith("/estimateCreate") ||
+    pathname.startsWith("/estimate/create") ||
     pathname.startsWith("/sellers")
   );
 }

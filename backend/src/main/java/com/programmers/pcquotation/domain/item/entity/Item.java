@@ -14,7 +14,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,7 +28,6 @@ import lombok.NoArgsConstructor;
 public class Item {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@NotNull
 	private Long id;
 	@NotEmpty
 	private String name;        // 부품 이름
