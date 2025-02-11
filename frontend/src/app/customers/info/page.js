@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
  * @param {({id:number})=>{}} onSelectQuote
  * @returns
  */
-const QuoteComponent = ({quote,onConfirm,onComment,onSelectQuote})=>{
+const QuoteComponent = ({quote,onConfirm,onComment,onSelectQuote, onDelete, onEdit})=>{
   const [selected,setSelected] = useState(false)
   const [receivedQuotes,setReceivedQuotes] = useState([])
   // 받은 견적 목록 조회
@@ -20,7 +20,9 @@ const QuoteComponent = ({quote,onConfirm,onComment,onSelectQuote})=>{
     if (receivedQuotes.length>0)return;
     const fetchReceivedQuotes = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/estimate/${quote.id}`);
+        const response = await fetch(`http://localhost:8080/api/estimate/${quote.id}`, {
+          credentials: 'include'
+        });
         if (!response.ok) {
           throw new Error('받은 견적 데이터를 가져오는데 실패했습니다');
         }
@@ -45,13 +47,34 @@ const QuoteComponent = ({quote,onConfirm,onComment,onSelectQuote})=>{
      견적 요청 #{quote.id}
 
    </span>
-          <button
-              onClick={()=>setSelected(p=>!p)}
-              className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-          >
-            {selected?"닫기":"열기"}
-          </button>
-        </div>
+          <div className="flex gap-2">
+                  {/* 수정/삭제 버튼 추가 */}
+                      <>
+                          <button
+                              onClick={() => onEdit(quote)}
+                              className="px-3 py-1 text-blue-600 hover:text-blue-700 transition-colors"
+                          >
+                              수정
+                          </button>
+                          <button
+                              onClick={() => {
+                                  if (window.confirm('정말 삭제하시겠습니까?')) {
+                                      onDelete(quote.id);
+                                  }
+                              }}
+                              className="px-3 py-1 text-red-600 hover:text-red-700 transition-colors"
+                          >
+                              삭제
+                          </button>
+                      </>
+                  <button
+                      onClick={() => setSelected(p => !p)}
+                      className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  >
+                      {selected ? "닫기" : "열기"}
+                  </button>
+              </div>
+          </div>
         <div className="grid grid-cols-2 gap-2 text-sm mb-6">
           <div className="text-gray-600 dark:text-gray-400">요청일</div>
           <div className="dark:text-white">{new Date(quote.createDate).toLocaleDateString()}</div>
@@ -114,6 +137,7 @@ export default function MyPage() {
   const [confirmQuote, setConfirmQuote] = useState(null);
   const [requestedQuotes, setRequestedQuotes] = useState([]);
   const [deliveryAddress, setDeliveryAddress] = useState('');
+  const [editQuote, setEditQuote] = useState(null);
   const [customerInfo, setCustomerInfo] = useState({
     id: '',
     username: '',
@@ -194,6 +218,53 @@ export default function MyPage() {
       router.replace("/");
     }
   }
+    // 견적 요청 삭제 함수 추가
+    const handleDelete = async (id) => {
+        try {
+            const response = await fetch(`http://localhost:8080/estimate/request/${id}`, {
+                method: 'DELETE',
+                credentials: 'include',
+            });
+            if (!response.ok) throw new Error('견적 요청 삭제 실패');
+
+            setRequestedQuotes(prev => prev.filter(quote => quote.id !== id));
+            alert('견적 요청이 삭제되었습니다.');
+        } catch (error) {
+            console.error('견적 요청 삭제 오류:', error);
+            alert('견적 요청 삭제 중 오류가 발생했습니다.');
+        }
+    };
+
+    // 견적 요청 수정 함수 추가
+    const handleEdit = async (editedData) => {
+        try {
+            const response = await fetch(`http://localhost:8080/estimate/request/${editedData.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    purpose: editedData.purpose,
+                    budget: editedData.budget,
+                    otherRequest: editedData.otherRequest
+                })
+            });
+
+            if (!response.ok) throw new Error('견적 요청 수정 실패');
+
+            setRequestedQuotes(prev =>
+                prev.map(quote =>
+                    quote.id === editedData.id ? { ...quote, ...editedData } : quote
+                )
+            );
+            setEditQuote(null);
+            alert('견적 요청이 수정되었습니다.');
+        } catch (error) {
+            console.error('견적 요청 수정 오류:', error);
+            alert('견적 요청 수정 중 오류가 발생했습니다.');
+        }
+    };
 
   return (
       <div className="min-h-screen p-8 dark:bg-gray-900">
@@ -213,8 +284,81 @@ export default function MyPage() {
           >
             요청한 견적
           </button>
-
         </div>
+          {/* 요청한 견적 목록 부분 수정 */}
+          {activeTab === 'requested' && (
+              <div className="space-y-6">
+                  {requestedQuotes.map(quote => (
+                      <QuoteComponent
+                          key={quote.id}
+                          quote={quote}
+                          onConfirm={onConfirm}
+                          onComment={onComment}
+                          onSelectQuote={onSelcectQuote}
+                          onDelete={handleDelete}
+                          onEdit={() => setEditQuote(quote)}
+                      />
+                  ))}
+              </div>
+          )}
+
+          {/* 수정 모달 추가 */}
+          {editQuote && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                  <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full">
+                      <h3 className="text-lg font-semibold mb-4 dark:text-white">견적 요청 수정</h3>
+                      <form onSubmit={(e) => {
+                          e.preventDefault();
+                          handleEdit(editQuote);
+                      }}>
+                          <div className="space-y-4">
+                              <div>
+                                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">용도</label>
+                                  <input
+                                      type="text"
+                                      value={editQuote.purpose}
+                                      onChange={(e) => setEditQuote({...editQuote, purpose: e.target.value})}
+                                      className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                  />
+                              </div>
+                              <div>
+                                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">예산</label>
+                                  <input
+                                      type="number"
+                                      value={editQuote.budget}
+                                      onChange={(e) => setEditQuote({...editQuote, budget: parseInt(e.target.value)})}
+                                      className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                  />
+                              </div>
+                              <div>
+                                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">상세 요청사항</label>
+                                  <textarea
+                                      value={editQuote.otherRequest}
+                                      onChange={(e) => setEditQuote({...editQuote, otherRequest: e.target.value})}
+                                      className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                      rows="4"
+                                  />
+                              </div>
+                          </div>
+                          <div className="flex justify-end gap-3 mt-6">
+                              <button
+                                  type="button"
+                                  onClick={() => setEditQuote(null)}
+                                  className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300"
+                              >
+                                  취소
+                              </button>
+                              <button
+                                  type="submit"
+                                  className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+                              >
+                                  수정
+                              </button>
+                          </div>
+                      </form>
+                  </div>
+              </div>
+          )}
 
         {/* 회원정보 탭 */}
         {activeTab === 'profile' && (
