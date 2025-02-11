@@ -25,27 +25,27 @@ const ItemModal = ({ isOpen, onClose, onSubmit, item, categories }) => {
 
     return (
         isOpen && (
-            <div className="fixed inset-0 flex items-center justify-center z-50">
-                <div className="bg-white p-6 rounded-lg shadow-lg">
-                    <h2 className="text-lg font-bold">{item ? '부품 수정' : '부품 추가'}</h2>
+            <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">{item ? '부품 수정' : '부품 추가'}</h2>
                     <form onSubmit={handleSubmit}>
                         <input
                             type="text"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             placeholder="부품 이름을 입력하세요"
-                            className="border p-2 w-full mb-4"
+                            className="w-full px-4 py-2 mb-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300"
                             required
                         />
                         <input
                             type="file"
                             onChange={(e) => {
                                 const file = e.target.files[0];
-                                console.log('Selected file:', file); // 선택된 파일 로그 추가
+                                console.log('Selected file:', file);
                                 setImage(file);
                             }}
-                            className="mb-4"
-                            accept="image/*" // 파일 형식 제한
+                            className="w-full px-4 py-2 mb-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300"
+                            accept="image/*"
                         />
                         {item && item.filename && (
                             <div className="mb-4">
@@ -59,26 +59,31 @@ const ItemModal = ({ isOpen, onClose, onSubmit, item, categories }) => {
                         <select
                             value={categoryId}
                             onChange={(e) => setCategoryId(e.target.value)}
-                            className="border p-2 w-full mb-4"
+                            className="w-full px-4 py-2 mb-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300"
                             required
                         >
-                            <option value="">카테고리 선택</option>
+                            <option value="" className="dark:bg-gray-700">카테고리 선택</option>
                             {categories.map((category) => (
-                                <option key={category.id} value={category.id}>
+                                <option key={category.id} value={category.id} className="dark:bg-gray-700">
                                     {category.category}
                                 </option>
                             ))}
                         </select>
-                        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
-                            {item ? '수정' : '추가'}
-                        </button>
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="ml-2 bg-gray-500 text-white px-4 py-2 rounded"
-                        >
-                            취소
-                        </button>
+                        <div className="flex justify-end gap-2">
+                            <button
+                                type="button"
+                                onClick={onClose}
+                                className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                            >
+                                취소
+                            </button>
+                            <button 
+                                type="submit" 
+                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                            >
+                                {item ? '수정' : '추가'}
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -287,7 +292,7 @@ export default function ItemList() {
     };
 
     return (
-        <div className="min-h-screen p-8 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white p-8">
             <h1 className="text-3xl font-bold text-center mb-8">관리자 페이지</h1>
 
             {/* 카테고리 추가, 수정, 삭제 버튼 */}
@@ -325,7 +330,6 @@ export default function ItemList() {
                 </button>
             </div>
 
-
             {/* 카테고리 목록 */}
             <div className="flex flex-wrap justify-center gap-4 mb-8">
                 {categories.length > 0 ? (
@@ -343,8 +347,6 @@ export default function ItemList() {
                     <p>카테고리가 없습니다.</p>
                 )}
             </div>
-
-
 
             {/* 부품 목록 */}
             {selectedCategory && (
@@ -365,9 +367,6 @@ export default function ItemList() {
                         >
                             선택한 부품 삭제
                         </button>
-                    </div>
-                    <div className="flex justify-between mb-4">
-
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4">
                         {items.filter(item => item.categoryId === selectedCategory).length > 0 ? (
