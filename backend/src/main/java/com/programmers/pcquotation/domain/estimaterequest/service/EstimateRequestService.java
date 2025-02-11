@@ -22,6 +22,7 @@ import com.programmers.pcquotation.domain.estimaterequest.repository.EstimateReq
 import lombok.RequiredArgsConstructor;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class EstimateRequestService {
 	private final EstimateRequestRepository estimateRequestRepository;
@@ -80,11 +81,17 @@ public class EstimateRequestService {
 				.build();
 		}).toList();
 	}
-	@Transactional
+
 	public void modify(Integer id, EstimateRequestData estimateRequestData) {
 		EstimateRequest estimateRequest = estimateRequestRepository
 				.findById(id)
 				.orElseThrow(NullEntityException::new);
 		estimateRequest.UpdateEstimateRequest(estimateRequestData);
+	}
+
+	public void Delete(Integer id) {
+		estimateRequestRepository.delete(estimateRequestRepository
+				.findById(id)
+				.orElseThrow(NullEntityException::new));
 	}
 }

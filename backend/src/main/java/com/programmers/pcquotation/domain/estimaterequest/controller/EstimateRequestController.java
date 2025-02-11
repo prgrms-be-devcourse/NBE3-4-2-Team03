@@ -43,6 +43,12 @@ public class EstimateRequestController {
 		return ResponseEntity.status(HttpStatus.OK).body("수정되었습니다");
 	}
 
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> DeleteER(@PathVariable Integer id){
+		estimateRequestService.Delete(id);
+		return ResponseEntity.status(HttpStatus.OK).body("수정되었습니다");
+	}
+
 	@GetMapping
 	public ResponseEntity<List<EstimateRequestResDto>> getER(Principal principal) {
 		String type = rq.getCookieValue("userType");
