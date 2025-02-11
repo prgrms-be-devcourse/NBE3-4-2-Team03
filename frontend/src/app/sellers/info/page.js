@@ -388,7 +388,7 @@ export default function MyPage() {
   {comments.map((comment) => (
     <div key={comment.id} className={`flex ${comment.isOwnComment ? 'justify-end' : 'justify-start'}`}>
       <div className={`flex-grow text-right`}>
-        <div className="flex items-center gap-2 mb-1">
+        <div className="flex items-center gap-2 mb-1 justify-end">
           <span className="font-medium dark:text-white">{comment.author || '구매자'}</span>
           <span className="text-sm text-gray-500 dark:text-gray-400">{comment.date}</span>
         </div>
@@ -422,10 +422,10 @@ export default function MyPage() {
         if (commentText.trim()) {
           const newComment = {
             estimateId: selectedQuoteForComment.id,
-            authorId: sellerInfo.id, // sellerInfo가 정의되어 있는지 확인
-            isOwnComment: true, // 또는 false, 현재 사용자의 역할에 따라 설정
+            authorId: sellerInfo.id,
+            isOwnComment: true, // 현재 사용자의 역할에 따라 설정
             content: commentText,
-            author: '구매자' // 기본적으로 '구매자'로 설정
+            author: '판매자'
           };
 
           try {
@@ -438,14 +438,14 @@ export default function MyPage() {
             });
 
             if (!response.ok) {
-              const errorResponse = await response.json(); // 서버에서 반환된 오류 메시지
+              const errorResponse = await response.json();
               throw new Error(`댓글 추가에 실패했습니다: ${errorResponse.message}`);
             }
 
-            setCommentText(''); // 입력 필드 초기화
+            setCommentText('');
             const updatedComments = await fetch(`http://localhost:8080/api/estimates/comments/${selectedQuoteForComment.id}`);
             const commentsData = await updatedComments.json();
-            setComments(commentsData); // 댓글 목록 업데이트
+            setComments(commentsData);
           } catch (error) {
             console.error('댓글 추가 오류:', error);
           }

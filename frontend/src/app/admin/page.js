@@ -210,7 +210,7 @@ export default function ItemList() {
                 return response.json();
             })
             .then(() => {
-                fetchItems(); // 아이템 목록 새로고침
+                fetchItems(selectedCategory); // 아이템 목록 새로고침
             })
             .catch((error) => console.error('부품 추가 실패:', error));
     };
@@ -229,7 +229,7 @@ export default function ItemList() {
             formData.append('image', new Blob([updatedItem.image], { type: updatedItem.image.type }), filename);
         } else {
             // 이미지가 없는 경우 기존 파일 이름 사용
-            formData.append('image', editingItem.filename); // 기존 이미지 파일 이름 사용
+            formData.append('imgFilename', editingItem.filename); // 기존 이미지 파일 이름 사용
         }
 
         fetch(`http://localhost:8080/api/admin/items/${editingItem.id}`, {
@@ -243,7 +243,7 @@ export default function ItemList() {
                 return response.json();
             })
             .then(() => {
-                fetchItems(); // 아이템 목록 새로고침
+                fetchItems(selectedCategory); // 아이템 목록 새로고침
             })
             .catch((error) => console.error('부품 수정 실패:', error));
     };
@@ -269,7 +269,7 @@ export default function ItemList() {
         }))
             .then(() => {
                 setSelectedItems(new Set());
-                fetchItems();
+                fetchItems(selectedCategory);
             })
             .catch((error) => console.error('부품 삭제 실패:', error));
     };

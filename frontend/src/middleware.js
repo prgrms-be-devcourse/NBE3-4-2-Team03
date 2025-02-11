@@ -35,11 +35,11 @@ export async function middleware(req) {
     const isSeller = respData?.userType  === 'Seller';
     const isCustomer = respData?.userType === 'Customer';
 
-    if(req.nextUrl.pathname === "/"){
-        if(isSeller) return createUnauthorizedResponse("/sellers/info");
-        if(isCustomer) return createUnauthorizedResponse("/customers/info");
-        if(isAdmin) return createUnauthorizedResponse("/admin");
-    }
+    // if(req.nextUrl.pathname === "/"){
+    //     if(isSeller) return createUnauthorizedResponse("/sellers/info");
+    //     if(isCustomer) return createUnauthorizedResponse("/customers/info");
+    //     if(isAdmin) return createUnauthorizedResponse("/admin");
+    // }
     //if(isProtectedRouteAdmin(req.nextUrl.pathname)){
         //if (!isAdmin) {
           //return createUnauthorizedResponse("/");
