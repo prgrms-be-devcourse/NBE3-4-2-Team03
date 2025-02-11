@@ -105,8 +105,9 @@ export default function ItemList() {
         fetchCategories();
     }, []);
 
+
     const fetchCategories = () => {
-        fetch('http://localhost:8080/api/admin/categories')
+        fetch('http://localhost:8080/api/admin/categories',{credentials: "include"})
             .then((response) => response.json())
             .then((data) => {
                 if (Array.isArray(data)) {
@@ -119,7 +120,7 @@ export default function ItemList() {
     };
 
     const fetchItems = (categoryId) => {
-        fetch(`http://localhost:8080/api/admin/items?categoryId=${categoryId}`)
+        fetch(`http://localhost:8080/api/admin/items?categoryId=${categoryId}`,{credentials: "include"})
             .then((response) => response.json())
             .then((data) => {
                 if (Array.isArray(data)) {
@@ -142,6 +143,7 @@ export default function ItemList() {
         if (!newCategoryName.trim()) return alert('카테고리 이름을 입력하세요.');
         fetch('http://localhost:8080/api/admin/categories', {
             method: 'POST',
+            credentials: "include",
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ category: newCategoryName }),
         })
@@ -161,6 +163,7 @@ export default function ItemList() {
         fetch(`http://localhost:8080/api/admin/categories/${selectedCategory}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
+            credentials: "include",
             body: JSON.stringify({ category: newName }),
         })
             .then((response) => response.json())
@@ -174,6 +177,7 @@ export default function ItemList() {
 
         fetch(`http://localhost:8080/api/admin/categories/${selectedCategory}`, {
             method: 'DELETE',
+            credentials: "include"
         })
             .then((response) => response.json())
             .then(() => {
@@ -206,6 +210,7 @@ export default function ItemList() {
 
         fetch('http://localhost:8080/api/admin/items', {
             method: 'POST',
+            credentials: "include",
             body: formData,
         })
             .then((response) => {
@@ -239,6 +244,7 @@ export default function ItemList() {
 
         fetch(`http://localhost:8080/api/admin/items/${editingItem.id}`, {
             method: 'PUT',
+            credentials: "include",
             body: formData,
         })
             .then((response) => {
@@ -269,6 +275,7 @@ export default function ItemList() {
 
         Promise.all(Array.from(selectedItems).map(itemId => {
             return fetch(`http://localhost:8080/api/admin/items/${itemId}`, {
+            credentials: "include",
                 method: 'DELETE',
             });
         }))

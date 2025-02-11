@@ -2,9 +2,12 @@ package com.programmers.pcquotation.domain.estimaterequest.controller;
 
 
 import com.programmers.pcquotation.domain.customer.entity.Customer;
+import com.programmers.pcquotation.domain.customer.service.CustomerService;
 import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequest;
 import com.programmers.pcquotation.domain.estimaterequest.exception.NullEntityException;
 import com.programmers.pcquotation.domain.estimaterequest.service.EstimateRequestService;
+import com.programmers.pcquotation.util.util;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
 
@@ -29,16 +33,19 @@ public class EstimateRequestControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
+    @Autowired
+    private CustomerService customerService;
     @MockitoBean
     private EstimateRequestService estimateRequestService;
 
     @Test
-    @WithMockUser(username = "user1")
+    @Transactional
+    @WithMockUser(username = "user123", roles = {"CUSTOMER"}) //  SecurityContext 강제설정?
     @DisplayName("성공케이스")
     public void 견적요청생성() throws Exception {
         //given
         Customer customer = new Customer();
+        String token  = "Bearer " + util.loginCustomer("user123","zzzzz",mockMvc,customerService);
 
         EstimateRequest estimateRequest = EstimateRequest
                 .builder()
@@ -65,7 +72,10 @@ public class EstimateRequestControllerTest {
                         post("/estimate/request")
                                 .content(data)
                                 .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
-                )
+                            .header("Authorization", token)
+
+            )
+
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.purpose").value("testPurpose"))
                 .andExpect(jsonPath("$.budget").value(100))
@@ -73,12 +83,13 @@ public class EstimateRequestControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "user1")
+    @Transactional
+    @WithMockUser(username = "user12", roles = {"CUSTOMER"}) //  SecurityContext 강제설정?
     @DisplayName("오류케이스")
     public void 견적요청생성실패() throws Exception {
         //given
         Customer customer = new Customer();
-
+        String token  = "Bearer " + util.loginCustomer("user12","zzzzz",mockMvc,customerService);
         EstimateRequest estimateRequest = EstimateRequest
                 .builder()
                 .purpose("testPurpose")
@@ -104,7 +115,9 @@ public class EstimateRequestControllerTest {
                         post("/estimate/request")
                                 .content(data)
                                 .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
-                )
+                                .header("Authorization",  token)
+
+            )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("입력한 내용을 다시 확인해주세요"));
     }

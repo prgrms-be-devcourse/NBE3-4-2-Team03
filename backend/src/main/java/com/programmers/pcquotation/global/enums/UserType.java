@@ -18,6 +18,7 @@ public enum UserType {
 		switch (value){
 			case "[ROLE_CUSTOMER]": return UserType.Customer;
 			case "[ROLE_SELLER]": return UserType.Seller;
+			case "[ROLE_ADMIN]": return UserType.Admin;
 		}
 		try {
 			return UserType.valueOf(value);
