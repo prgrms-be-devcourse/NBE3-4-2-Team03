@@ -8,15 +8,12 @@ import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import com.programmers.pcquotation.domain.comment.emtity.Comment;
 import com.programmers.pcquotation.domain.member.entitiy.Member;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -54,8 +51,8 @@ public class Seller implements Member {
 	private Set<Customers> recommend = new HashSet<>();
 	*/
 
-	@OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Comment> comments;
+	// @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true)
+	// private List<Comment> comments;
 
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return List.of("ROLE_SELLER")

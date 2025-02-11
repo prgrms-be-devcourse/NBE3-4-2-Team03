@@ -4,9 +4,10 @@ import java.time.LocalDateTime;
 
 import com.programmers.pcquotation.domain.customer.entity.Customer;
 import com.programmers.pcquotation.domain.estimate.entity.Estimate;
-import com.programmers.pcquotation.domain.seller.entitiy.Seller;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -37,24 +38,18 @@ public class Comment {
 	@JoinColumn(name = "customer_id")
 	private Customer customer;
 
-	@ManyToOne
-	@JoinColumn(name = "seller_id")
-	private Seller seller;
+	// @ManyToOne
+	// @JoinColumn(name = "seller_id")
+	// private Seller seller;
 
 	private String content;
 
 	private LocalDateTime createDate;
 
-	public void updateComment(
-		Estimate estimate,
-		Customer customer,
-		Seller seller,
-		String content
-	) {
-		this.estimate = estimate;
-		this.customer = customer;
-		this.seller = seller;
-		this.content = content;
+	@Enumerated(EnumType.STRING)
+	private CommentType type;
 
+	public void updateComment(String content) {
+		this.content = content;
 	}
 }

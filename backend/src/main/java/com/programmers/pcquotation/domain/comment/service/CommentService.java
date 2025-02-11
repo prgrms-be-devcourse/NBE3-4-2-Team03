@@ -19,8 +19,6 @@ import com.programmers.pcquotation.domain.customer.entity.Customer;
 import com.programmers.pcquotation.domain.customer.repository.CustomerRepository;
 import com.programmers.pcquotation.domain.estimate.entity.Estimate;
 import com.programmers.pcquotation.domain.estimate.repository.EstimateRepository;
-import com.programmers.pcquotation.domain.seller.entitiy.Seller;
-import com.programmers.pcquotation.domain.seller.repository.SellerRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -32,23 +30,22 @@ public class CommentService {
 	private final CommentRepository commentRepository;
 	private final EstimateRepository estimateRepository;
 	private final CustomerRepository customerRepository;
-	private final SellerRepository sellerRepository;
 
 	@Transactional
+
 	public CommentCreateResponse addComment(final CommentCreateRequest request) {
+
 		Estimate estimate = estimateRepository.findById(request.estimateId())
 			.orElseThrow(() -> new IllegalArgumentException("유효하지 않은 견적 ID입니다."));
 		Customer customer = customerRepository.findById(request.customerId())
 			.orElseThrow(() -> new IllegalArgumentException("유효하지 않은 구매자 ID입니다."));
-		Seller seller = sellerRepository.findById(request.sellerId())
-			.orElseThrow(() -> new IllegalArgumentException("유효하지 않은 판매자 ID입니다."));
 
 		Comment comment = Comment.builder()
 			.estimate(estimate)
 			.customer(customer)
-			.seller(seller)
 			.content(request.content())
 			.createDate(LocalDateTime.now())
+			.type(request.type())
 			.build();
 
 		Comment savedComment = commentRepository.save(comment);
@@ -64,9 +61,9 @@ public class CommentService {
 				comment.getId(),
 				comment.getEstimate().getId(),
 				comment.getCustomer().getId(),
-				comment.getSeller().getId(),
 				comment.getContent(),
-				comment.getCreateDate()
+				comment.getCreateDate(),
+				comment.getType()
 			))
 			.collect(Collectors.toList());
 
@@ -77,25 +74,9 @@ public class CommentService {
 		Comment comment = commentRepository.findById(id)
 			.orElseThrow(() -> new CommentNotFoundException(id));
 
-		Integer estimateId = comment.getEstimate().getId();
-		Estimate estimate = estimateRepository.findById(estimateId)
-			.orElseThrow(() -> new IllegalArgumentException("유효하지 않은 견적 ID입니다."));
-
-		Customer customer = customerRepository.findById(id)
-			.orElseThrow(() -> new IllegalArgumentException("유효하지 않은 작성자 ID입니다."));
-
-		Seller seller = sellerRepository.findById(id)
-			.orElseThrow(() -> new IllegalArgumentException("유효하지 않은 작성자 ID입니다."));
-
-		comment.updateComment(
-			estimate,
-			customer,
-			seller,
-			request.content()
-		);
+		comment.updateComment(request.content());
 
 		return new CommentUpdateResponse(id, "댓글 수정 완료");
-
 	}
 
 	@Transactional
@@ -115,9 +96,9 @@ public class CommentService {
 				comment.getId(),
 				comment.getEstimate().getId(),
 				comment.getCustomer().getId(),
-				comment.getSeller().getId(),
 				comment.getContent(),
-				comment.getCreateDate()
+				comment.getCreateDate(),
+				comment.getType()
 			))
 			.collect(Collectors.toList());
 	}

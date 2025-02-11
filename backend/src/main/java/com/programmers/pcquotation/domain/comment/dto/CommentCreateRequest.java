@@ -2,6 +2,8 @@ package com.programmers.pcquotation.domain.comment.dto;
 
 import java.time.LocalDateTime;
 
+import com.programmers.pcquotation.domain.comment.emtity.CommentType;
+
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
@@ -13,14 +15,14 @@ public record CommentCreateRequest(
 	@NotNull
 	Long customerId,
 
-	@NotNull
-	Long sellerId,
-
 	@NotEmpty
 	String content,
 
 	@NotEmpty
-	LocalDateTime createDate
+	LocalDateTime createDate,
+
+	@NotNull
+	CommentType type
 
 ) {
 }
