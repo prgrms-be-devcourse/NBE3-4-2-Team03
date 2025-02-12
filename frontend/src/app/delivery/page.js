@@ -87,13 +87,13 @@ export default function DeliveryPage() {
     };
 
     return (
-        <div className="min-h-screen p-8 bg-white">
+        <div className="min-h-screen p-8 bg-gray-50 dark:bg-gray-900">
             {/* 헤더 부분 */}
             <div className="flex justify-between items-center mb-8">
-                <h1 className="text-2xl font-bold text-black">배송 관리</h1>
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">배송 관리</h1>
                 <div className="flex gap-4">
                     <Link href="/customers/info">
-                        <button className="px-4 py-2 text-gray-500 hover:text-blue-600 border border-gray-300 rounded-lg hover:border-blue-600 transition-colors">
+                        <button className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 border border-gray-300 dark:border-gray-600 rounded-lg hover:border-blue-600 dark:hover:border-blue-400 transition-colors">
                             마이페이지
                         </button>
                     </Link>
@@ -103,7 +103,7 @@ export default function DeliveryPage() {
             {/* 로딩 상태 */}
             {isLoading ? (
                 <div className="text-center py-12">
-                    <p className="text-gray-500">배송 목록을 불러오는 중...</p>
+                    <p className="text-gray-500 dark:text-gray-400">배송 목록을 불러오는 중...</p>
                 </div>
             ) : (
                 <>
@@ -111,9 +111,9 @@ export default function DeliveryPage() {
                     {deliveries.length > 0 ? (
                         <div className="space-y-4">
                             {deliveries.map((delivery) => (
-                                <div key={delivery.id} className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                                <div key={delivery.id} className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
                                     <div className="flex justify-between items-center mb-4">
-                                        <span className="text-lg font-semibold text-black">배송 #{delivery.id}</span>
+                                        <span className="text-lg font-semibold text-gray-900 dark:text-white">배송 #{delivery.id}</span>
                                         <div className="space-x-2">
                                             <button
                                                 onClick={() => {
@@ -122,29 +122,29 @@ export default function DeliveryPage() {
                                                         handleUpdateDelivery(delivery.id, newAddress);
                                                     }
                                                 }}
-                                                className="text-blue-500 hover:text-blue-700"
+                                                className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
                                             >
                                                 수정
                                             </button>
                                             <button
                                                 onClick={() => handleDeleteDelivery(delivery.id)}
-                                                className="text-red-500 hover:text-red-700"
+                                                className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors"
                                             >
                                                 취소
                                             </button>
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-2 gap-4 text-sm">
-                                        <div className="text-gray-600 font-medium">배송 주소</div>
-                                        <div className="text-black">{delivery.address}</div>
-                                        <div className="text-gray-600 font-medium">상태</div>
-                                        <div className="text-black">
-                                            <span className="px-2 py-1 bg-blue-100 text-blue-600 rounded-full text-sm">
+                                        <div className="text-gray-600 dark:text-gray-400 font-medium">배송 주소</div>
+                                        <div className="text-gray-900 dark:text-white">{delivery.address}</div>
+                                        <div className="text-gray-600 dark:text-gray-400 font-medium">상태</div>
+                                        <div className="text-gray-900 dark:text-white">
+                                            <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 rounded-full text-sm">
                                                 {delivery.status}
                                             </span>
                                         </div>
-                                        <div className="text-gray-600 font-medium">견적 ID</div>
-                                        <div className="text-black">{delivery.estimateId}</div>
+                                        <div className="text-gray-600 dark:text-gray-400 font-medium">견적 ID</div>
+                                        <div className="text-gray-900 dark:text-white">{delivery.estimateId}</div>
                                     </div>
                                 </div>
                             ))}
@@ -152,7 +152,7 @@ export default function DeliveryPage() {
                     ) : (
                         /* 데이터가 없을 경우 */
                         <div className="text-center py-12">
-                            <p className="text-gray-500">아직 배송 내역이 없습니다.</p>
+                            <p className="text-gray-500 dark:text-gray-400">아직 배송 내역이 없습니다.</p>
                         </div>
                     )}
                 </>
