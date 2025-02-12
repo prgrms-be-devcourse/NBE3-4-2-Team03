@@ -144,6 +144,7 @@ export default function MyPage() {
     customerName: '',
     email: ''
   });
+  const [comments, setComments] = useState([]);
 
   /**
    *
@@ -265,6 +266,110 @@ export default function MyPage() {
             alert('견적 요청 수정 중 오류가 발생했습니다.');
         }
     };
+
+  // 댓글 모달이 열릴 때 댓글 조회
+  useEffect(() => {
+    if (selectedQuoteForComment?.id) {
+      fetchComments(selectedQuoteForComment.id);
+    }
+  }, [selectedQuoteForComment]);
+
+  // 댓글 조회 함수
+  const fetchComments = async (estimateId) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/estimates/comments/${estimateId}`, {
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        console.error('서버 응답:', errorData);
+        setComments([]);
+        return;
+      }
+
+      const data = await response.json();
+      console.log('받은 댓글 데이터:', data);
+      
+      const commentsWithType = data.map(comment => ({
+        ...comment,
+        type: comment.type || 'CUSTOMER'
+      }));
+      
+      setComments(commentsWithType);
+    } catch (error) {
+      console.error('댓글 불러오기 실패:', error);
+      setComments([]);
+    }
+  };
+
+  // 댓글 전송 함수
+  const handleSendComment = async () => {
+    if (!commentText.trim()) {
+      alert('댓글 내용을 입력해주세요.');
+      return;
+    }
+
+    try {
+      if (!selectedQuoteForComment?.id) {
+        console.error('견적 ID 누락:', selectedQuoteForComment);
+        throw new Error('견적 정보가 없습니다.');
+      }
+
+      const newComment = {
+        estimateId: parseInt(selectedQuoteForComment.id),
+        customerId: parseInt(customerInfo.id),
+        content: commentText,
+        createDate: new Date().toISOString(),
+        type: 'CUSTOMER'
+      };
+
+      console.log('전송할 댓글 데이터:', newComment);
+
+      const response = await fetch('http://localhost:8080/api/estimates/comments', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify(newComment),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('서버 응답 상세:', errorData);
+        throw new Error(errorData.message || '댓글 전송에 실패했습니다.');
+      }
+
+      const result = await response.json();
+      console.log('댓글 전송 성공:', result);
+
+      setCommentText('');
+      await fetchComments(selectedQuoteForComment.id);
+    } catch (error) {
+      console.error('댓글 전송 실패:', error);
+      alert(error.message);
+    }
+  };
+
+  // 댓글 입력 핸들러
+  const handleCommentChange = (e) => {
+    setCommentText(e.target.value);
+  };
+
+  // Enter 키 입력 처리
+  const onKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendComment();
+    }
+  };
+
+  // 견적 목록에서 댓글 버튼 클릭 시 호출되는 함수
+  const handleCommentClick = (quote) => {
+    console.log('댓글 버튼 클릭됨:', quote);
+    setSelectedQuoteForComment(quote);
+  };
 
   return (
       <div className="min-h-screen p-8 dark:bg-gray-900">
@@ -489,88 +594,64 @@ export default function MyPage() {
 
         {selectedQuoteForComment && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-xl font-semibold dark:text-white">문의하기</h3>
+              <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-md p-4">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold dark:text-white">댓글</h3>
                   <button
-                      onClick={() => setSelectedQuoteForComment(null)}
-                      className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                    onClick={() => setSelectedQuoteForComment(null)}
+                    className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                   >
-                    ✕
+                    닫기
                   </button>
                 </div>
-
-                <div className="space-y-6">
-                  <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                    <span className="font-medium dark:text-white">{selectedQuoteForComment.seller}</span>
-                    <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">
-                  총 견적금액: {selectedQuoteForComment.totalPrice}
-                </span>
-                  </div>
-
-                  {/* 댓글 목록 */}
-                  <div className="space-y-4 max-h-[400px] overflow-y-auto">
-                    {selectedQuoteForComment.comments?.map((comment) => (
-                        <div
-                            key={comment.id}
-                            className={`flex gap-4 ${comment.isCustomer ? 'flex-row-reverse' : ''}`}
-                        >
-                          <div className="flex-shrink-0">
-                            <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
-                        <span className="text-sm">
-                          {comment.author.charAt(0)}
-                        </span>
-                            </div>
-                          </div>
-                          <div className={`flex-grow ${comment.isCustomer ? 'text-right' : ''}`}>
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="font-medium dark:text-white">{comment.author}</span>
-                              <span className="text-sm text-gray-500 dark:text-gray-400">{comment.date}</span>
-                            </div>
-                            <div className={`inline-block max-w-[80%] rounded-lg px-4 py-2 ${
-                                comment.isCustomer
-                                    ? 'bg-purple-500 text-white'
-                                    : 'bg-gray-100 dark:bg-gray-700 dark:text-white'
-                            }`}>
-                              {comment.text}
-                            </div>
-                          </div>
-                        </div>
-                    ))}
-                  </div>
-
-                  {/* 댓글 입력 폼 */}
-                  <div className="border-t dark:border-gray-700 pt-4">
-                    <div className="flex gap-2">
-                      <input
-                          type="text"
-                          value={commentText}
-                          onChange={(e) => setCommentText(e.target.value)}
-                          placeholder="문의사항을 입력하세요..."
-                          className="flex-grow px-4 py-2 rounded-lg border dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      />
-                      <button
-                          onClick={() => {
-                            if (commentText.trim()) {
-                              // 댓글 추가 로직 구현 필요
-                              const newComment = {
-                                id: Date.now(),
-                                author: userInfo.customer_name,
-                                text: commentText,
-                                date: new Date().toLocaleString(),
-                                isCustomer: true
-                              };
-                              // API 호출 및 상태 업데이트 로직 필요
-                              setCommentText('');
-                            }
-                          }}
-                          className="px-6 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition-colors disabled:opacity-50"
-                          disabled={!commentText.trim()}
+                
+                {/* 댓글 목록 */}
+                <div className="space-y-2 mb-4 max-h-60 overflow-y-auto">
+                  {Array.isArray(comments) && comments.length > 0 ? (
+                    comments.map((comment) => (
+                      <div key={comment.id} 
+                        className={`p-3 rounded-lg mb-2 ${
+                          comment.type === 'SELLER' 
+                            ? 'bg-blue-50 dark:bg-blue-900/20' 
+                            : 'bg-green-50 dark:bg-green-900/20'
+                        }`}
                       >
-                        전송
-                      </button>
-                    </div>
-                  </div>
+                        <div className="flex justify-between items-center mb-1">
+                          <span className={`px-2 py-1 rounded-full text-xs text-white ${
+                            comment.type === 'SELLER' 
+                              ? 'bg-blue-500' 
+                              : 'bg-green-500'
+                          }`}>
+                            {comment.type === 'SELLER' ? '판매자' : '구매자'}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            {new Date(comment.createDate).toLocaleString()}
+                          </span>
+                        </div>
+                        <p className="text-sm mt-1 dark:text-white">{comment.content}</p>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-center text-gray-500 dark:text-gray-400">댓글이 없습니다.</p>
+                  )}
+                </div>
+
+                {/* 댓글 입력 영역 */}
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={commentText}
+                    onChange={handleCommentChange}
+                    onKeyPress={onKeyPress}
+                    placeholder="댓글을 입력하세요"
+                    className="flex-1 p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  />
+                  <button
+                    onClick={handleSendComment}
+                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
+                  >
+                    전송
+                  </button>
                 </div>
               </div>
             </div>
