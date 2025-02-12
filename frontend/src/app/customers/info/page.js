@@ -371,6 +371,18 @@ export default function MyPage() {
     setSelectedQuoteForComment(quote);
   };
 
+  // 날짜 포맷팅 함수 추가
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('ko-KR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(date);
+  };
+
   return (
       <div className="min-h-screen p-8 dark:bg-gray-900">
         <h1 className="text-2xl font-bold mb-8 dark:text-white">구매자 페이지</h1>
@@ -391,21 +403,7 @@ export default function MyPage() {
           </button>
         </div>
           {/* 요청한 견적 목록 부분 수정 */}
-          {activeTab === 'requested' && (
-              <div className="space-y-6">
-                  {requestedQuotes.map(quote => (
-                      <QuoteComponent
-                          key={quote.id}
-                          quote={quote}
-                          onConfirm={onConfirm}
-                          onComment={onComment}
-                          onSelectQuote={onSelcectQuote}
-                          onDelete={handleDelete}
-                          onEdit={() => setEditQuote(quote)}
-                      />
-                  ))}
-              </div>
-          )}
+         
 
           {/* 수정 모달 추가 */}
           {editQuote && (
@@ -493,7 +491,7 @@ export default function MyPage() {
             <div>
               <div className="space-y-8">
                 {requestedQuotes.map(quote => (
-                    <QuoteComponent key={quote.id} quote={quote} onConfirm={onConfirm} onComment={onComment} onSelectQuote={onSelcectQuote}/>             ))}
+                    <QuoteComponent key={quote.id} quote={quote} onConfirm={onConfirm} onComment={onComment} onSelectQuote={onSelcectQuote}onDelete={handleDelete} onEdit={() => setEditQuote(quote)}/>             ))}
               </div>
               <Link href="/estimateRequest">
                 <button
@@ -594,65 +592,71 @@ export default function MyPage() {
 
         {selectedQuoteForComment && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-              <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-md p-4">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold dark:text-white">댓글</h3>
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-xl font-semibold dark:text-white">문의하기</h3>
                   <button
                     onClick={() => setSelectedQuoteForComment(null)}
                     className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                   >
-                    닫기
+                    ✕
                   </button>
-                </div>
-                
-                {/* 댓글 목록 */}
-                <div className="space-y-2 mb-4 max-h-60 overflow-y-auto">
-                  {Array.isArray(comments) && comments.length > 0 ? (
-                    comments.map((comment) => (
-                      <div key={comment.id} 
-                        className={`p-3 rounded-lg mb-2 ${
-                          comment.type === 'SELLER' 
-                            ? 'bg-blue-50 dark:bg-blue-900/20' 
-                            : 'bg-green-50 dark:bg-green-900/20'
-                        }`}
-                      >
-                        <div className="flex justify-between items-center mb-1">
-                          <span className={`px-2 py-1 rounded-full text-xs text-white ${
-                            comment.type === 'SELLER' 
-                              ? 'bg-blue-500' 
-                              : 'bg-green-500'
-                          }`}>
-                            {comment.type === 'SELLER' ? '판매자' : '구매자'}
-                          </span>
-                          <span className="text-xs text-gray-500">
-                            {new Date(comment.createDate).toLocaleString()}
-                          </span>
-                        </div>
-                        <p className="text-sm mt-1 dark:text-white">{comment.content}</p>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-center text-gray-500 dark:text-gray-400">댓글이 없습니다.</p>
-                  )}
                 </div>
 
                 {/* 댓글 입력 영역 */}
-                <div className="flex gap-2">
+                <div className="flex gap-2 mb-6 border-b pb-4 dark:border-gray-700">
                   <input
                     type="text"
                     value={commentText}
                     onChange={handleCommentChange}
                     onKeyPress={onKeyPress}
-                    placeholder="댓글을 입력하세요"
-                    className="flex-1 p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    placeholder="문의사항을 입력하세요..."
+                    className="flex-grow px-4 py-2 border dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white"
                   />
                   <button
                     onClick={handleSendComment}
-                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                   >
                     전송
                   </button>
                 </div>
+
+                {/* 댓글 목록 */}
+                <div className="space-y-2">
+                  {[...comments]
+                    .sort((a, b) => new Date(a.createDate) - new Date(b.createDate))
+                    .map((comment) => (
+                      <div key={comment.id}
+                        className={`border-b dark:border-gray-700 pb-2 ${
+                          comment.type === 'SELLER' 
+                            ? 'bg-blue-50 dark:bg-blue-900/20' 
+                            : 'bg-green-50 dark:bg-green-900/20'
+                        } p-3 rounded-lg`}
+                      >
+                        <div className="flex items-center gap-2 text-sm mb-1">
+                          <span className={`font-semibold px-2 py-1 rounded-full text-white ${
+                            comment.type === 'SELLER' 
+                              ? 'bg-blue-500 dark:bg-blue-600' 
+                              : 'bg-green-500 dark:bg-green-600'
+                          }`}>
+                            {comment.type === 'SELLER' ? '판매자' : '구매자'}
+                          </span>
+                          <span className="text-gray-500 dark:text-gray-400">
+                            {formatDate(comment.createDate)}
+                          </span>
+                        </div>
+                        <div className="pl-2 dark:text-white mt-2">
+                          {comment.content}
+                        </div>
+                      </div>
+                    ))}
+                </div>
+
+                {comments.length === 0 && (
+                  <div className="text-center text-gray-500 dark:text-gray-400 py-4">
+                    아직 댓글이 없습니다.
+                  </div>
+                )}
               </div>
             </div>
         )}
