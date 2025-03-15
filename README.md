@@ -42,3 +42,6 @@
 
 ### API 명세서
 #### [[위키]](https://github.com/prgrms-be-devcourse/NBE3-4-2-Team03/wiki)를 참고해주세요!
+
+### 발표 자료
+#### [[3팀_2차_발표자료]](https://github.com/user-attachments/files/19262808/NBE3-4-2_Team03_2._.pdf)
